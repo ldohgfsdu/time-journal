@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../app/copy.dart';
 import '../../app/gentle_feedback.dart';
 import '../../app/shell_navigation.dart';
@@ -450,6 +451,112 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
             label: Text(AppCopy.focusStartWith(state.selectedMinutes)),
             style: FilledButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
+            ),
+          ),
+          const SizedBox(height: 28),
+          _buildRecentHistory(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentHistory() {
+    final sessionsAsync = ref.watch(recentSessionsProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '最近专注',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.ink,
+          ),
+        ),
+        const SizedBox(height: 10),
+        sessionsAsync.when(
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: AppTheme.tomato),
+              ),
+            ),
+          ),
+          error: (_, _) => const SizedBox.shrink(),
+          data: (sessions) {
+            if (sessions.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  '还没有专注记录',
+                  style: TextStyle(fontSize: 13, color: AppTheme.inkFaint),
+                ),
+              );
+            }
+            return Column(
+              children: [
+                for (final s in sessions) _buildSessionRow(s),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSessionRow(dynamic session) {
+    final startedAt = session.startedAt;
+    final endedAt = session.endedAt;
+    final started = DateFormat('HH:mm').format(startedAt);
+    final ended = endedAt != null ? DateFormat('HH:mm').format(endedAt) : '—';
+    final actualMin = (session.actualSeconds / 60).round();
+    final durationLabel = '${session.durationMinutes} 分钟';
+    final label = session.completed
+        ? '完成 · $started — $ended'
+        : '放弃 · $started';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Icon(
+            session.completed
+                ? Icons.check_circle_outline_rounded
+                : Icons.cancel_outlined,
+            size: 18,
+            color: session.completed
+                ? AppTheme.sleepBlue
+                : AppTheme.inkFaint,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: session.completed
+                        ? AppTheme.ink
+                        : AppTheme.inkFaint,
+                  ),
+                ),
+                Text(
+                  session.completed
+                      ? '$durationLabel · 实际 $actualMin 分钟'
+                      : durationLabel,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppTheme.inkMuted,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

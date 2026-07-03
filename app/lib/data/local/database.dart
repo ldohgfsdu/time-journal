@@ -137,6 +137,13 @@ class AppDatabase extends _$AppDatabase {
         .get();
   }
 
+  Future<List<PomodoroSession>> recentSessions({int limit = 5}) {
+    return (select(pomodoroSessions)
+          ..orderBy([(t) => OrderingTerm.desc(t.startedAt)])
+          ..limit(limit, offset: 0))
+        .get();
+  }
+
   Future<int> insertPomodoroSession(PomodoroSessionsCompanion session) =>
       into(pomodoroSessions).insert(session);
 

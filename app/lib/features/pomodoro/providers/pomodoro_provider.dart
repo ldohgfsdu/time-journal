@@ -388,3 +388,9 @@ final pomodoroControllerProvider =
     StateNotifierProvider<PomodoroController, PomodoroState>((ref) {
       return PomodoroController(ref);
     });
+
+final recentSessionsProvider =
+    FutureProvider.autoDispose<List<PomodoroSession>>((ref) async {
+      final db = ref.watch(databaseProvider);
+      return db.recentSessions(limit: 5);
+    });

@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -233,6 +234,66 @@ void main() {
       await controller.onPhaseComplete();
       expect(controller.state.phase, PomodoroPhase.idle);
       expect(controller.state.readyForNextRound, true);
+    });
+  });
+
+  group('recentSessions', () {
+    test('returns empty when no sessions exist', () async {
+      final sessions = await db.recentSessions();
+      expect(sessions, isEmpty);
+    });
+
+    test('returns sessions ordered by startedAt desc', () async {
+      final id1 = await db.insertPomodoroSession(
+        PomodoroSessionsCompanion.insert(
+          date: '2026-07-01',
+          durationMinutes: 25,
+          startedAt: DateTime(2026, 7, 1, 9, 0),
+        ),
+      );
+      final id2 = await db.insertPomodoroSession(
+        PomodoroSessionsCompanion.insert(
+          date: '2026-07-02',
+          durationMinutes: 45,
+          startedAt: DateTime(2026, 7, 2, 14, 0),
+        ),
+      );
+      await db.updatePomodoroSession(
+        id1,
+        const PomodoroSessionsCompanion(
+          completed: Value(true),
+          actualSeconds: Value(1500),
+          endedAt: Value(null),
+        ),
+      );
+      await db.updatePomodoroSession(
+        id2,
+        const PomodoroSessionsCompanion(
+          completed: Value(false),
+          actualSeconds: Value(900),
+          endedAt: Value(null),
+        ),
+      );
+
+      final sessions = await db.recentSessions(limit: 5);
+      // Most recent first
+      expect(sessions.first.startedAt, DateTime(2026, 7, 2, 14, 0));
+      expect(sessions.first.completed, false);
+      expect(sessions.last.completed, true);
+    });
+
+    test('respects limit', () async {
+      for (var i = 0; i < 7; i++) {
+        await db.insertPomodoroSession(
+          PomodoroSessionsCompanion.insert(
+            date: '2026-07-0${i + 1}',
+            durationMinutes: 25,
+            startedAt: DateTime(2026, 7, i + 1, 9, 0),
+          ),
+        );
+      }
+      final sessions = await db.recentSessions(limit: 3);
+      expect(sessions.length, 3);
     });
   });
 }

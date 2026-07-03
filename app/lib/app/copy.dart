@@ -120,6 +120,31 @@ class AppCopy {
   static const focusHoldToPause = '需要先停一下？长按确认';
   static const focusHolding = '好的，再按一会儿…';
   static String focusInterrupt(int count) => '刚才离开了一下（$count 次），没关系';
+  static const focusCustomDuration = '自定义时间';
+  static const focusCustomMinuteHint = '输入分钟数（1–180）';
+  static const focusCustomMinuteHelper = '建议不超过 180 分钟';
+  static const focusCancel = '取消';
+  static const focusConfirm = '确定';
+  static const focusPause = '暂停';
+  static const focusResume = '继续';
+  static const focusBreakCompleteTitle = '休息结束';
+  static const focusBreakCompleteSubtitle = '准备开始下一轮';
+  static const focusNextRoundStart = '开始下一轮';
+  static const focusNextRoundDismiss = '不用了';
+  static const focusNextRoundContinuePrefix = '继续：';
+  static const focusHistoryTitle = '最近专注';
+  static const focusHistoryEmpty = '还没有专注记录';
+  static const focusSessionComplete = '完成';
+  static const focusSessionAbandoned = '放弃';
+  static const focusSessionFormatMin = '分钟';
+  static String focusSessionCompleteDetail(
+          String started, String ended) =>
+      '$focusSessionComplete · $started — $ended';
+  static String focusSessionAbandonedDetail(String started) =>
+      '$focusSessionAbandoned · $started';
+  static String focusSessionCompleteActual(
+          int plannedMin, int actualMin) =>
+      '$plannedMin 分钟 · 实际 $actualMin 分钟';
 
   // ── 睡眠 ──
   static const sleepTitle = '睡眠节奏';
@@ -240,4 +265,22 @@ class AppCopy {
   static const profileClearDataCancel = '再想想';
   static const profileClearDataConfirm = '确认清空';
   static const profileClearDataDone = '本机记录已清空';
+  static const profileExportTitle = '数据导出';
+  static const profileExportSubtitle = 'Markdown / CSV 复制到剪贴板';
+  static const profileExportMarkdown = '复制 Markdown';
+  static const profileExportMarkdownDesc = '包含手账、待办、专注、睡眠、周小结';
+  static const profileExportCsv = '复制 CSV';
+  static const profileExportCsvDesc = 'todos / time_blocks / sessions / sleep';
+  static const profileExportMarkdownDone = '已复制 Markdown 导出内容';
+  static const profileExportCsvDone = '已复制 CSV 导出内容';
+  static String profileExportFailed(Object e) => '导出失败：$e';
+  static const profileStorageDetail1 = '数据保存在本机';
+  static const profileStorageDetail2 = '当前版本使用本地数据库';
+  static const profileStorageDetail3 = '删除 App 或清除数据会移除本地记录';
+  static const profileStorageDetail4 = '可通过"数据导出"复制最近 7 天记录';
+  static const profileAboutDesc1 = '手账式时间记录与专注管理';
+  static const profileAboutDesc2 = '手账 · 番茄钟 · 睡眠 · 周报 · 数据导出';
+
+  // ── Journal: completed ──
+  static const journalCompletedTitle = '已完成';
 }

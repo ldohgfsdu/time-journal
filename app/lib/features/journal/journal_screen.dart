@@ -325,14 +325,14 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                   ),
                   if (completedTodos.isNotEmpty)
                     SectionCard(
-                      title: '已完成',
+                      title: AppCopy.journalCompletedTitle,
                       dense: true,
                       child: Opacity(
                         opacity: 0.72,
                         child: Column(
                           children: [
                             for (final todo in completedTodos)
-                              _buildTodoRow(dateKey, todo),
+                              _buildTodoRow(dateKey, todo, editable: false),
                           ],
                         ),
                       ),
@@ -415,7 +415,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     );
   }
 
-  Widget _buildTodoRow(String dateKey, TodoItem item) {
+  Widget _buildTodoRow(String dateKey, TodoItem item, {bool editable = true}) {
     final controller = _controllerForTodo(item);
     final showHint = _showFirstTodoHint && _firstTodoHintItemId == item.id;
 
@@ -425,34 +425,50 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
-            onLongPress: () => _openTodoActions(dateKey, item),
+            onLongPress: editable ? () => _openTodoActions(dateKey, item) : null,
             child: Row(
             children: [
               Checkbox(
                 value: item.completed,
-                onChanged: (_) => _toggleTodo(item),
+                onChanged: editable ? (_) => _toggleTodo(item) : null,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               Expanded(
-                child: TextField(
-                  controller: controller,
-                  minLines: 1,
-                  maxLines: null,
-                  style: TextStyle(
-                    fontSize: 15,
-                    decoration:
-                        item.completed ? TextDecoration.lineThrough : null,
-                    color: item.completed ? AppTheme.inkFaint : AppTheme.ink,
-                  ),
-                  decoration:
-                      const InputDecoration(hintText: AppCopy.journalTodoHint),
-                  onChanged: (v) => _persistTodo(dateKey, item, v),
+                child: editable
+                    ? TextField(
+                        controller: controller,
+                        minLines: 1,
+                        maxLines: null,
+                        style: TextStyle(
+                          fontSize: 15,
+                          decoration:
+                              item.completed ? TextDecoration.lineThrough : null,
+                          color: item.completed ? AppTheme.inkFaint : AppTheme.ink,
+                        ),
+                        decoration: const InputDecoration(
+                            hintText: AppCopy.journalTodoHint),
+                        onChanged: (v) => _persistTodo(dateKey, item, v),
+                      )
+                    : Text(
+                        item.content.trim().isEmpty
+                            ? AppCopy.journalTodoHint
+                            : item.content.trim(),
+                        style: TextStyle(
+                          fontSize: 15,
+                          decoration: item.completed
+                              ? TextDecoration.lineThrough
+                              : null,
+                          color: item.completed
+                              ? AppTheme.inkFaint
+                              : AppTheme.ink,
+                        ),
+                      ),
+              ),
+              if (editable)
+                TextButton(
+                  onPressed: () => _scheduleTodo(dateKey, item),
+                  child: const Text(AppCopy.journalTodoArrange),
                 ),
-              ),
-              TextButton(
-                onPressed: () => _scheduleTodo(dateKey, item),
-                child: const Text(AppCopy.journalTodoArrange),
-              ),
             ],
           ),
           ),

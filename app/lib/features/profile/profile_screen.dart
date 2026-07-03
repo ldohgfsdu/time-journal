@@ -77,8 +77,8 @@ class ProfileScreen extends ConsumerWidget {
               const Divider(height: 18),
               _SettingsSheetRow(
                 icon: Icons.upload_file_outlined,
-                title: '数据导出',
-                subtitle: 'Markdown / CSV 复制到剪贴板',
+                title: AppCopy.profileExportTitle,
+                subtitle: AppCopy.profileExportSubtitle,
                 onTap: () => _showExportSheet(sheetContext, ref),
               ),
               const Divider(height: 18),
@@ -144,8 +144,8 @@ class ProfileScreen extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.description_outlined,
                     color: AppTheme.inkMuted),
-                title: const Text('复制 Markdown'),
-                subtitle: const Text('包含手账、待办、专注、睡眠、周小结'),
+                title: const Text(AppCopy.profileExportMarkdown),
+                subtitle: const Text(AppCopy.profileExportMarkdownDesc),
                 onTap: () async {
                   Navigator.pop(sheetContext);
                   await _copyExport(ref, context, isCsv: false);
@@ -155,8 +155,8 @@ class ProfileScreen extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.table_chart_outlined,
                     color: AppTheme.inkMuted),
-                title: const Text('复制 CSV'),
-                subtitle: const Text('todos / time_blocks / sessions / sleep'),
+                title: const Text(AppCopy.profileExportCsv),
+                subtitle: const Text(AppCopy.profileExportCsvDesc),
                 onTap: () async {
                   Navigator.pop(sheetContext);
                   await _copyExport(ref, context, isCsv: true);
@@ -179,7 +179,9 @@ class ProfileScreen extends ConsumerWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(isCsv ? '已复制 CSV 导出内容' : '已复制 Markdown 导出内容'),
+          content: Text(isCsv
+              ? AppCopy.profileExportCsvDone
+              : AppCopy.profileExportMarkdownDone),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -187,7 +189,7 @@ class ProfileScreen extends ConsumerWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('导出失败：$e'),
+          content: Text(AppCopy.profileExportFailed(e)),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -223,15 +225,15 @@ class ProfileScreen extends ConsumerWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 12),
-              _infoRow(Icons.phone_android_outlined, '数据保存在本机'),
+              _infoRow(Icons.phone_android_outlined, AppCopy.profileStorageDetail1),
               const SizedBox(height: 8),
-              _infoRow(Icons.storage_outlined, '当前版本使用本地数据库'),
+              _infoRow(Icons.storage_outlined, AppCopy.profileStorageDetail2),
               const SizedBox(height: 8),
               _infoRow(Icons.warning_amber_outlined,
-                  '删除 App 或清除数据会移除本地记录'),
+                  AppCopy.profileStorageDetail3),
               const SizedBox(height: 8),
               _infoRow(Icons.upload_file_outlined,
-                  '可通过"数据导出"复制最近 7 天记录'),
+                  AppCopy.profileStorageDetail4),
             ],
           ),
         ),
@@ -268,10 +270,9 @@ class ProfileScreen extends ConsumerWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 12),
-              _infoRow(Icons.auto_stories_outlined, '手账式时间记录与专注管理'),
+              _infoRow(Icons.auto_stories_outlined, AppCopy.profileAboutDesc1),
               const SizedBox(height: 8),
-              _infoRow(Icons.checklist_outlined,
-                  '手账 · 番茄钟 · 睡眠 · 周报 · 数据导出'),
+              _infoRow(Icons.checklist_outlined, AppCopy.profileAboutDesc2),
               const SizedBox(height: 8),
               _infoRow(Icons.info_outline, AppCopy.profileAboutSubtitle),
             ],

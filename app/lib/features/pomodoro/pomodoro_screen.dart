@@ -81,20 +81,20 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.card,
-        title: const Text('自定义时间'),
+        title: const Text(AppCopy.focusCustomDuration),
         content: TextField(
           controller: controller_,
           autofocus: true,
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
-            hintText: '输入分钟数（1–180）',
-            helperText: '建议不超过 180 分钟',
+            hintText: AppCopy.focusCustomMinuteHint,
+            helperText: AppCopy.focusCustomMinuteHelper,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('取消'),
+            child: const Text(AppCopy.focusCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -103,7 +103,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                 Navigator.pop(ctx, v);
               }
             },
-            child: const Text('确定'),
+            child: const Text(AppCopy.focusConfirm),
           ),
         ],
       ),
@@ -218,7 +218,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
               onPressed: controller.pause,
               icon: const Icon(Icons.pause_rounded, color: Colors.white54, size: 20),
               label: const Text(
-                '暂停',
+                AppCopy.focusPause,
                 style: TextStyle(color: Colors.white54),
               ),
               style: TextButton.styleFrom(
@@ -230,7 +230,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
               onPressed: controller.resume,
               icon: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 20),
               label: const Text(
-                '继续',
+                AppCopy.focusResume,
                 style: TextStyle(color: Colors.white),
               ),
               style: FilledButton.styleFrom(
@@ -277,7 +277,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
               color: Colors.white38, size: 48),
           const SizedBox(height: 20),
           const Text(
-            '休息结束',
+            AppCopy.focusBreakCompleteTitle,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
@@ -286,7 +286,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            '准备开始下一轮',
+            AppCopy.focusBreakCompleteSubtitle,
             style: TextStyle(
               fontSize: 15,
               color: Colors.white.withValues(alpha: 0.5),
@@ -295,7 +295,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
           if (task.isNotEmpty) ...[
             const SizedBox(height: 16),
             Text(
-              '继续：$task',
+              '${AppCopy.focusNextRoundContinuePrefix}$task',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white.withValues(alpha: 0.7),
@@ -304,7 +304,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
           ],
           const SizedBox(height: 12),
           Text(
-            '${state.selectedMinutes} 分钟',
+            '${state.selectedMinutes} ${AppCopy.focusSessionFormatMin}',
             style: TextStyle(
               fontSize: 14,
               color: Colors.white.withValues(alpha: 0.4),
@@ -314,7 +314,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
           FilledButton.icon(
             onPressed: () => controller.startNextRound(),
             icon: const Icon(Icons.play_arrow_rounded),
-            label: const Text('开始下一轮'),
+            label: const Text(AppCopy.focusNextRoundStart),
             style: FilledButton.styleFrom(
               backgroundColor: Colors.white.withValues(alpha: 0.15),
               foregroundColor: Colors.white,
@@ -325,7 +325,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
           TextButton(
             onPressed: controller.resetNextRound,
             child: Text(
-              '不用了',
+              AppCopy.focusNextRoundDismiss,
               style: TextStyle(color: Colors.white.withValues(alpha: 0.35)),
             ),
           ),
@@ -436,7 +436,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
               TextButton.icon(
                 onPressed: () => _showCustomDurationDialog(context, controller),
                 icon: const Icon(Icons.edit_calendar_outlined, size: 16),
-                label: const Text('自定义时间'),
+                label: const Text(AppCopy.focusCustomDuration),
                 style: TextButton.styleFrom(foregroundColor: AppTheme.inkMuted),
               ),
             ],
@@ -467,7 +467,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          '最近专注',
+          AppCopy.focusHistoryTitle,
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -493,7 +493,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
               return const Padding(
                 padding: EdgeInsets.symmetric(vertical: 12),
                 child: Text(
-                  '还没有专注记录',
+                  AppCopy.focusHistoryEmpty,
                   style: TextStyle(fontSize: 13, color: AppTheme.inkFaint),
                 ),
               );
@@ -515,10 +515,9 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
     final started = DateFormat('HH:mm').format(startedAt);
     final ended = endedAt != null ? DateFormat('HH:mm').format(endedAt) : '—';
     final actualMin = (session.actualSeconds / 60).round();
-    final durationLabel = '${session.durationMinutes} 分钟';
     final label = session.completed
-        ? '完成 · $started — $ended'
-        : '放弃 · $started';
+        ? AppCopy.focusSessionCompleteDetail(started, ended)
+        : AppCopy.focusSessionAbandonedDetail(started);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -549,8 +548,9 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                 ),
                 Text(
                   session.completed
-                      ? '$durationLabel · 实际 $actualMin 分钟'
-                      : durationLabel,
+                      ? AppCopy.focusSessionCompleteActual(
+                          session.durationMinutes, actualMin)
+                      : '${session.durationMinutes} ${AppCopy.focusSessionFormatMin}',
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppTheme.inkMuted,

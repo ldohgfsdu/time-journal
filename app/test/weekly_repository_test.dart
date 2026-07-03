@@ -346,20 +346,12 @@ void main() {
       expect(summary.reflectionNote, '这周状态不错');
     });
 
-    test('BUG: second save throws because insertOnConflictUpdate targets id not weekMonday', () async {
+    test('overwrites existing reflection on second save', () async {
       await repo.saveReflection(_testMonday, '第一次记录');
+      await repo.saveReflection(_testMonday, '第二次覆盖');
 
-      // The second save fails with UNIQUE constraint violation on week_monday.
-      // Root cause: db.upsertWeeklyReflection uses insertOnConflictUpdate which
-      // targets PRIMARY KEY (id), but weekly_reflections has a UNIQUE constraint
-      // on week_monday.  Same Drift issue as sleep_records.
-      //
-      // Fix: replace insertOnConflictUpdate with ensure + update pattern
-      // in database.dart:upsertWeeklyReflection.
-      expect(
-        () async => repo.saveReflection(_testMonday, '第二次覆盖'),
-        throwsA(isA<Exception>()),
-      );
+      final summary = await repo.loadWeek(_testMonday);
+      expect(summary.reflectionNote, '第二次覆盖');
     });
 
     test('empty note is allowed', () async {
@@ -414,17 +406,13 @@ void main() {
       expect(summary.plannedStudyMinutes, 0);
     });
 
-    test('empty content blocks are still counted in minutes (current impl)', () async {
+    test('empty content blocks are not counted in minutes', () async {
       await insertPlannedBlock(
         date: _day(0), start: '09:00', end: '10:00', content: '',
       );
 
       final summary = await repo.loadWeek(_testMonday);
-      // BUG: _sumBlockMinutes does NOT check content.isEmpty;
-      // empty-content blocks contribute minutes. 09:00-10:00 = 60 min.
-      // Fix suggestion: add `if (b.content.trim().isEmpty) continue;` in
-      // _sumBlockMinutes at weekly_repository.dart:166.
-      expect(summary.plannedStudyMinutes, 60);
+      expect(summary.plannedStudyMinutes, 0);
     });
 
     test('block with missing colon in time string is handled', () async {

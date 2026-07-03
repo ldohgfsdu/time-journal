@@ -142,8 +142,18 @@ class AppDatabase extends _$AppDatabase {
     )..where((t) => t.weekMonday.equals(weekMonday))).getSingleOrNull();
   }
 
-  Future<void> upsertWeeklyReflection(String weekMonday, String note) {
-    return into(weeklyReflections).insertOnConflictUpdate(
+  Future<void> upsertWeeklyReflection(String weekMonday, String note) async {
+    final existing = await reflectionForWeek(weekMonday);
+    if (existing != null) {
+      await (update(weeklyReflections)
+            ..where((t) => t.id.equals(existing.id)))
+          .write(WeeklyReflectionsCompanion(
+        note: Value(note),
+        updatedAt: Value(DateTime.now()),
+      ));
+      return;
+    }
+    await into(weeklyReflections).insert(
       WeeklyReflectionsCompanion.insert(
         weekMonday: weekMonday,
         note: Value(note),

@@ -164,6 +164,7 @@ class WeeklyRepository {
   static int _sumBlockMinutes(List<TimeBlock> blocks) {
     var total = 0;
     for (final b in blocks) {
+      if (b.content.trim().isEmpty) continue;
       final start = _parseTime(b.startTime);
       final end = _parseTime(b.endTime);
       if (end > start) total += end - start;

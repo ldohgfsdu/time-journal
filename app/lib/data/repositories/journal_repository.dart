@@ -354,6 +354,27 @@ class JournalRepository {
     int? linkedTodoId,
   }) async {
     final existing = await _db.blocksForDate(date, 'actual');
+
+    // 去重：按时间段 + linkedTodoId + content 匹配已有 actual 块
+    for (final block in existing) {
+      if (block.startTime == startTime &&
+          block.endTime == endTime &&
+          block.linkedTodoId == linkedTodoId &&
+          block.content.trim() == content.trim()) {
+        return; // 完全匹配，跳过
+      }
+    }
+
+    // 时间段相同但 content 有变化 → 更新已有行
+    for (final block in existing) {
+      if (block.startTime == startTime &&
+          block.endTime == endTime &&
+          block.linkedTodoId == linkedTodoId) {
+        await updateBlock(block.copyWith(content: content));
+        return;
+      }
+    }
+
     final order = existing.isEmpty ? 0 : existing.last.sortOrder + 1;
     await _db.into(_db.timeBlocks).insert(
       TimeBlocksCompanion.insert(

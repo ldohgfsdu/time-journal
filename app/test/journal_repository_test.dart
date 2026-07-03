@@ -98,4 +98,67 @@ void main() {
       expect(snapshot.actualBlocks.single.linkedTodoId, isNull);
     },
   );
+
+  test(
+    'addActualFromPomodoro is idempotent on duplicate call with same params',
+    () async {
+      const date = '2026-06-25';
+      const params = (
+        date: date,
+        startTime: '14:00',
+        endTime: '14:25',
+        content: '复习高数',
+        linkedTodoId: 42,
+      );
+
+      await repository.addActualFromPomodoro(
+        date: params.date,
+        startTime: params.startTime,
+        endTime: params.endTime,
+        content: params.content,
+        linkedTodoId: params.linkedTodoId,
+      );
+      await repository.addActualFromPomodoro(
+        date: params.date,
+        startTime: params.startTime,
+        endTime: params.endTime,
+        content: params.content,
+        linkedTodoId: params.linkedTodoId,
+      );
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.actualBlocks, hasLength(1));
+      expect(snapshot.actualBlocks.single.content, '复习高数');
+      expect(snapshot.actualBlocks.single.linkedTodoId, 42);
+      expect(snapshot.actualBlocks.single.startTime, '14:00');
+      expect(snapshot.actualBlocks.single.endTime, '14:25');
+    },
+  );
+
+  test(
+    'addActualFromPomodoro does not deduplicate different time slots',
+    () async {
+      const date = '2026-06-25';
+
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '09:00',
+        endTime: '09:25',
+        content: '背单词',
+        linkedTodoId: 1,
+      );
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '14:00',
+        endTime: '14:25',
+        content: '复习高数',
+        linkedTodoId: 2,
+      );
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.actualBlocks, hasLength(2));
+      final contents = snapshot.actualBlocks.map((b) => b.content).toSet();
+      expect(contents, {'背单词', '复习高数'});
+    },
+  );
 }

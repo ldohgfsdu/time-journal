@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/copy.dart';
 import '../../app/theme.dart';
@@ -7,6 +8,7 @@ import '../journal/providers/journal_providers.dart';
 import '../sleep/providers/sleep_provider.dart';
 import '../weekly/weekly_screen.dart';
 import '../weekly/providers/weekly_provider.dart';
+import 'services/export_service.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -72,6 +74,13 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const Divider(height: 18),
               _SettingsSheetRow(
+                icon: Icons.upload_file_outlined,
+                title: '数据导出',
+                subtitle: 'Markdown / CSV 复制到剪贴板',
+                onTap: () => _showExportSheet(sheetContext, ref),
+              ),
+              const Divider(height: 18),
+              _SettingsSheetRow(
                 icon: Icons.delete_outline_rounded,
                 title: AppCopy.profileClearDataTitle,
                 subtitle: AppCopy.profileClearDataSubtitle,
@@ -115,6 +124,72 @@ class ProfileScreen extends ConsumerWidget {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text(AppCopy.profileClearDataDone)));
+  }
+
+  void _showExportSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppTheme.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.description_outlined,
+                    color: AppTheme.inkMuted),
+                title: const Text('复制 Markdown'),
+                subtitle: const Text('包含手账、待办、专注、睡眠、周小结'),
+                onTap: () async {
+                  Navigator.pop(sheetContext);
+                  await _copyExport(ref, context, isCsv: false);
+                },
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.table_chart_outlined,
+                    color: AppTheme.inkMuted),
+                title: const Text('复制 CSV'),
+                subtitle: const Text('todos / time_blocks / sessions / sleep'),
+                onTap: () async {
+                  Navigator.pop(sheetContext);
+                  await _copyExport(ref, context, isCsv: true);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _copyExport(
+      WidgetRef ref, BuildContext context, {required bool isCsv}) async {
+    try {
+      final db = ref.read(databaseProvider);
+      final service = ExportService(db);
+      final text = isCsv ? await service.buildCsv() : await service.buildMarkdown();
+      await Clipboard.setData(ClipboardData(text: text));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isCsv ? '已复制 CSV 导出内容' : '已复制 Markdown 导出内容'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('导出失败：$e'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 }
 

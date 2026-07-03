@@ -23,6 +23,7 @@ class PendingFocusCompletion {
     required this.date,
     required this.startTime,
     required this.endTime,
+    this.linkedTodoId,
   });
 
   final int minutes;
@@ -30,6 +31,7 @@ class PendingFocusCompletion {
   final String date;
   final String startTime;
   final String endTime;
+  final int? linkedTodoId;
 }
 
 class PomodoroState {
@@ -40,6 +42,7 @@ class PomodoroState {
     this.interruptCount = 0,
     this.sessionId,
     this.linkedTask = '',
+    this.linkedTodoId,
     this.pendingCompletion,
   });
 
@@ -49,6 +52,7 @@ class PomodoroState {
   final int interruptCount;
   final int? sessionId;
   final String linkedTask;
+  final int? linkedTodoId;
   final PendingFocusCompletion? pendingCompletion;
 
   PomodoroState copyWith({
@@ -58,6 +62,8 @@ class PomodoroState {
     int? interruptCount,
     int? sessionId,
     String? linkedTask,
+    int? linkedTodoId,
+    bool clearLinkedTodo = false,
     PendingFocusCompletion? pendingCompletion,
     bool clearPending = false,
   }) {
@@ -68,6 +74,8 @@ class PomodoroState {
       interruptCount: interruptCount ?? this.interruptCount,
       sessionId: sessionId ?? this.sessionId,
       linkedTask: linkedTask ?? this.linkedTask,
+      linkedTodoId:
+          clearLinkedTodo ? null : (linkedTodoId ?? this.linkedTodoId),
       pendingCompletion: clearPending
           ? null
           : (pendingCompletion ?? this.pendingCompletion),
@@ -89,9 +97,9 @@ class PomodoroController extends StateNotifier<PomodoroState>
 
   DateTime _now() => _ref.read(currentTimeProvider)();
 
-  void setLinkedTask(String task) {
+  void setLinkedTask(String task, {int? todoId}) {
     if (state.phase != PomodoroPhase.idle) return;
-    state = state.copyWith(linkedTask: task);
+    state = state.copyWith(linkedTask: task, linkedTodoId: todoId);
   }
 
   void selectMinutes(int minutes) {
@@ -116,6 +124,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
         date: date,
         durationMinutes: state.selectedMinutes,
         startedAt: startedAt,
+        linkedTodoId: Value(state.linkedTodoId),
       ),
     );
     _startedAt = startedAt;
@@ -190,6 +199,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
       date: DateFormat('yyyy-MM-dd').format(_startedAt!),
       startTime: DateFormat('HH:mm').format(_startedAt!),
       endTime: DateFormat('HH:mm').format(endedAt),
+      linkedTodoId: state.linkedTodoId,
     );
   }
 
@@ -206,6 +216,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
       startTime: pending.startTime,
       endTime: pending.endTime,
       content: content,
+      linkedTodoId: pending.linkedTodoId,
     );
     _ref.invalidate(journalSnapshotProvider);
     state = state.copyWith(clearPending: true);

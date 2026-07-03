@@ -61,4 +61,41 @@ void main() {
     expect(snapshot.todos, hasLength(1));
     expect(snapshot.todos.single.content, isEmpty);
   });
+
+  test('addActualFromPomodoro writes actual block with linkedTodoId', () async {
+    const date = '2026-06-25';
+    await repository.addActualFromPomodoro(
+      date: date,
+      startTime: '14:00',
+      endTime: '14:25',
+      content: '复习高数',
+      linkedTodoId: 42,
+    );
+
+    final snapshot = await repository.load(date);
+    expect(snapshot.actualBlocks, hasLength(1));
+    final block = snapshot.actualBlocks.single;
+    expect(block.source, 'actual');
+    expect(block.content, '复习高数');
+    expect(block.startTime, '14:00');
+    expect(block.endTime, '14:25');
+    expect(block.linkedTodoId, 42);
+  });
+
+  test(
+    'addActualFromPomodoro works without linkedTodoId for manual tasks',
+    () async {
+      const date = '2026-06-25';
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '10:00',
+        endTime: '10:25',
+        content: '临时任务',
+      );
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.actualBlocks, hasLength(1));
+      expect(snapshot.actualBlocks.single.linkedTodoId, isNull);
+    },
+  );
 }

@@ -351,6 +351,7 @@ class JournalRepository {
     required String startTime,
     required String endTime,
     required String content,
+    int? linkedTodoId,
   }) async {
     final existing = await _db.blocksForDate(date, 'actual');
     final order = existing.isEmpty ? 0 : existing.last.sortOrder + 1;
@@ -361,6 +362,7 @@ class JournalRepository {
         endTime: endTime,
         content: Value(content),
         source: 'actual',
+        linkedTodoId: Value(linkedTodoId),
         sortOrder: Value(order),
       ),
     );

@@ -237,7 +237,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
               onPick: (todo) {
                 GentleFeedback.lightTap();
                 _taskController.text = todo.content;
-                controller.setLinkedTask(todo.content);
+                controller.setLinkedTask(todo.content, todoId: todo.id);
               },
             ),
           ),

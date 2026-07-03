@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:drift/drift.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -193,6 +194,10 @@ class PomodoroController extends StateNotifier<PomodoroState>
     });
   }
 
+  void _playCompletionFeedback() {
+    try { HapticFeedback.mediumImpact(); } catch (_) {}
+  }
+
   @visibleForTesting
   Future<void> onPhaseComplete() async {
     if (_completingPhase) return;
@@ -200,6 +205,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
     _timer?.cancel();
     try {
       if (state.phase == PomodoroPhase.focus) {
+        _playCompletionFeedback();
         final pending = await _completeFocusSession();
         await _cancelFocusNotifications();
         _deadlineAt = _now().add(const Duration(minutes: 5));
@@ -211,6 +217,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
         unawaited(_scheduleBreakEndNotification(_deadlineAt!));
         _startTicker();
       } else {
+        _playCompletionFeedback();
         _deadlineAt = null;
         await _cancelFocusNotifications();
         try { await WakelockPlus.disable(); } catch (_) {}

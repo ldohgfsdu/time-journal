@@ -220,5 +220,19 @@ void main() {
       expect(controller.state.readyForNextRound, true);
       expect(controller.state.isPaused, false);
     });
+
+    test('completion feedback does not break state transitions', () async {
+      controller.selectMinutes(5);
+      await controller.startFocus();
+
+      // focus → break: feedback fires, state still transitions correctly
+      await controller.onPhaseComplete();
+      expect(controller.state.phase, PomodoroPhase.breakTime);
+
+      // break → ready: feedback fires, state still transitions correctly
+      await controller.onPhaseComplete();
+      expect(controller.state.phase, PomodoroPhase.idle);
+      expect(controller.state.readyForNextRound, true);
+    });
   });
 }

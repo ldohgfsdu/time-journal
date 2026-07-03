@@ -27,15 +27,17 @@ class ProfileScreen extends ConsumerWidget {
               context,
             ).push(MaterialPageRoute(builder: (_) => const WeeklyScreen())),
           ),
-          const _SettingsTile(
+          _SettingsTile(
             icon: Icons.storage_outlined,
             title: AppCopy.profileDataTitle,
             subtitle: AppCopy.profileDataSubtitle,
+            onTap: () => _showStorageSheet(context),
           ),
-          const _SettingsTile(
+          _SettingsTile(
             icon: Icons.info_outline,
             title: AppCopy.profileAboutTitle,
             subtitle: AppCopy.profileAboutSubtitle,
+            onTap: () => _showAboutSheet(context),
           ),
           _SettingsTile(
             icon: Icons.settings_outlined,
@@ -190,6 +192,109 @@ class ProfileScreen extends ConsumerWidget {
         ),
       );
     }
+  }
+
+  void _showStorageSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppTheme.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(
+                    color: AppTheme.rule,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                AppCopy.profileDataTitle,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 12),
+              _infoRow(Icons.phone_android_outlined, '数据保存在本机'),
+              const SizedBox(height: 8),
+              _infoRow(Icons.storage_outlined, '当前版本使用本地数据库'),
+              const SizedBox(height: 8),
+              _infoRow(Icons.warning_amber_outlined,
+                  '删除 App 或清除数据会移除本地记录'),
+              const SizedBox(height: 8),
+              _infoRow(Icons.upload_file_outlined,
+                  '可通过"数据导出"复制最近 7 天记录'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAboutSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppTheme.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(
+                    color: AppTheme.rule,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                AppCopy.profileAboutTitle,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 12),
+              _infoRow(Icons.auto_stories_outlined, '手账式时间记录与专注管理'),
+              const SizedBox(height: 8),
+              _infoRow(Icons.checklist_outlined,
+                  '手账 · 番茄钟 · 睡眠 · 周报 · 数据导出'),
+              const SizedBox(height: 8),
+              _infoRow(Icons.info_outline, AppCopy.profileAboutSubtitle),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  static Widget _infoRow(IconData icon, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: AppTheme.inkMuted),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 14, color: AppTheme.ink),
+          ),
+        ),
+      ],
+    );
   }
 }
 

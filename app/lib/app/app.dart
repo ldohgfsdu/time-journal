@@ -23,6 +23,7 @@ class _TimeJournalAppState extends ConsumerState<TimeJournalApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: AppCopy.journalTitle,
       theme: AppTheme.light(),
       locale: const Locale('zh', 'CN'),

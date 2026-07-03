@@ -250,17 +250,42 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            alignment: WrapAlignment.center,
-            children: presets.map((m) {
-              return DurationChip(
-                minutes: m,
-                selected: state.selectedMinutes == m,
-                onTap: () => controller.selectMinutes(m),
-              );
-            }).toList(),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  DurationChip(
+                    minutes: 5,
+                    selected: state.selectedMinutes == 5,
+                    onTap: () => controller.selectMinutes(5),
+                  ),
+                  const SizedBox(width: 10),
+                  DurationChip(
+                    minutes: 15,
+                    selected: state.selectedMinutes == 15,
+                    onTap: () => controller.selectMinutes(15),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  DurationChip(
+                    minutes: 25,
+                    selected: state.selectedMinutes == 25,
+                    onTap: () => controller.selectMinutes(25),
+                  ),
+                  const SizedBox(width: 10),
+                  DurationChip(
+                    minutes: 45,
+                    selected: state.selectedMinutes == 45,
+                    onTap: () => controller.selectMinutes(45),
+                  ),
+                ],
+              ),
+            ],
           ),
           const SizedBox(height: 28),
           FilledButton.icon(

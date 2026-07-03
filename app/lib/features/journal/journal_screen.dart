@@ -244,6 +244,8 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             final hiddenCount = _showAllTodos
                 ? 0
                 : unscheduledIncomplete.length - visiblePersisted.length;
+            final completelyEmpty =
+                allTodos.isEmpty && snapshot.comparisonSlots.isEmpty;
 
             return RefreshIndicator(
               color: AppTheme.tomato,
@@ -268,9 +270,14 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                     child: Column(
                       children: [
                         if (allTodos.isEmpty && draftTodos.isEmpty)
-                          Text(
-                            AppCopy.journalTodoEmpty,
-                            style: Theme.of(context).textTheme.bodySmall,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: Text(
+                              completelyEmpty
+                                  ? AppCopy.journalTodoHint
+                                  : AppCopy.journalTodoEmpty,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
                           )
                         else ...[
                           for (var i = 0; i < visibleTodos.length; i++)
@@ -305,7 +312,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                     subtitle: AppCopy.journalNotesSubtitle,
                     child: TextField(
                       controller: _notesController,
-                      minLines: 3,
+                      minLines: 1,
                       maxLines: null,
                       decoration: const InputDecoration(
                         hintText: AppCopy.journalNotesHint,

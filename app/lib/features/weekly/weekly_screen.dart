@@ -51,25 +51,34 @@ class _WeeklyScreenState extends ConsumerState<WeeklyScreen> {
     return Scaffold(
       backgroundColor: AppTheme.paper,
       appBar: AppBar(
-        title: const Text(AppCopy.weeklyTitle),
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left_rounded),
-          onPressed: () {
-            ref.read(selectedWeekMondayProvider.notifier).state =
-                monday.subtract(const Duration(days: 7));
-          },
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.chevron_right_rounded),
-            onPressed: _canGoForward(monday)
-                ? () {
-                    ref.read(selectedWeekMondayProvider.notifier).state =
-                        monday.add(const Duration(days: 7));
-                  }
-                : null,
-          ),
-        ],
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left_rounded, size: 20),
+              visualDensity: VisualDensity.compact,
+              onPressed: () {
+                ref.read(selectedWeekMondayProvider.notifier).state =
+                    monday.subtract(const Duration(days: 7));
+              },
+            ),
+            const Text(AppCopy.weeklyTitle),
+            IconButton(
+              icon: const Icon(Icons.chevron_right_rounded, size: 20),
+              visualDensity: VisualDensity.compact,
+              onPressed: _canGoForward(monday)
+                  ? () {
+                      ref.read(selectedWeekMondayProvider.notifier).state =
+                          monday.add(const Duration(days: 7));
+                    }
+                  : null,
+            ),
+          ],
+        ),
       ),
       body: PaperBackground(
         child: summaryAsync.when(

@@ -20,13 +20,12 @@
   - loading indicators warmed
   - pomodoro custom duration added
 - Latest known commit:
-  ea5d657 fix(journal): make pomodoro actual recording idempotent
-- MVP 审计复核完成（.external_outbox/mvp-audit-2026-07-03.md）：
-  - completePlannedAsActual 已幂等（审计误判）
-  - copyPlannedToActual 是死代码（零调用方）
-  - addActualFromPomodoro 非幂等（已修复）
-  - actualWakeTime 无写入（待 P0）
-  - WeeklyRepository / ComparisonSlot 零测试（待 P0）
-  - EmptyAddSlot 死代码（确认）
+  2e0655e feat(sleep): record actual wake time
+- P0 系列完成情况：
+  - 原 P0-1 (幂等性): `addActualFromPomodoro` 已去重 (ea5d657)
+  - 原 P0-2 (actualWakeTime): `checkInWakeTime` + 起床按钮 + 睡眠时长 (2e0655e)
+  - 待 P0: WeeklyRepository / ComparisonSlot 测试覆盖
+- MVP 审计复核完成（.external_outbox/mvp-audit-2026-07-03.md）
+- 发现 Drift bug: `insertOnConflictUpdate` 按主键 `id` 做冲突检测，对 `sleep_records`（unique on `date`）无效；改用 `update + where` 模式
 - Next recommended step:
-  P0-3: actualWakeTime 闭环（sleep 起床时间记录）。
+  P0-3: WeeklyRepository / ComparisonSlot 关键路径测试。

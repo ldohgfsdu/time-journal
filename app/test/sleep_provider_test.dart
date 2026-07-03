@@ -80,6 +80,114 @@ void main() {
     });
   });
 
+  group('upsertSleepRecord', () {
+    late AppDatabase db;
+    final date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    setUp(() {
+      db = AppDatabase.forTesting(NativeDatabase.memory());
+    });
+
+    tearDown(() async {
+      await db.close();
+    });
+
+    test('second upsert with same date does not throw', () async {
+      await db.upsertSleepRecord(SleepRecordsCompanion(
+        date: Value(date),
+        targetBedtime: const Value('22:30'),
+        targetWakeTime: const Value('06:30'),
+      ));
+
+      // Second call with same date — must not throw UNIQUE constraint.
+      await db.upsertSleepRecord(SleepRecordsCompanion(
+        date: Value(date),
+        targetBedtime: const Value('23:00'),
+        targetWakeTime: const Value('07:00'),
+      ));
+
+      final all = await db.select(db.sleepRecords).get();
+      expect(all.length, 1);
+    });
+
+    test('updates only provided fields, preserves others', () async {
+      // Create record with actualBedtime + actualWakeTime set
+      final record = await db.ensureSleepRecord(date);
+      await (db.update(db.sleepRecords)
+            ..where((t) => t.id.equals(record.id)))
+          .write(SleepRecordsCompanion(
+        actualBedtime: Value(DateTime(2026, 7, 3, 23, 15)),
+        actualWakeTime: Value(DateTime(2026, 7, 4, 7, 0)),
+      ));
+
+      // Now call upsertSleepRecord to update only target fields
+      await db.upsertSleepRecord(SleepRecordsCompanion(
+        date: Value(date),
+        targetBedtime: const Value('22:00'),
+        targetWakeTime: const Value('06:00'),
+      ));
+
+      final updated = await db.sleepForDate(date);
+      expect(updated, isNotNull);
+      // Target fields updated
+      expect(updated!.targetBedtime, '22:00');
+      expect(updated.targetWakeTime, '06:00');
+      // Existing actual* fields preserved
+      expect(updated.actualBedtime, isNotNull);
+      expect(updated.actualWakeTime, isNotNull);
+    });
+
+    test(
+        'updateSleepSchedule does not erase existing actualBedtime',
+        () async {
+      // Simulate: user checks in bedtime first
+      final record = await db.ensureSleepRecord(date);
+      await (db.update(db.sleepRecords)
+            ..where((t) => t.id.equals(record.id)))
+          .write(SleepRecordsCompanion(
+        actualBedtime: Value(DateTime(2026, 7, 3, 23, 15)),
+        sleepScore: const Value(10),
+      ));
+
+      // Then user edits sleep schedule
+      await db.upsertSleepRecord(SleepRecordsCompanion(
+        date: Value(date),
+        targetBedtime: const Value('22:00'),
+        targetWakeTime: const Value('06:00'),
+      ));
+
+      final result = await db.sleepForDate(date);
+      expect(result, isNotNull);
+      expect(result!.actualBedtime, isNotNull);
+      expect(result.sleepScore, 10);
+      expect(result.targetBedtime, '22:00');
+    });
+
+    test(
+        'updateSleepSchedule does not erase existing actualWakeTime',
+        () async {
+      // Simulate: user records wake time first
+      final record = await db.ensureSleepRecord(date);
+      await (db.update(db.sleepRecords)
+            ..where((t) => t.id.equals(record.id)))
+          .write(SleepRecordsCompanion(
+        actualWakeTime: Value(DateTime(2026, 7, 4, 7, 0)),
+      ));
+
+      // Then user edits sleep schedule
+      await db.upsertSleepRecord(SleepRecordsCompanion(
+        date: Value(date),
+        targetBedtime: const Value('23:00'),
+        targetWakeTime: const Value('07:00'),
+      ));
+
+      final result = await db.sleepForDate(date);
+      expect(result, isNotNull);
+      expect(result!.actualWakeTime, isNotNull);
+      expect(result.targetBedtime, '23:00');
+    });
+  });
+
   group('formatSleepDuration', () {
     test('returns null when actualBedtime is null', () {
       final result = formatSleepDuration(

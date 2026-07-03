@@ -36,6 +36,13 @@
 - 跨项目共享导出使用 .shared_outbox/。
 - 不提交 .external_outbox、.shared_outbox 或任何外部文件。
 
+## Global AI usage tools
+
+- usage / proxy 是全局工具（~/.ai-tools/deepseek-usage/）。
+- 不要复制 usage 日志进仓库。
+- 不要提交 API Key。
+- 每轮收口执行 ai-usage --auto || true。
+
 ## 验证命令
 
 Flutter 验证统一使用：

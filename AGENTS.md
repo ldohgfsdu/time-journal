@@ -111,3 +111,23 @@ When switching between AI tools or models:
 3. Do not assume previous chat context exists.
 4. Continue from repository memory, not from hidden model memory.
 5. Close the round by updating .memory/SESSION_LOG.md.
+
+## Global AI usage tools
+
+This project uses global AI usage tracking tools:
+
+- `~/.ai-tools/deepseek-usage/` — shared scripts (proxy, usage, control)
+- `~/.ai-usage/deepseek/` — usage logs and balance snapshots (not committed)
+- `~/.ai-profiles/` — model provider env files (not committed)
+
+Key commands:
+- `ai-usage` — view DeepSeek usage and balance
+- `ai-proxy-start` / `ai-proxy-stop` / `ai-proxy-status` — proxy control
+- `ai-usage --auto` — one-line usage tail (runs after each round)
+
+Important:
+- Usage/proxy tools are global, shared across all projects.
+- Do not copy usage logs into this repository.
+- Do not commit API keys.
+- To see per-request token stats, use "Claude Code + Proxy" mode from the launch menu.
+- Direct mode only shows balance estimates, not per-request token details.

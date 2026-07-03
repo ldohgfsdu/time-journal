@@ -43,6 +43,25 @@ Web Drift depends on:
 - app/web/sqlite3.wasm
 - app/web/drift_worker.js
 
+## AI usage tools
+
+Global tools:
+
+```
+~/.ai-tools/deepseek-usage/    # shared scripts
+~/.ai-usage/deepseek/          # usage logs (not committed)
+~/.ai-profiles/                # provider env (not committed)
+```
+
+Commands:
+
+```
+ai-usage             # view usage/balance
+ai-proxy-start       # start DeepSeek proxy (port 8787)
+ai-proxy-stop        # stop proxy
+ai-proxy-status      # proxy status
+```
+
 ## External inbox
 
 External inbox root:

@@ -47,6 +47,16 @@ For any AI tool:
 2. Then read .memory/CURRENT_STATE.md and .memory/ACTIVE_OBJECT.md.
 3. Then inspect git status before making changes.
 
+## Usage / Proxy
+
+```
+ai-usage             # 完整用量报告
+ai-usage --auto      # 一行自动尾巴
+ai-proxy-start       # 启动 proxy
+ai-proxy-stop        # 停止 proxy
+ai-proxy-status      # proxy 状态
+```
+
 ## Inbox / Outbox
 
 ```

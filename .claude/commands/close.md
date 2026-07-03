@@ -7,4 +7,5 @@
 3. 更新 .memory/SESSION_LOG.md
 4. 运行 bash scripts/memory_close.sh
 5. 输出 git status --short
-6. 不提交，除非用户明确要求
+6. 运行 ai-usage --auto || true
+7. 不提交，除非用户明确要求

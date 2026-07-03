@@ -2454,6 +2454,306 @@ class SleepRecordsCompanion extends UpdateCompanion<SleepRecord> {
   }
 }
 
+class $WeeklyReflectionsTable extends WeeklyReflections
+    with TableInfo<$WeeklyReflectionsTable, WeeklyReflection> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WeeklyReflectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _weekMondayMeta = const VerificationMeta(
+    'weekMonday',
+  );
+  @override
+  late final GeneratedColumn<String> weekMonday = GeneratedColumn<String>(
+    'week_monday',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, weekMonday, note, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'weekly_reflections';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WeeklyReflection> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('week_monday')) {
+      context.handle(
+        _weekMondayMeta,
+        weekMonday.isAcceptableOrUnknown(data['week_monday']!, _weekMondayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weekMondayMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WeeklyReflection map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WeeklyReflection(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      weekMonday: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}week_monday'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $WeeklyReflectionsTable createAlias(String alias) {
+    return $WeeklyReflectionsTable(attachedDatabase, alias);
+  }
+}
+
+class WeeklyReflection extends DataClass
+    implements Insertable<WeeklyReflection> {
+  final int id;
+
+  /// 该周周一，格式 yyyy-MM-dd
+  final String weekMonday;
+  final String note;
+  final DateTime updatedAt;
+  const WeeklyReflection({
+    required this.id,
+    required this.weekMonday,
+    required this.note,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['week_monday'] = Variable<String>(weekMonday);
+    map['note'] = Variable<String>(note);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  WeeklyReflectionsCompanion toCompanion(bool nullToAbsent) {
+    return WeeklyReflectionsCompanion(
+      id: Value(id),
+      weekMonday: Value(weekMonday),
+      note: Value(note),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory WeeklyReflection.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WeeklyReflection(
+      id: serializer.fromJson<int>(json['id']),
+      weekMonday: serializer.fromJson<String>(json['weekMonday']),
+      note: serializer.fromJson<String>(json['note']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'weekMonday': serializer.toJson<String>(weekMonday),
+      'note': serializer.toJson<String>(note),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  WeeklyReflection copyWith({
+    int? id,
+    String? weekMonday,
+    String? note,
+    DateTime? updatedAt,
+  }) => WeeklyReflection(
+    id: id ?? this.id,
+    weekMonday: weekMonday ?? this.weekMonday,
+    note: note ?? this.note,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  WeeklyReflection copyWithCompanion(WeeklyReflectionsCompanion data) {
+    return WeeklyReflection(
+      id: data.id.present ? data.id.value : this.id,
+      weekMonday: data.weekMonday.present
+          ? data.weekMonday.value
+          : this.weekMonday,
+      note: data.note.present ? data.note.value : this.note,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeeklyReflection(')
+          ..write('id: $id, ')
+          ..write('weekMonday: $weekMonday, ')
+          ..write('note: $note, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, weekMonday, note, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WeeklyReflection &&
+          other.id == this.id &&
+          other.weekMonday == this.weekMonday &&
+          other.note == this.note &&
+          other.updatedAt == this.updatedAt);
+}
+
+class WeeklyReflectionsCompanion extends UpdateCompanion<WeeklyReflection> {
+  final Value<int> id;
+  final Value<String> weekMonday;
+  final Value<String> note;
+  final Value<DateTime> updatedAt;
+  const WeeklyReflectionsCompanion({
+    this.id = const Value.absent(),
+    this.weekMonday = const Value.absent(),
+    this.note = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  WeeklyReflectionsCompanion.insert({
+    this.id = const Value.absent(),
+    required String weekMonday,
+    this.note = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  }) : weekMonday = Value(weekMonday);
+  static Insertable<WeeklyReflection> custom({
+    Expression<int>? id,
+    Expression<String>? weekMonday,
+    Expression<String>? note,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (weekMonday != null) 'week_monday': weekMonday,
+      if (note != null) 'note': note,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  WeeklyReflectionsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? weekMonday,
+    Value<String>? note,
+    Value<DateTime>? updatedAt,
+  }) {
+    return WeeklyReflectionsCompanion(
+      id: id ?? this.id,
+      weekMonday: weekMonday ?? this.weekMonday,
+      note: note ?? this.note,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (weekMonday.present) {
+      map['week_monday'] = Variable<String>(weekMonday.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeeklyReflectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('weekMonday: $weekMonday, ')
+          ..write('note: $note, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2464,6 +2764,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $SleepRecordsTable sleepRecords = $SleepRecordsTable(this);
+  late final $WeeklyReflectionsTable weeklyReflections =
+      $WeeklyReflectionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2474,6 +2776,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     timeBlocks,
     pomodoroSessions,
     sleepRecords,
+    weeklyReflections,
   ];
 }
 
@@ -3721,6 +4024,196 @@ typedef $$SleepRecordsTableProcessedTableManager =
       SleepRecord,
       PrefetchHooks Function()
     >;
+typedef $$WeeklyReflectionsTableCreateCompanionBuilder =
+    WeeklyReflectionsCompanion Function({
+      Value<int> id,
+      required String weekMonday,
+      Value<String> note,
+      Value<DateTime> updatedAt,
+    });
+typedef $$WeeklyReflectionsTableUpdateCompanionBuilder =
+    WeeklyReflectionsCompanion Function({
+      Value<int> id,
+      Value<String> weekMonday,
+      Value<String> note,
+      Value<DateTime> updatedAt,
+    });
+
+class $$WeeklyReflectionsTableFilterComposer
+    extends Composer<_$AppDatabase, $WeeklyReflectionsTable> {
+  $$WeeklyReflectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get weekMonday => $composableBuilder(
+    column: $table.weekMonday,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WeeklyReflectionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WeeklyReflectionsTable> {
+  $$WeeklyReflectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get weekMonday => $composableBuilder(
+    column: $table.weekMonday,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WeeklyReflectionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WeeklyReflectionsTable> {
+  $$WeeklyReflectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get weekMonday => $composableBuilder(
+    column: $table.weekMonday,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$WeeklyReflectionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WeeklyReflectionsTable,
+          WeeklyReflection,
+          $$WeeklyReflectionsTableFilterComposer,
+          $$WeeklyReflectionsTableOrderingComposer,
+          $$WeeklyReflectionsTableAnnotationComposer,
+          $$WeeklyReflectionsTableCreateCompanionBuilder,
+          $$WeeklyReflectionsTableUpdateCompanionBuilder,
+          (
+            WeeklyReflection,
+            BaseReferences<
+              _$AppDatabase,
+              $WeeklyReflectionsTable,
+              WeeklyReflection
+            >,
+          ),
+          WeeklyReflection,
+          PrefetchHooks Function()
+        > {
+  $$WeeklyReflectionsTableTableManager(
+    _$AppDatabase db,
+    $WeeklyReflectionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WeeklyReflectionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WeeklyReflectionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WeeklyReflectionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> weekMonday = const Value.absent(),
+                Value<String> note = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => WeeklyReflectionsCompanion(
+                id: id,
+                weekMonday: weekMonday,
+                note: note,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String weekMonday,
+                Value<String> note = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => WeeklyReflectionsCompanion.insert(
+                id: id,
+                weekMonday: weekMonday,
+                note: note,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WeeklyReflectionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WeeklyReflectionsTable,
+      WeeklyReflection,
+      $$WeeklyReflectionsTableFilterComposer,
+      $$WeeklyReflectionsTableOrderingComposer,
+      $$WeeklyReflectionsTableAnnotationComposer,
+      $$WeeklyReflectionsTableCreateCompanionBuilder,
+      $$WeeklyReflectionsTableUpdateCompanionBuilder,
+      (
+        WeeklyReflection,
+        BaseReferences<
+          _$AppDatabase,
+          $WeeklyReflectionsTable,
+          WeeklyReflection
+        >,
+      ),
+      WeeklyReflection,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3735,4 +4228,6 @@ class $AppDatabaseManager {
       $$PomodoroSessionsTableTableManager(_db, _db.pomodoroSessions);
   $$SleepRecordsTableTableManager get sleepRecords =>
       $$SleepRecordsTableTableManager(_db, _db.sleepRecords);
+  $$WeeklyReflectionsTableTableManager get weeklyReflections =>
+      $$WeeklyReflectionsTableTableManager(_db, _db.weeklyReflections);
 }

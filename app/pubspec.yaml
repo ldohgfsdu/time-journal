@@ -1,7 +1,7 @@
 ﻿name: time_journal
 description: 时间管理手账 - 提升执行力、养成专注、规范作息
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.2+3
 
 environment:
   sdk: ^3.12.1
@@ -24,6 +24,7 @@ dependencies:
   audio_session: ^0.2.3
   wakelock_plus: ^1.6.1
   shared_preferences: ^2.5.5
+  timezone: ^0.11.0
 
 dev_dependencies:
   flutter_test:

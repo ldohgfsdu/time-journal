@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../data/local/database.dart';
 import '../../../data/local/database_provider.dart';
+import '../../../app/copy.dart';
 
 class SleepViewData {
   const SleepViewData({
@@ -54,7 +55,7 @@ Future<void> updateSleepSchedule(WidgetRef ref, {required String bedtime, requir
   ref.invalidate(sleepDataProvider);
 }
 
-Future<void> checkInBedtime(WidgetRef ref) async {
+Future<String> checkInBedtime(WidgetRef ref) async {
   final db = ref.read(databaseProvider);
   final now = DateTime.now();
   final date = DateFormat('yyyy-MM-dd').format(now);
@@ -73,4 +74,5 @@ Future<void> checkInBedtime(WidgetRef ref) async {
     totalScore: Value(total),
   ));
   ref.invalidate(sleepDataProvider);
+  return AppCopy.sleepCheckInFeedback(score, newStreak);
 }

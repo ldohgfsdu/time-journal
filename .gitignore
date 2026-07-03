@@ -5,6 +5,14 @@ app/build/
 app/.flutter-plugins
 app/.flutter-plugins-dependencies
 
+# Build artifacts and diagnostics
+*.apk
+*.aab
+*.hprof
+*.jks
+*.keystore
+key.properties
+
 # IDE
 .idea/
 .vscode/

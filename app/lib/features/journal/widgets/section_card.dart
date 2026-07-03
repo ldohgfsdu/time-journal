@@ -7,35 +7,78 @@ class SectionCard extends StatelessWidget {
     required this.title,
     required this.child,
     this.trailing,
+    this.subtitle,
+    this.dense = false,
   });
 
   final String title;
+  final String? subtitle;
   final Widget child;
   final Widget? trailing;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.symmetric(
+        horizontal: AppTheme.pagePadding,
+        vertical: dense ? 6 : 8,
+      ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.divider),
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+        border: Border.all(color: AppTheme.rule),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.ink)),
-              const Spacer(),
-              if (trailing != null) trailing!,
-            ],
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, dense ? 12 : 14, 16, dense ? 8 : 10),
+            child: Row(
+              children: [
+                Container(
+                  width: 3,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: AppTheme.tomato,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.ink,
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle!,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppTheme.subtitle,
+                              ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                ?trailing,
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-          child,
+          const Divider(height: 1),
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, dense ? 8 : 10, 16, dense ? 12 : 14),
+            child: child,
+          ),
         ],
       ),
     );

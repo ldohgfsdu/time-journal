@@ -52,3 +52,11 @@ class SleepRecords extends Table {
   IntColumn get streakDays => integer().withDefault(const Constant(0))();
   IntColumn get totalScore => integer().withDefault(const Constant(0))();
 }
+
+class WeeklyReflections extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  /// 该周周一，格式 yyyy-MM-dd
+  TextColumn get weekMonday => text().unique()();
+  TextColumn get note => text().withDefault(const Constant(''))();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+}

@@ -239,7 +239,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                 _draftTodoIds.map((id) => _draftTodo(dateKey, id)).toList();
             final visiblePersisted = _showAllTodos
                 ? unscheduledIncomplete
-                : unscheduledIncomplete.take(3).toList();
+                : unscheduledIncomplete.take(5).toList();
             final visibleTodos = [...draftTodos, ...visiblePersisted];
             final hiddenCount = _showAllTodos
                 ? 0

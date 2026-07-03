@@ -242,6 +242,13 @@ class _SlotCard extends StatefulWidget {
 class _SlotCardState extends State<_SlotCard> {
   late final TextEditingController _planController;
   bool _editingPlan = false;
+  bool _saving = false;
+
+  VoidCallback _guard(VoidCallback action) => () {
+        if (_saving) return;
+        setState(() => _saving = true);
+        action();
+      };
 
   @override
   void initState() {
@@ -254,6 +261,7 @@ class _SlotCardState extends State<_SlotCard> {
   @override
   void didUpdateWidget(_SlotCard oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _saving = false;
     final content = widget.slot.planned?.content ?? '';
     if (content != _planController.text) {
       _planController.text = content;
@@ -414,7 +422,7 @@ class _SlotCardState extends State<_SlotCard> {
         ActionPillButton(
           label: AppCopy.journalCompareEditActual,
           compact: true,
-          onPressed: widget.onEditActual,
+          onPressed: _guard(widget.onEditActual),
         ),
       ];
     }
@@ -425,48 +433,48 @@ class _SlotCardState extends State<_SlotCard> {
               ActionPillButton(
                 label: AppCopy.journalCompareCatchUpActual,
                 compact: true,
-                onPressed: widget.onEditActual,
+                onPressed: _guard(widget.onEditActual),
               ),
               ActionPillButton(
                 label: AppCopy.journalCompareAsPlanned,
                 compact: true,
-                onPressed: widget.onCompleteAsPlanned,
+                onPressed: _guard(widget.onCompleteAsPlanned),
               ),
             ]
           : [
               ActionPillButton(
                 label: AppCopy.journalCompareAsPlanned,
                 compact: true,
-                onPressed: widget.onCompleteAsPlanned,
+                onPressed: _guard(widget.onCompleteAsPlanned),
               ),
               ActionPillButton(
                 label: AppCopy.journalCompareChanged,
                 compact: true,
-                onPressed: widget.onEditActual,
+                onPressed: _guard(widget.onEditActual),
               ),
             ],
       SlotStatus.match => [
           ActionPillButton(
             label: AppCopy.journalCompareEditActual,
             compact: true,
-            onPressed: widget.onEditActual,
+            onPressed: _guard(widget.onEditActual),
           ),
           ActionPillButton(
             label: AppCopy.journalCompareRevert,
             compact: true,
-            onPressed: widget.onRevertActual,
+            onPressed: _guard(widget.onRevertActual),
           ),
         ],
       SlotStatus.changed => [
           ActionPillButton(
             label: AppCopy.journalCompareEditActual,
             compact: true,
-            onPressed: widget.onEditActual,
+            onPressed: _guard(widget.onEditActual),
           ),
           ActionPillButton(
             label: AppCopy.journalCompareMarkPlanned,
             compact: true,
-            onPressed: widget.onCompleteAsPlanned,
+            onPressed: _guard(widget.onCompleteAsPlanned),
           ),
         ],
       SlotStatus.unplanned => [],

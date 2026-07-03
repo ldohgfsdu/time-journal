@@ -357,7 +357,8 @@ class _SlotCardState extends State<_SlotCard> {
                 ),
               ),
             ],
-            if (plan != null || widget.slot.orphanActual) ...[
+            if ((plan != null || widget.slot.orphanActual) &&
+                status != SlotStatus.match) ...[
               const SizedBox(height: 4),
               Text(
                 '${AppCopy.journalCompareActualPrefix}$actualText',

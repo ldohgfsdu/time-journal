@@ -71,6 +71,48 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
     }
   }
 
+  Future<void> _showCustomDurationDialog(
+    BuildContext context,
+    PomodoroController controller,
+  ) async {
+    final controller_ = TextEditingController();
+    final minutes = await showDialog<int>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.card,
+        title: const Text('自定义时间'),
+        content: TextField(
+          controller: controller_,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            hintText: '输入分钟数（1–180）',
+            helperText: '建议不超过 180 分钟',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final v = int.tryParse(controller_.text.trim());
+              if (v != null && v >= 1 && v <= 180) {
+                Navigator.pop(ctx, v);
+              }
+            },
+            child: const Text('确定'),
+          ),
+        ],
+      ),
+    );
+    controller_.dispose();
+    if (minutes != null) {
+      controller.selectMinutes(minutes);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<int>(shellTabIndexProvider, (prev, next) {
@@ -284,6 +326,13 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                     onTap: () => controller.selectMinutes(45),
                   ),
                 ],
+              ),
+              const SizedBox(height: 10),
+              TextButton.icon(
+                onPressed: () => _showCustomDurationDialog(context, controller),
+                icon: const Icon(Icons.edit_calendar_outlined, size: 16),
+                label: const Text('自定义时间'),
+                style: TextButton.styleFrom(foregroundColor: AppTheme.inkMuted),
               ),
             ],
           ),

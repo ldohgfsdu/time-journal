@@ -215,7 +215,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       ),
       body: PaperBackground(
         child: snapshotAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.tomato)),
           error: (e, _) => Center(child: Text(AppCopy.loadErrorDetail(e))),
           data: (snapshot) {
             if (_loadedNotesDate != dateKey) {
@@ -251,7 +251,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
               color: AppTheme.tomato,
               onRefresh: () async => ref.invalidate(journalSnapshotProvider),
               child: ListView(
-                padding: const EdgeInsets.only(bottom: 28),
+                padding: const EdgeInsets.only(bottom: 88),
                 children: [
                   _DateHeader(
                     displayDate: displayDate,
@@ -263,6 +263,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                   SectionCard(
                     title: AppCopy.journalTodoTitle,
                     subtitle: AppCopy.journalTodoSubtitle,
+                    dense: allTodos.isEmpty && draftTodos.isEmpty,
                     trailing: ActionPillButton(
                       label: AppCopy.journalTodoAdd,
                       onPressed: _addDraftTodo,
@@ -271,7 +272,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                       children: [
                         if (allTodos.isEmpty && draftTodos.isEmpty)
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            padding: const EdgeInsets.only(top: 2),
                             child: Text(
                               completelyEmpty
                                   ? AppCopy.journalTodoHint

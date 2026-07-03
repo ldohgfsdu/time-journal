@@ -80,8 +80,14 @@ class _ActualEditBodyState extends State<_ActualEditBody> {
       context: context,
       initialTime: start ? _start : _end,
       builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(primary: AppTheme.tomato),
+        data: AppTheme.light().copyWith(
+          colorScheme: AppTheme.light().colorScheme.copyWith(
+                secondary: AppTheme.tomato,
+              ),
+          dialogTheme: const DialogThemeData(
+            barrierColor: Colors.black54,
+            backgroundColor: AppTheme.paper,
+          ),
         ),
         child: child!,
       ),

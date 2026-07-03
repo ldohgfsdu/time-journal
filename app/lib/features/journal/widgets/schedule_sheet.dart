@@ -103,14 +103,22 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
     });
   }
 
+  ThemeData _timePickerTheme() => AppTheme.light().copyWith(
+        colorScheme: AppTheme.light().colorScheme.copyWith(
+              secondary: AppTheme.tomato,
+            ),
+        dialogTheme: const DialogThemeData(
+          barrierColor: Colors.black54,
+          backgroundColor: AppTheme.paper,
+        ),
+      );
+
   Future<void> _pickStart() async {
     final picked = await showTimePicker(
       context: context,
       initialTime: _start,
       builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(primary: AppTheme.tomato),
-        ),
+        data: _timePickerTheme(),
         child: child!,
       ),
     );
@@ -128,9 +136,7 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
       context: context,
       initialTime: _end,
       builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(primary: AppTheme.tomato),
-        ),
+        data: _timePickerTheme(),
         child: child!,
       ),
     );

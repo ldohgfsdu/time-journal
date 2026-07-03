@@ -82,7 +82,7 @@ class _WeeklyScreenState extends ConsumerState<WeeklyScreen> {
       ),
       body: PaperBackground(
         child: summaryAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.tomato)),
           error: (e, _) => Center(child: Text(AppCopy.loadErrorDetail(e))),
           data: (summary) {
             final weekKey = DateFormat('yyyy-MM-dd').format(summary.week.monday);

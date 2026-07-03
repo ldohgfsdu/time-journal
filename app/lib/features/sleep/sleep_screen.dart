@@ -50,7 +50,7 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text(AppCopy.sleepTitle)),
       body: sleepAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.tomato)),
         error: (e, _) => Center(child: Text(AppCopy.loadErrorDetail(e))),
         data: (data) {
           final weekDots = (data.streakDays % 7).clamp(0, 7);
@@ -416,7 +416,7 @@ class _NoiseChip extends StatelessWidget {
                 const SizedBox(
                   width: 12,
                   height: 12,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.tomato),
                 ),
                 const SizedBox(width: 6),
               ],

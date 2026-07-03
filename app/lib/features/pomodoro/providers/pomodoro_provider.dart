@@ -195,7 +195,9 @@ class PomodoroController extends StateNotifier<PomodoroState>
   }
 
   void _playCompletionFeedback() {
-    try { HapticFeedback.mediumImpact(); } catch (_) {}
+    try {
+      unawaited(HapticFeedback.mediumImpact().catchError((_) {}));
+    } catch (_) {}
   }
 
   @visibleForTesting

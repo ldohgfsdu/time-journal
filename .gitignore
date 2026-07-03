@@ -18,6 +18,10 @@ key.properties
 .vscode/
 *.iml
 
+# Claude Code local settings
+.claude/settings.local.json
+.claude/settings.json
+
 # OS
 .DS_Store
 Thumbs.db

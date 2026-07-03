@@ -234,6 +234,9 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                     t.content.trim().isNotEmpty &&
                     !scheduledIds.contains(t.id))
                 .toList();
+            final completedTodos = allTodos
+                .where((t) => t.completed && t.content.trim().isNotEmpty)
+                .toList();
             final incompleteTodoCount = unscheduledIncomplete.length;
             final draftTodos =
                 _draftTodoIds.map((id) => _draftTodo(dateKey, id)).toList();
@@ -295,6 +298,20 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                       ],
                     ),
                   ),
+                  if (completedTodos.isNotEmpty)
+                    SectionCard(
+                      title: '已完成',
+                      dense: true,
+                      child: Opacity(
+                        opacity: 0.72,
+                        child: Column(
+                          children: [
+                            for (final todo in completedTodos)
+                              _buildTodoRow(dateKey, todo),
+                          ],
+                        ),
+                      ),
+                    ),
                   TodayComparisonSection(
                     dateKey: dateKey,
                     slots: snapshot.comparisonSlots,

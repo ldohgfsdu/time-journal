@@ -32,7 +32,13 @@ class AppDatabase extends _$AppDatabase {
   );
 
   static QueryExecutor _openConnection() {
-    return driftDatabase(name: 'time_journal.db');
+    return driftDatabase(
+      name: 'time_journal.db',
+      web: DriftWebOptions(
+        sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+        driftWorker: Uri.parse('drift_worker.js'),
+      ),
+    );
   }
 
   Future<DailyJournal?> journalForDate(String date) {

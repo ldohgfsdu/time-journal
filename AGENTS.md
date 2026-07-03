@@ -4,9 +4,13 @@ This repository uses a shared, tool-agnostic project memory system.
 
 All coding agents, regardless of model or tool, should read the shared memory files before doing work.
 
+## Boot trigger policy
+
+Do not automatically run boot for casual messages (hi, hello, 你好, ?, 在吗, simple status questions, command usage questions). Run boot automatically only before real development tasks (code changes, audits, bug fixes, tests, commits, reports). If unsure, ask one short clarification instead of running boot. Manual boot is always available via the `boot` command.
+
 ## Shared memory files
 
-Read in this order:
+Read in this order (only when boot is triggered):
 
 1. .memory/BOOT.md
 2. .memory/RULES.md

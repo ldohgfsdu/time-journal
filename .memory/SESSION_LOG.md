@@ -3,6 +3,7 @@
 ## 2026-07-03
 
 - Claude Code installed and restored in Ubuntu/proot.
+- 全局 proxy 修复：`~/.ai-tools/deepseek-usage/deepseek_proxy.py` — 修复 `/anthropic/anthropic` 双重路径前缀 bug，增加 `upstream_url` 日志字段。Proxy 透传模式现已正常转发到 DeepSeek。模型字段和 body 不做修改，无敏感信息泄露。
 - Termux one-command `claude` entry created.
 - DeepSeek API connected to Claude Code.
 - Flutter Web preview ran successfully.

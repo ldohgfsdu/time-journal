@@ -1,5 +1,31 @@
 # RULES
 
+## Boot trigger policy
+
+Do not automatically run boot for casual messages.
+
+Casual messages include:
+- hi / hello / 你好
+- ? / 在吗
+- 简单询问当前状态
+- 问命令怎么用
+- 问菜单 / proxy / usage 怎么用
+
+Run boot automatically only before real development tasks, such as:
+- 修改代码
+- 审计功能
+- mvp-audit
+- 修 bug
+- 写测试
+- 提交
+- 生成报告
+- 读取项目状态后继续开发
+
+Manual boot remains available:
+- 用户明确输入 boot 时，执行 boot protocol。
+
+If unsure whether a message is casual or a development task, ask one short clarification instead of running boot.
+
 ## 工作方式
 
 - 默认中文。

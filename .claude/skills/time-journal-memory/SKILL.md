@@ -4,11 +4,13 @@ Purpose:
 Maintain project memory for time-journal using structured repository-local markdown files.
 
 When to use:
-- On session boot
-- Before starting a new task
+- Before starting a real development task (not casual messages)
 - Before and after commits
 - At round close
 - When project state appears inconsistent
+- When user explicitly invokes `boot`
+
+Do NOT trigger for casual messages: hi, hello, 你好, ?, 在吗, simple status questions, command usage questions.
 
 Protocol:
 1. Read CLAUDE.md.

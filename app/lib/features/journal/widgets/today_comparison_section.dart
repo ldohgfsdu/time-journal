@@ -10,6 +10,7 @@ import '../providers/journal_providers.dart';
 import 'action_pill_button.dart';
 import 'actual_edit_sheet.dart';
 import 'schedule_sheet.dart';
+import 'empty_add_slot.dart';
 import 'section_card.dart';
 import 'todo_pick_chips.dart';
 
@@ -128,6 +129,14 @@ class TodayComparisonSection extends ConsumerWidget {
                   }
                 },
               ),
+          if (isToday)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: EmptyAddSlot(
+                hint: '补记一段实际记录',
+                onTap: () => _openCatchUp(context, ref),
+              ),
+            ),
         ],
       ),
     );

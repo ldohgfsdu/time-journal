@@ -141,6 +141,10 @@ class AppCopy {
   static const sleepScorePending = '待记录';
 
   static const sleepCheckInButton = '我准备去睡了';
+  static const sleepWakeButton = '我起床了';
+  static const sleepDurationLabel = '睡眠时长';
+  static const sleepWakeFeedback = '早安，今天已经记下起床时间';
+  static String sleepWakeRecorded(String time) => '已记录：$time';
   static const sleepNoiseTitle = '白噪音';
   static const sleepNoiseSubtitle = '选一个舒服的声音，慢慢放松';
   static const sleepNoisePlaying = '正在播放';

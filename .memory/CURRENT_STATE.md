@@ -9,12 +9,13 @@
 
 ## Latest known commit
 
-- 2ff47a2 polish(ui): refine scheduling picker loading and focus duration
+- ea5d657 fix(journal): make pomodoro actual recording idempotent
 
 ## Completed
 
 - P0-1/P0-2 今日对照与按钮防重复
 - P0-3 专注完成写入实际记录，linkedTodoId 贯通
+- P0-4 `addActualFromPomodoro` 幂等性修复（按时间段+linkedTodoId+content 去重）
 - Drift Web 支持
 - Web 主题色修复
 - UI polish:
@@ -29,8 +30,8 @@
 
 ## Last known validation
 
-- flutter analyze: passed
-- flutter test: 9/9 passed
+- flutter analyze: passed (no issues found)
+- flutter test: 11/11 passed (journal 8 + sleep 3 + widget 1)
 
 ## Known notes
 
@@ -39,3 +40,4 @@
 - Termux 外部存储运行 SQLite 测试会遇到 mmap/exec 限制。
 - 主开发目录必须是 Ubuntu home 下的 ~/code/time-journal。
 - /storage/emulated/0/time-journal 不是主开发目录。
+- `copyPlannedToActual` 是死代码（零调用方），待后续清理。

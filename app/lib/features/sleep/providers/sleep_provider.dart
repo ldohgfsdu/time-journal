@@ -55,6 +55,33 @@ Future<void> updateSleepSchedule(WidgetRef ref, {required String bedtime, requir
   ref.invalidate(sleepDataProvider);
 }
 
+Future<void> checkInWakeTime(AppDatabase db) async {
+  final now = DateTime.now();
+  final date = DateFormat('yyyy-MM-dd').format(now);
+  final record = await db.ensureSleepRecord(date);
+  await (db.update(db.sleepRecords)
+        ..where((t) => t.id.equals(record.id)))
+      .write(SleepRecordsCompanion(actualWakeTime: Value(now)));
+}
+
+String? formatSleepDuration({
+  required DateTime? actualBedtime,
+  required DateTime? actualWakeTime,
+}) {
+  if (actualBedtime == null || actualWakeTime == null) return null;
+  var duration = actualWakeTime.difference(actualBedtime);
+  if (duration.isNegative) {
+    duration =
+        actualWakeTime.add(const Duration(days: 1)).difference(actualBedtime);
+  }
+  final hours = duration.inHours;
+  final minutes = duration.inMinutes % 60;
+  if (hours == 0 && minutes == 0) return '不足 1 分钟';
+  if (hours == 0) return '$minutes 分钟';
+  if (minutes == 0) return '$hours 小时';
+  return '$hours 小时 $minutes 分钟';
+}
+
 Future<String> checkInBedtime(WidgetRef ref) async {
   final db = ref.read(databaseProvider);
   final now = DateTime.now();

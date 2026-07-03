@@ -20,6 +20,13 @@
   - loading indicators warmed
   - pomodoro custom duration added
 - Latest known commit:
-  2ff47a2 polish(ui): refine scheduling picker loading and focus duration
+  ea5d657 fix(journal): make pomodoro actual recording idempotent
+- MVP 审计复核完成（.external_outbox/mvp-audit-2026-07-03.md）：
+  - completePlannedAsActual 已幂等（审计误判）
+  - copyPlannedToActual 是死代码（零调用方）
+  - addActualFromPomodoro 非幂等（已修复）
+  - actualWakeTime 无写入（待 P0）
+  - WeeklyRepository / ComparisonSlot 零测试（待 P0）
+  - EmptyAddSlot 死代码（确认）
 - Next recommended step:
-  MVP 功能缺口审计。
+  P0-3: actualWakeTime 闭环（sleep 起床时间记录）。

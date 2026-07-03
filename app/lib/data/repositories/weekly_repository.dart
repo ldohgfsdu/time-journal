@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:intl/intl.dart';
 import '../local/database.dart';
 import '../models/weekly_summary.dart';
@@ -180,7 +182,19 @@ class WeeklyRepository {
 
   static String? _formatAvgBedtime(List<int> minutes) {
     if (minutes.isEmpty) return null;
-    final avg = minutes.reduce((a, b) => a + b) ~/ minutes.length;
+    // Circular mean: treats each bedtime as an angle on a 24-hour circle
+    // and computes the vector average.  Handles cross-midnight correctly,
+    // e.g. 23:30 + 00:30 → 00:00, not 12:00.
+    var sumSin = 0.0;
+    var sumCos = 0.0;
+    for (final m in minutes) {
+      final angle = m / 1440.0 * 2 * pi;
+      sumSin += sin(angle);
+      sumCos += cos(angle);
+    }
+    final avgAngle = atan2(sumSin, sumCos);
+    final normalized = (avgAngle + 2 * pi) % (2 * pi);
+    final avg = (normalized / (2 * pi) * 1440).round();
     final h = avg ~/ 60;
     final m = avg % 60;
     return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';

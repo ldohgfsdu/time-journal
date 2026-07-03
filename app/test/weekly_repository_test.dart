@@ -458,11 +458,8 @@ void main() {
       expect(summary.avgBedtimeLabel, '23:15');
     });
 
-    test('cross-midnight bedtimes may produce misleading average', () async {
-      // This test documents the current behaviour.
-      // 23:30 = 1410 min, 00:30 = 30 min → avg = (1410+30)/2 = 720 = 12:00
-      // The result "12:00" is not a realistic avg bedtime but is expected
-      // given the purely arithmetic implementation.
+    test('cross-midnight bedtimes average near midnight', () async {
+      // 23:30 + 00:30 → circular mean → 00:00
       await setSleepRecord(
         date: _day(0),
         bedtime: DateTime(2026, 7, 6, 23, 30),
@@ -475,15 +472,41 @@ void main() {
       );
 
       final summary = await repo.loadWeek(_testMonday);
-      // Current impl: (1410 + 30) ~/ 2 = 720 → 12:00
-      // This is a known limitation — documented, not fixed in this commit.
-      expect(summary.avgBedtimeLabel, isNotNull);
-      // Behaviour: the result is NOT a realistic bedtime hour
-      final result = summary.avgBedtimeLabel!;
-      final hour = int.parse(result.split(':')[0]);
-      // For cross-midnight bedtimes the current average lands in the middle
-      // of the day, which is mathematically correct but semantically wrong.
-      expect(hour, lessThan(18)); // falls in daytime, not evening
+      expect(summary.avgBedtimeLabel, '00:00');
+    });
+
+    test('early morning bedtimes are not treated as cross-midnight', () async {
+      // 06:00 + 07:00 → both in the same morning range → ~06:30
+      await setSleepRecord(
+        date: _day(0),
+        bedtime: DateTime(2026, 7, 6, 6, 0),
+        score: 10,
+      );
+      await setSleepRecord(
+        date: _day(1),
+        bedtime: DateTime(2026, 7, 7, 7, 0),
+        score: 10,
+      );
+
+      final summary = await repo.loadWeek(_testMonday);
+      expect(summary.avgBedtimeLabel, '06:30');
+    });
+
+    test('evening-only bedtimes work normally', () async {
+      // 22:00 + 23:00 → ~22:30
+      await setSleepRecord(
+        date: _day(0),
+        bedtime: DateTime(2026, 7, 6, 22, 0),
+        score: 10,
+      );
+      await setSleepRecord(
+        date: _day(1),
+        bedtime: DateTime(2026, 7, 7, 23, 0),
+        score: 10,
+      );
+
+      final summary = await repo.loadWeek(_testMonday);
+      expect(summary.avgBedtimeLabel, '22:30');
     });
   });
 

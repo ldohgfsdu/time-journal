@@ -61,9 +61,15 @@ bash scripts/memory_boot.sh
 - usage / proxy 是全局工具，位于 ~/.ai-tools/deepseek-usage/ 和 ~/.ai-usage/deepseek/。
 - 当前项目不要复制 usage 日志。
 - 当前项目不要提交 API Key。
-- 要看每次请求 token，需要通过"Claude Code + DeepSeek Proxy 记录版"启动。
+- 要看每次请求 token，需要通过"Claude Code + DeepSeek Proxy 透明模式"启动。
 - 直连模式只能查余额，不能稳定记录每次 token。
-- 命令：ai-usage（查看）、ai-proxy-start/stop/status（代理控制）。
+- proxy 进程和 token 记录是两个独立概念：
+  - `ai-proxy-start` 启动转发代理（端口 8787）
+  - `ai-proxy-enable` 开启 token 记录（不需要重启 proxy）
+  - `ai-proxy-disable` 暂停 token 记录（proxy 继续转发）
+  - `ai-proxy-status` 查看 proxy 进程 + token 记录状态
+- proxy 透明模式默认不强制开启 token 记录，由用户按需启用。
+- 命令：ai-usage（查看）、ai-proxy-start/stop/status（代理控制）、ai-proxy-enable/disable（记录开关）。
 
 ## 外部发件箱
 

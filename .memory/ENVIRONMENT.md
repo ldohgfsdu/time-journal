@@ -59,8 +59,22 @@ Commands:
 ai-usage             # view usage/balance
 ai-proxy-start       # start DeepSeek proxy (port 8787)
 ai-proxy-stop        # stop proxy
-ai-proxy-status      # proxy status
+ai-proxy-status      # proxy + recording status
+ai-proxy-enable      # enable token recording
+ai-proxy-disable     # pause token recording
 ```
+
+### Proxy forwarding vs token recording
+
+- Proxy process (`ai-proxy-start`) forwards requests: Claude Code → 127.0.0.1:8787 → DeepSeek.
+- Token recording (`ai-proxy-enable/disable`) is controlled by the presence of `~/.ai-usage/deepseek/recording.enabled`.
+- Proxy checks this flag file on every request — no restart needed.
+- `proxy-disable` pauses recording; proxy continues forwarding normally.
+- To use recording controls, launch via **Proxy 透明模式**: `claude proxy <project>`.
+- Direct mode (`ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic`) bypasses proxy entirely.
+- Starting proxy mid-session in direct mode won't affect the current session.
+- Neither mode logs prompt or response body text.
+- Do not commit `~/.ai-usage/` or API keys.
 
 ## External inbox
 

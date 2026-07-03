@@ -42,6 +42,13 @@
 - 不要复制 usage 日志进仓库。
 - 不要提交 API Key。
 - 每轮收口执行 ai-usage --auto || true。
+- proxy 进程和 token 记录是两回事：
+  - `ai-proxy-start` 启动转发代理，不强制开启记录。
+  - `ai-proxy-enable` / `ai-proxy-disable` 控制 token 记录开关。
+  - 暂停记录不影响 proxy 转发，Claude Code 照常使用。
+- 要用记录开关功能，必须通过 proxy 透明模式启动 Claude Code。
+- 直连模式中途启动 proxy 不会接管当前会话。
+- 推荐从 Termux 菜单选择"Claude Code + DeepSeek Proxy 透明模式"。
 
 ## 验证命令
 

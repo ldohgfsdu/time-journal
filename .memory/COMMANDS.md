@@ -52,10 +52,21 @@ For any AI tool:
 ```
 ai-usage             # 完整用量报告
 ai-usage --auto      # 一行自动尾巴
-ai-proxy-start       # 启动 proxy
+ai-proxy-start       # 启动 proxy（端口 8787）
 ai-proxy-stop        # 停止 proxy
-ai-proxy-status      # proxy 状态
+ai-proxy-status      # proxy 进程 + token 记录状态
+ai-proxy-enable      # 开启 token 记录（不重启 proxy）
+ai-proxy-disable     # 暂停 token 记录（proxy 继续转发）
 ```
+
+### Proxy vs Recording
+
+- Proxy 进程和 token 记录是独立的两个概念。
+- `proxy-start` 启动转发代理，`proxy-enable` 才开启记录。
+- `proxy-disable` 暂停记录，proxy 继续转发，不影响 Claude Code。
+- proxy 每次请求动态检查 `~/.ai-usage/deepseek/recording.enabled`，不需要重启。
+- 直连模式中途启动 proxy 不会接管当前会话。
+- 要用记录控制，必须通过 proxy 透明模式启动 Claude Code。
 
 ## Inbox / Outbox
 

@@ -122,12 +122,23 @@ This project uses global AI usage tracking tools:
 
 Key commands:
 - `ai-usage` — view DeepSeek usage and balance
-- `ai-proxy-start` / `ai-proxy-stop` / `ai-proxy-status` — proxy control
 - `ai-usage --auto` — one-line usage tail (runs after each round)
+- `ai-proxy-start` / `ai-proxy-stop` / `ai-proxy-status` — proxy control
+- `ai-proxy-enable` / `ai-proxy-disable` — toggle token recording on/off
+
+### Proxy vs recording: two separate concepts
+
+- **Proxy process** (ai-proxy-start/stop): forwards Claude Code → DeepSeek via `127.0.0.1:8787`. Always forwards, never interrupted.
+- **Token recording** (ai-proxy-enable/disable): toggled via `~/.ai-usage/deepseek/recording.enabled` flag file. Proxy checks this on every request — no restart needed.
+- `proxy-disable` pauses recording; proxy still forwards requests.
+- `proxy-enable` resumes recording; token usage starts writing to `proxy_usage.jsonl`.
+- If Claude Code was started in direct mode, starting proxy mid-session won't take over the current session.
+- To use recording controls, launch Claude Code via **Proxy 透明模式** from the launch menu (`claude proxy <project>`).
+- Direct mode only shows balance estimates via `ai-usage`, not per-request token details.
+- Neither mode records prompt or response body text.
 
 Important:
 - Usage/proxy tools are global, shared across all projects.
 - Do not copy usage logs into this repository.
 - Do not commit API keys.
-- To see per-request token stats, use "Claude Code + Proxy" mode from the launch menu.
-- Direct mode only shows balance estimates, not per-request token details.
+- Do not commit `~/.ai-usage/`.

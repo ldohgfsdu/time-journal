@@ -161,4 +161,32 @@ void main() {
       expect(contents, {'背单词', '复习高数'});
     },
   );
+
+  group('reorderTodos', () {
+    test('reorders three todos correctly', () async {
+      const date = '2026-07-04';
+      await repository.createTodo(date, 'A');
+      await repository.createTodo(date, 'B');
+      await repository.createTodo(date, 'C');
+
+      // Move A (index 0) to after C (index 2)
+      await repository.reorderTodos(date, 0, 2);
+
+      final snapshot = await repository.load(date);
+      final names = snapshot.todos.map((t) => t.content).toList();
+      expect(names, ['B', 'C', 'A']);
+    });
+
+    test('out of bounds indices are silently ignored', () async {
+      const date = '2026-07-04';
+      await repository.createTodo(date, 'A');
+      await repository.createTodo(date, 'B');
+
+      // Both indices out of range — should not throw
+      await repository.reorderTodos(date, 5, 10);
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.todos, hasLength(2));
+    });
+  });
 }

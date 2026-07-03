@@ -284,8 +284,33 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                             ),
                           )
                         else ...[
-                          for (var i = 0; i < visibleTodos.length; i++)
-                            _buildTodoRow(dateKey, visibleTodos[i]),
+                          ReorderableListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: visibleTodos.length,
+                            onReorderItem: (oldIndex, newIndex) async {
+                              final reordered =
+                                  List<TodoItem>.from(visibleTodos);
+                              final moved = reordered.removeAt(oldIndex);
+                              reordered.insert(newIndex, moved);
+                              final repo =
+                                  ref.read(journalRepositoryProvider);
+                              for (var i = 0; i < reordered.length; i++) {
+                                await repo.updateTodo(
+                                    reordered[i].copyWith(sortOrder: i));
+                              }
+                              if (mounted) {
+                                ref.invalidate(journalSnapshotProvider);
+                              }
+                            },
+                            itemBuilder: (context, index) {
+                              final todo = visibleTodos[index];
+                              return KeyedSubtree(
+                                key: ValueKey(todo.id),
+                                child: _buildTodoRow(dateKey, todo),
+                              );
+                            },
+                          ),
                           if (hiddenCount > 0)
                             TextButton(
                               onPressed: () =>

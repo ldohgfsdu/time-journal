@@ -125,7 +125,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
     final presets = [5, 15, 25, 45];
     final inFocus = state.phase == PomodoroPhase.focus;
     final inBreak = state.phase == PomodoroPhase.breakTime;
-    final immersive = inFocus || inBreak;
+    final immersive = inFocus || inBreak || state.readyForNextRound;
 
     ref.listen<PomodoroState>(pomodoroControllerProvider, (prev, next) {
       final pending = next.pendingCompletion;
@@ -175,6 +175,11 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
   ) {
     final seconds = state.remainingSeconds;
     final task = state.linkedTask.trim();
+
+    if (state.readyForNextRound) {
+      return _buildNextRoundBody(state, controller, task);
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28),
       child: Column(
@@ -251,6 +256,78 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
               ),
             ),
           ],
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNextRoundBody(
+    PomodoroState state,
+    PomodoroController controller,
+    String task,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Column(
+        children: [
+          const Spacer(flex: 2),
+          const Icon(Icons.self_improvement_rounded,
+              color: Colors.white38, size: 48),
+          const SizedBox(height: 20),
+          const Text(
+            '休息结束',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '准备开始下一轮',
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.white.withValues(alpha: 0.5),
+            ),
+          ),
+          if (task.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(
+              '继续：$task',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white.withValues(alpha: 0.7),
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Text(
+            '${state.selectedMinutes} 分钟',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white.withValues(alpha: 0.4),
+            ),
+          ),
+          const Spacer(flex: 3),
+          FilledButton.icon(
+            onPressed: () => controller.startNextRound(),
+            icon: const Icon(Icons.play_arrow_rounded),
+            label: const Text('开始下一轮'),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.white.withValues(alpha: 0.15),
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 48),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: controller.resetNextRound,
+            child: Text(
+              '不用了',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.35)),
+            ),
+          ),
           const SizedBox(height: 32),
         ],
       ),

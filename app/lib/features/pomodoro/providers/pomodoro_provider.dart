@@ -45,6 +45,7 @@ class PomodoroState {
     this.linkedTodoId,
     this.pendingCompletion,
     this.isPaused = false,
+    this.readyForNextRound = false,
   });
 
   final PomodoroPhase phase;
@@ -56,6 +57,7 @@ class PomodoroState {
   final int? linkedTodoId;
   final PendingFocusCompletion? pendingCompletion;
   final bool isPaused;
+  final bool readyForNextRound;
 
   PomodoroState copyWith({
     PomodoroPhase? phase,
@@ -69,6 +71,7 @@ class PomodoroState {
     PendingFocusCompletion? pendingCompletion,
     bool clearPending = false,
     bool? isPaused,
+    bool? readyForNextRound,
   }) {
     return PomodoroState(
       phase: phase ?? this.phase,
@@ -83,6 +86,7 @@ class PomodoroState {
           ? null
           : (pendingCompletion ?? this.pendingCompletion),
       isPaused: isPaused ?? this.isPaused,
+      readyForNextRound: readyForNextRound ?? this.readyForNextRound,
     );
   }
 }
@@ -116,6 +120,21 @@ class PomodoroController extends StateNotifier<PomodoroState>
 
   void clearPendingCompletion() {
     state = state.copyWith(clearPending: true);
+  }
+
+  Future<void> startNextRound() async {
+    if (!state.readyForNextRound) return;
+    state = state.copyWith(readyForNextRound: false);
+    await startFocus();
+  }
+
+  void resetNextRound() {
+    if (!state.readyForNextRound) return;
+    state = state.copyWith(
+      readyForNextRound: false,
+      selectedMinutes: 25,
+      remainingSeconds: 25 * 60,
+    );
   }
 
   void pause() {
@@ -174,7 +193,8 @@ class PomodoroController extends StateNotifier<PomodoroState>
     });
   }
 
-  Future<void> _onPhaseComplete() async {
+  @visibleForTesting
+  Future<void> onPhaseComplete() async {
     if (_completingPhase) return;
     _completingPhase = true;
     _timer?.cancel();
@@ -194,9 +214,10 @@ class PomodoroController extends StateNotifier<PomodoroState>
         _deadlineAt = null;
         await _cancelFocusNotifications();
         try { await WakelockPlus.disable(); } catch (_) {}
-        state = const PomodoroState(
-          selectedMinutes: 25,
-          remainingSeconds: 25 * 60,
+        state = state.copyWith(
+          phase: PomodoroPhase.idle,
+          remainingSeconds: state.selectedMinutes * 60,
+          readyForNextRound: true,
         );
       }
     } finally {
@@ -315,7 +336,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
     if (state.phase == PomodoroPhase.idle || state.isPaused) return;
     final remaining = _remainingSeconds();
     if (remaining <= 0) {
-      _onPhaseComplete();
+      onPhaseComplete();
       return;
     }
     if (remaining != state.remainingSeconds) {

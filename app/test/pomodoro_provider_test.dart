@@ -149,4 +149,76 @@ void main() {
       expect(controller.state.interruptCount, 0);
     });
   });
+
+  // ── next round ──────────────────────────────────────────────
+
+  group('next round', () {
+    test('readyForNextRound is true after break ends', () async {
+      controller.selectMinutes(5);
+      await controller.startFocus();
+      // Simulate break ending by calling phase-complete twice.
+      await controller.onPhaseComplete(); // focus → break
+      await controller.onPhaseComplete(); // break → ready
+
+      expect(controller.state.phase, PomodoroPhase.idle);
+      expect(controller.state.readyForNextRound, true);
+    });
+
+    test('startNextRound begins a new focus session', () async {
+      controller.setLinkedTask('背单词');
+      controller.selectMinutes(25);
+      await controller.startFocus();
+      await controller.onPhaseComplete(); // focus → break
+      await controller.onPhaseComplete(); // break → ready
+
+      expect(controller.state.readyForNextRound, true);
+      expect(controller.state.linkedTask, '背单词');
+
+      await controller.startNextRound();
+
+      expect(controller.state.phase, PomodoroPhase.focus);
+      expect(controller.state.readyForNextRound, false);
+      expect(controller.state.sessionId, isNotNull);
+    });
+
+    test('startNextRound creates one new session, not reusing old',
+        () async {
+      controller.selectMinutes(25);
+      await controller.startFocus();
+      final firstSessionId = controller.state.sessionId;
+      await controller.onPhaseComplete(); // focus → break
+      await controller.onPhaseComplete(); // break → ready
+
+      await controller.startNextRound();
+      final secondSessionId = controller.state.sessionId;
+
+      expect(secondSessionId, isNot(firstSessionId));
+      final sessions = await db.select(db.pomodoroSessions).get();
+      expect(sessions.length, 2);
+    });
+
+    test('abandon clears readyForNextRound', () async {
+      controller.selectMinutes(5);
+      await controller.startFocus();
+      await controller.onPhaseComplete(); // focus → break
+      await controller.onPhaseComplete(); // break → ready
+
+      expect(controller.state.readyForNextRound, true);
+
+      await controller.abandon();
+      expect(controller.state.readyForNextRound, false);
+      expect(controller.state.phase, PomodoroPhase.idle);
+    });
+
+    test('pause is no-op in readyForNextRound state', () async {
+      controller.selectMinutes(5);
+      await controller.startFocus();
+      await controller.onPhaseComplete(); // focus → break
+      await controller.onPhaseComplete(); // break → ready
+
+      controller.pause();
+      expect(controller.state.readyForNextRound, true);
+      expect(controller.state.isPaused, false);
+    });
+  });
 }

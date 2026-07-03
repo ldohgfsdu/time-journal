@@ -39,6 +39,14 @@ Only after user confirmation:
 cd app && flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8081
 ```
 
+## Cross-model memory
+
+For any AI tool:
+
+1. Read AGENTS.md first.
+2. Then read .memory/CURRENT_STATE.md and .memory/ACTIVE_OBJECT.md.
+3. Then inspect git status before making changes.
+
 ## Close round
 
 ```

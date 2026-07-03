@@ -1,3 +1,13 @@
+This project also has a tool-agnostic agent entry file:
+
+AGENTS.md
+
+CLAUDE.md is the Claude Code adapter. The shared source of truth is .memory/.
+
+Claude Code should read AGENTS.md first, then CLAUDE.md, then .memory/*.
+
+---
+
 # time-journal Claude Code Entry
 
 这是 time-journal Flutter 轻量时间管理手账 App。

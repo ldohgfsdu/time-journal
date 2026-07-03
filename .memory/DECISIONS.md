@@ -14,3 +14,7 @@
 - APK 等 MVP 功能闭环后再打。
 - 每轮结束更新 CURRENT_STATE 和 SESSION_LOG。
 - DeepSeek API Key 只放在 Ubuntu home 的 ~/.deepseek-claude.env，不写进仓库。
+- Cross-model project memory is shared through .memory/ and AGENTS.md.
+- CLAUDE.md and .claude/ are Claude Code adapters only.
+- Future OpenCode / Hermes / Grok workflows should read AGENTS.md and .memory/ before working.
+- Do not rely on any single model's hidden conversation memory.

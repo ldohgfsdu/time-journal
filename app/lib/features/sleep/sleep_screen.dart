@@ -31,7 +31,7 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
         minute: int.parse(parts[1]),
       ),
     );
-    if (picked == null) return;
+    if (!mounted || picked == null) return;
     final value =
         '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
     final data = await ref.read(sleepDataProvider.future);

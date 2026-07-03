@@ -80,7 +80,7 @@ class _TimeBlockEditorState extends State<TimeBlockEditor> {
         );
       },
     );
-    if (picked == null) return;
+    if (!mounted || picked == null) return;
     final value =
         '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
     widget.onChanged(widget.block.copyWith(

@@ -76,39 +76,41 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
     BuildContext context,
     PomodoroController controller,
   ) async {
-    final controller_ = TextEditingController();
     final minutes = await showDialog<int>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.card,
-        title: const Text(AppCopy.focusCustomDuration),
-        content: TextField(
-          controller: controller_,
-          autofocus: true,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            hintText: AppCopy.focusCustomMinuteHint,
-            helperText: AppCopy.focusCustomMinuteHelper,
+      builder: (ctx) {
+        final controller_ = TextEditingController();
+        return AlertDialog(
+          backgroundColor: AppTheme.card,
+          title: const Text(AppCopy.focusCustomDuration),
+          content: TextField(
+            controller: controller_,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              hintText: AppCopy.focusCustomMinuteHint,
+              helperText: AppCopy.focusCustomMinuteHelper,
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text(AppCopy.focusCancel),
-          ),
-          FilledButton(
-            onPressed: () {
-              final v = int.tryParse(controller_.text.trim());
-              if (v != null && v >= 1 && v <= 180) {
-                Navigator.pop(ctx, v);
-              }
-            },
-            child: const Text(AppCopy.focusConfirm),
-          ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text(AppCopy.focusCancel),
+            ),
+            FilledButton(
+              onPressed: () {
+                final v = int.tryParse(controller_.text.trim());
+                if (v != null && v >= 1 && v <= 180) {
+                  Navigator.pop(ctx, v);
+                }
+              },
+              child: const Text(AppCopy.focusConfirm),
+            ),
+          ],
+        );
+      },
     );
-    controller_.dispose();
+    if (!context.mounted) return;
     if (minutes != null) {
       controller.selectMinutes(minutes);
     }

@@ -92,7 +92,7 @@ class _ActualEditBodyState extends State<_ActualEditBody> {
         child: child!,
       ),
     );
-    if (picked == null) return;
+    if (!mounted || picked == null) return;
     setState(() {
       if (start) {
         _start = picked;

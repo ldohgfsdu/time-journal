@@ -122,7 +122,7 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
         child: child!,
       ),
     );
-    if (picked == null) return;
+    if (!mounted || picked == null) return;
     setState(() {
       _start = picked;
       if (_durationMinutes != null) {
@@ -140,7 +140,7 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
         child: child!,
       ),
     );
-    if (picked == null) return;
+    if (!mounted || picked == null) return;
     setState(() {
       _end = picked;
       _durationMinutes = null;

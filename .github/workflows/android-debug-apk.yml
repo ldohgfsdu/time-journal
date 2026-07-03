@@ -11,6 +11,7 @@ defaults:
     working-directory: app
 
 env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=512m"
   JAVA_VERSION: "17"
 
 jobs:

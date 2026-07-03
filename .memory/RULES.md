@@ -30,6 +30,12 @@
 - 不要把外部文件复制进仓库，除非用户明确要求。
 - 分析大文件前先列出文件名、大小、类型，不盲目全量读取。
 
+## External outbox
+
+- 用户说"输出到 outbox""导出报告""保存一份"时，写入 .external_outbox/。
+- 跨项目共享导出使用 .shared_outbox/。
+- 不提交 .external_outbox、.shared_outbox 或任何外部文件。
+
 ## 验证命令
 
 Flutter 验证统一使用：

@@ -70,6 +70,38 @@ Rules:
 - Do not copy external files into the repository unless the user explicitly requests it.
 - Before analyzing large files, list filename, size, and type first — do not blindly read everything.
 
+## External outbox
+
+External outbox root:
+
+```
+/storage/emulated/0/outbox
+```
+
+Current project outbox:
+
+```
+/storage/emulated/0/outbox/time-journal
+```
+
+Shared outbox:
+
+```
+/storage/emulated/0/outbox/_shared
+```
+
+Repository access paths:
+
+```
+.external_outbox/
+.shared_outbox/
+```
+
+Rules:
+- When the user says "输出到 outbox" / "导出报告" / "保存一份", write to .external_outbox/.
+- For cross-project shared exports, use .shared_outbox/.
+- Do not commit .external_outbox or .shared_outbox.
+
 ## Model switching rule
 
 When switching between AI tools or models:

@@ -47,10 +47,24 @@ For any AI tool:
 2. Then read .memory/CURRENT_STATE.md and .memory/ACTIVE_OBJECT.md.
 3. Then inspect git status before making changes.
 
-## Inbox
+## Inbox / Outbox
 
 ```
 bash scripts/inbox_list.sh
+```
+
+Inbox:
+
+```
+.external_inbox/  -> /storage/emulated/0/inbox/time-journal
+.shared_inbox/    -> /storage/emulated/0/inbox/_shared
+```
+
+Outbox:
+
+```
+.external_outbox/ -> /storage/emulated/0/outbox/time-journal
+.shared_outbox/   -> /storage/emulated/0/outbox/_shared
 ```
 
 ## Close round

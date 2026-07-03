@@ -26,6 +26,14 @@ key.properties
 inbox
 inbox/
 
+# External outbox (project-scoped, phone storage)
+.external_outbox
+.external_outbox/
+.shared_outbox
+.shared_outbox/
+outbox
+outbox/
+
 # Claude Code local settings
 .claude/settings.local.json
 .claude/settings.json

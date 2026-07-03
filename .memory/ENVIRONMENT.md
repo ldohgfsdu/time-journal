@@ -69,3 +69,30 @@ Repository access paths:
 .external_inbox/
 .shared_inbox/
 ```
+
+## External outbox
+
+External outbox root:
+
+```
+/storage/emulated/0/outbox
+```
+
+Current project outbox:
+
+```
+/storage/emulated/0/outbox/time-journal
+```
+
+Shared outbox:
+
+```
+/storage/emulated/0/outbox/_shared
+```
+
+Repository access paths:
+
+```
+.external_outbox/
+.shared_outbox/
+```

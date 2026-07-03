@@ -55,3 +55,9 @@ bash scripts/memory_boot.sh
 - 跨项目通用资料检查 .shared_inbox/。
 - 不提交 .external_inbox、.shared_inbox 或任何外部文件。
 - 分析大文件前先列出文件名、大小、类型，不盲目全量读取。
+
+## 外部发件箱
+
+- 用户说"输出到 outbox""导出报告""保存一份"时，写入 .external_outbox/。
+- 跨项目共享导出使用 .shared_outbox/。
+- 不提交 .external_outbox、.shared_outbox 或任何外部文件。

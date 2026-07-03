@@ -32,6 +32,7 @@ class AppCopy {
   static const journalCompareStatusMatch = '一致';
   static const journalCompareStatusPending = '待补';
   static const journalCompareStatusChanged = '有变';
+  static const journalCompareStatusUnplanned = '未计划';
   static const journalCompareAsPlanned = '按计划完成';
   static const journalCompareCatchUpActual = '补记实际';
   static const journalCompareChanged = '实际有变';

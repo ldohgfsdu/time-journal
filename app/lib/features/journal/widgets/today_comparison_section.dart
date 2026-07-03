@@ -534,7 +534,7 @@ class _StatusChip extends StatelessWidget {
       SlotStatus.match => (AppCopy.journalCompareStatusMatch, AppTheme.inkMuted),
       SlotStatus.pending => (AppCopy.journalCompareStatusPending, AppTheme.inkFaint),
       SlotStatus.changed => (AppCopy.journalCompareStatusChanged, AppTheme.inkMuted),
-      SlotStatus.unplanned => ('', AppTheme.inkFaint),
+      SlotStatus.unplanned => (AppCopy.journalCompareStatusUnplanned, AppTheme.inkFaint),
     };
     if (label.isEmpty) return const SizedBox.shrink();
     return Container(

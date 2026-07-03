@@ -47,6 +47,12 @@ For any AI tool:
 2. Then read .memory/CURRENT_STATE.md and .memory/ACTIVE_OBJECT.md.
 3. Then inspect git status before making changes.
 
+## Inbox
+
+```
+bash scripts/inbox_list.sh
+```
+
 ## Close round
 
 ```

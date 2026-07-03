@@ -42,3 +42,30 @@ Web Drift depends on:
 
 - app/web/sqlite3.wasm
 - app/web/drift_worker.js
+
+## External inbox
+
+External inbox root:
+
+```
+/storage/emulated/0/inbox
+```
+
+Current project inbox:
+
+```
+/storage/emulated/0/inbox/time-journal
+```
+
+Shared inbox:
+
+```
+/storage/emulated/0/inbox/_shared
+```
+
+Repository access paths:
+
+```
+.external_inbox/
+.shared_inbox/
+```

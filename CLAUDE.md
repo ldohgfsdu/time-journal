@@ -48,3 +48,10 @@ bash scripts/memory_boot.sh
 - 提交后必须输出 git log 和 git status。
 - 每轮结束必须更新 .memory/CURRENT_STATE.md 和 .memory/SESSION_LOG.md。
 - API Key 不允许写入仓库。
+
+## 外部收件箱
+
+- 用户说"上传了文件""看新文件""读取附件"时，先检查 .external_inbox/。
+- 跨项目通用资料检查 .shared_inbox/。
+- 不提交 .external_inbox、.shared_inbox 或任何外部文件。
+- 分析大文件前先列出文件名、大小、类型，不盲目全量读取。

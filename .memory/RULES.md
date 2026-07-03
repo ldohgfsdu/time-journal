@@ -22,6 +22,14 @@
 - Do not rely on hidden chat memory when switching models.
 - Report drift if repository state conflicts with .memory/.
 
+## External inbox
+
+- 用户说"上传了文件""看新文件""读取附件"时，先检查 .external_inbox/。
+- 跨项目通用资料检查 .shared_inbox/。
+- 不提交 .external_inbox、.shared_inbox 或任何外部文件。
+- 不要把外部文件复制进仓库，除非用户明确要求。
+- 分析大文件前先列出文件名、大小、类型，不盲目全量读取。
+
 ## 验证命令
 
 Flutter 验证统一使用：

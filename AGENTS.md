@@ -36,6 +36,40 @@ Read in this order:
 - Claude Code skill: .claude/skills/time-journal-memory/
 - Other tools should still use .memory/ as the source of truth.
 
+## External inbox
+
+External inbox root:
+
+```
+/storage/emulated/0/inbox
+```
+
+Current project inbox:
+
+```
+/storage/emulated/0/inbox/time-journal
+```
+
+Shared inbox:
+
+```
+/storage/emulated/0/inbox/_shared
+```
+
+Repository access paths:
+
+```
+.external_inbox/
+.shared_inbox/
+```
+
+Rules:
+- When the user says "我上传了文件" / "看新文件" / "读取附件", check .external_inbox/ first.
+- For cross-project shared resources, check .shared_inbox/.
+- Do not commit .external_inbox or .shared_inbox.
+- Do not copy external files into the repository unless the user explicitly requests it.
+- Before analyzing large files, list filename, size, and type first — do not blindly read everything.
+
 ## Model switching rule
 
 When switching between AI tools or models:

@@ -18,6 +18,14 @@ key.properties
 .vscode/
 *.iml
 
+# External inbox (project-scoped, phone storage)
+.external_inbox
+.external_inbox/
+.shared_inbox
+.shared_inbox/
+inbox
+inbox/
+
 # Claude Code local settings
 .claude/settings.local.json
 .claude/settings.json

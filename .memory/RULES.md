@@ -15,6 +15,13 @@
 - 不 reset、不 checkout、不 clean，除非用户明确授权。
 - 不把 API Key 或任何密钥写进仓库。
 
+## Cross-model entry
+
+- Any AI coding tool or model should read AGENTS.md first.
+- Then read .memory/CURRENT_STATE.md and .memory/ACTIVE_OBJECT.md before making changes.
+- Do not rely on hidden chat memory when switching models.
+- Report drift if repository state conflicts with .memory/.
+
 ## 验证命令
 
 Flutter 验证统一使用：

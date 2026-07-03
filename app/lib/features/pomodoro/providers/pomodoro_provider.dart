@@ -44,6 +44,7 @@ class PomodoroState {
     this.linkedTask = '',
     this.linkedTodoId,
     this.pendingCompletion,
+    this.isPaused = false,
   });
 
   final PomodoroPhase phase;
@@ -54,6 +55,7 @@ class PomodoroState {
   final String linkedTask;
   final int? linkedTodoId;
   final PendingFocusCompletion? pendingCompletion;
+  final bool isPaused;
 
   PomodoroState copyWith({
     PomodoroPhase? phase,
@@ -66,6 +68,7 @@ class PomodoroState {
     bool clearLinkedTodo = false,
     PendingFocusCompletion? pendingCompletion,
     bool clearPending = false,
+    bool? isPaused,
   }) {
     return PomodoroState(
       phase: phase ?? this.phase,
@@ -79,6 +82,7 @@ class PomodoroState {
       pendingCompletion: clearPending
           ? null
           : (pendingCompletion ?? this.pendingCompletion),
+      isPaused: isPaused ?? this.isPaused,
     );
   }
 }
@@ -114,6 +118,29 @@ class PomodoroController extends StateNotifier<PomodoroState>
     state = state.copyWith(clearPending: true);
   }
 
+  void pause() {
+    if (state.phase != PomodoroPhase.focus &&
+        state.phase != PomodoroPhase.breakTime) {
+      return;
+    }
+    if (state.isPaused) return;
+    _timer?.cancel();
+    _deadlineAt = null;
+    unawaited(_cancelFocusNotifications());
+    state = state.copyWith(isPaused: true);
+    unawaited(WakelockPlus.disable().catchError((_) {}));
+  }
+
+  void resume() {
+    if (!state.isPaused) return;
+    _deadlineAt = _now().add(Duration(seconds: state.remainingSeconds));
+    if (state.phase == PomodoroPhase.focus) {
+      unawaited(WakelockPlus.enable().catchError((_) {}));
+    }
+    state = state.copyWith(isPaused: false);
+    _startTicker();
+  }
+
   Future<void> startFocus() async {
     if (state.phase != PomodoroPhase.idle) return;
     final startedAt = _now();
@@ -129,7 +156,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
     );
     _startedAt = startedAt;
     _deadlineAt = startedAt.add(Duration(minutes: state.selectedMinutes));
-    await WakelockPlus.enable();
+    try { await WakelockPlus.enable(); } catch (_) {}
     state = state.copyWith(
       phase: PomodoroPhase.focus,
       remainingSeconds: _remainingSeconds(),
@@ -166,7 +193,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
       } else {
         _deadlineAt = null;
         await _cancelFocusNotifications();
-        await WakelockPlus.disable();
+        try { await WakelockPlus.disable(); } catch (_) {}
         state = const PomodoroState(
           selectedMinutes: 25,
           remainingSeconds: 25 * 60,
@@ -226,7 +253,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
     _timer?.cancel();
     _deadlineAt = null;
     await _cancelFocusNotifications();
-    await WakelockPlus.disable();
+    try { await WakelockPlus.disable(); } catch (_) {}
     final sessionId = state.sessionId;
     if (sessionId != null && _startedAt != null) {
       final db = _ref.read(databaseProvider);
@@ -249,6 +276,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (this.state.isPaused) return;
     if (this.state.phase != PomodoroPhase.focus &&
         this.state.phase != PomodoroPhase.breakTime) {
       return;
@@ -270,7 +298,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
-    WakelockPlus.disable();
+    unawaited(WakelockPlus.disable().catchError((_) {}));
     super.dispose();
   }
 
@@ -284,7 +312,7 @@ class PomodoroController extends StateNotifier<PomodoroState>
   }
 
   void _syncRemainingWithDeadline() {
-    if (state.phase == PomodoroPhase.idle) return;
+    if (state.phase == PomodoroPhase.idle || state.isPaused) return;
     final remaining = _remainingSeconds();
     if (remaining <= 0) {
       _onPhaseComplete();

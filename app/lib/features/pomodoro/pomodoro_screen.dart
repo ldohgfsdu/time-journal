@@ -207,6 +207,33 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
             style: _timerStyle,
           ),
           const Spacer(flex: 3),
+          if (!state.isPaused) ...[
+            TextButton.icon(
+              onPressed: controller.pause,
+              icon: const Icon(Icons.pause_rounded, color: Colors.white54, size: 20),
+              label: const Text(
+                '暂停',
+                style: TextStyle(color: Colors.white54),
+              ),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+            ),
+          ] else ...[
+            TextButton.icon(
+              onPressed: controller.resume,
+              icon: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 20),
+              label: const Text(
+                '继续',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.white.withValues(alpha: 0.15),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
           if (inFocus)
             LongPressAbandonButton(onAbandoned: controller.abandon)
           else

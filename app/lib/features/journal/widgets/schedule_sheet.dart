@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../app/copy.dart';
+import '../../../app/picker_helper.dart';
 import '../../../app/theme.dart';
 
 class ScheduleSheetResult {
@@ -103,27 +104,13 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
     });
   }
 
-  ThemeData _timePickerTheme() => AppTheme.light().copyWith(
-        colorScheme: AppTheme.light().colorScheme.copyWith(
-              secondary: AppTheme.tomato,
-            ),
-        dialogTheme: const DialogThemeData(
-          barrierColor: Colors.black54,
-          backgroundColor: AppTheme.paper,
-        ),
-      );
-
   Future<void> _pickStart() async {
-    final picked = await showTimePicker(
-      context: context,
+    final picked = await safeShowTimePicker(
+      context,
       initialTime: _start,
       helpText: widget.catchUp
           ? AppCopy.scheduleCatchUpPickStart
           : AppCopy.schedulePickStart,
-      builder: (context, child) => Theme(
-        data: _timePickerTheme(),
-        child: child!,
-      ),
     );
     if (!mounted || picked == null) return;
     setState(() {
@@ -135,16 +122,12 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
   }
 
   Future<void> _pickEnd() async {
-    final picked = await showTimePicker(
-      context: context,
+    final picked = await safeShowTimePicker(
+      context,
       initialTime: _end,
       helpText: widget.catchUp
           ? AppCopy.scheduleCatchUpPickEnd
           : AppCopy.schedulePickEnd,
-      builder: (context, child) => Theme(
-        data: _timePickerTheme(),
-        child: child!,
-      ),
     );
     if (!mounted || picked == null) return;
     setState(() {

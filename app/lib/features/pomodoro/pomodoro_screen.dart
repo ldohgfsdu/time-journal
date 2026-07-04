@@ -140,6 +140,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
             pending: pending,
             onRecord: ({String? note}) =>
                 controller.recordPendingToJournal(note: note),
+            onStartBreak: () => controller.startBreak(),
             onDismiss: controller.clearPendingCompletion,
           );
         });
@@ -244,11 +245,22 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
           const SizedBox(height: 12),
           if (inFocus)
             LongPressAbandonButton(onAbandoned: controller.abandon)
-          else
+          else ...[
+            TextButton.icon(
+              onPressed: controller.endBreakEarly,
+              icon: const Icon(Icons.skip_next_rounded,
+                  color: Colors.white54, size: 20),
+              label: const Text(
+                AppCopy.focusEndBreakButton,
+                style: TextStyle(color: Colors.white54),
+              ),
+            ),
+            const SizedBox(height: 4),
             Text(
               AppCopy.focusBreakFooter,
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.45)),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
             ),
+          ],
           if (state.interruptCount > 0) ...[
             const SizedBox(height: 16),
             Text(

@@ -47,6 +47,7 @@ class WeeklySummary {
     required this.focusSessions,
     required this.focusMinutes,
     required this.earlySleepDays,
+    required this.sleepNights,
     required this.starsLit,
     required this.days,
     this.avgBedtimeLabel,
@@ -64,6 +65,7 @@ class WeeklySummary {
   final int focusSessions;
   final int focusMinutes;
   final int earlySleepDays;
+  final int sleepNights;
   final int starsLit;
   final List<DayActivity> days;
   final String? avgBedtimeLabel;

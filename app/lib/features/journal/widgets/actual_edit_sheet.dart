@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../app/copy.dart';
+import '../../../app/picker_helper.dart';
 import '../../../app/theme.dart';
 import '../../../data/models/comparison_slot.dart';
 
@@ -76,24 +77,12 @@ class _ActualEditBodyState extends State<_ActualEditBody> {
       '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 
   Future<void> _pickTime({required bool start}) async {
-    final picked = await showTimePicker(
-      context: context,
+    final picked = await safeShowTimePicker(
+      context,
       initialTime: start ? _start : _end,
       helpText: start
           ? AppCopy.scheduleEditActualStart
           : AppCopy.scheduleEditActualEnd,
-      builder: (context, child) => Theme(
-        data: AppTheme.light().copyWith(
-          colorScheme: AppTheme.light().colorScheme.copyWith(
-                secondary: AppTheme.tomato,
-              ),
-          dialogTheme: const DialogThemeData(
-            barrierColor: Colors.black54,
-            backgroundColor: AppTheme.paper,
-          ),
-        ),
-        child: child!,
-      ),
     );
     if (!mounted || picked == null) return;
     setState(() {

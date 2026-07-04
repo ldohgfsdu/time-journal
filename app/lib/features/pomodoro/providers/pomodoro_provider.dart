@@ -138,6 +138,31 @@ class PomodoroController extends StateNotifier<PomodoroState>
     );
   }
 
+  void startBreak() {
+    if (state.phase != PomodoroPhase.idle || state.pendingCompletion == null) {
+      return;
+    }
+    _deadlineAt = _now().add(const Duration(minutes: 5));
+    state = state.copyWith(
+      phase: PomodoroPhase.breakTime,
+      remainingSeconds: 5 * 60,
+    );
+    unawaited(_scheduleBreakEndNotification(_deadlineAt!));
+    _startTicker();
+  }
+
+  void endBreakEarly() {
+    if (state.phase != PomodoroPhase.breakTime) return;
+    _timer?.cancel();
+    _deadlineAt = null;
+    unawaited(_cancelFocusNotifications());
+    state = state.copyWith(
+      phase: PomodoroPhase.idle,
+      remainingSeconds: state.selectedMinutes * 60,
+      readyForNextRound: true,
+    );
+  }
+
   void pause() {
     if (state.phase != PomodoroPhase.focus &&
         state.phase != PomodoroPhase.breakTime) {
@@ -210,14 +235,12 @@ class PomodoroController extends StateNotifier<PomodoroState>
         _playCompletionFeedback();
         final pending = await _completeFocusSession();
         await _cancelFocusNotifications();
-        _deadlineAt = _now().add(const Duration(minutes: 5));
+        _deadlineAt = null;
+        try { await WakelockPlus.disable(); } catch (_) {}
         state = state.copyWith(
-          phase: PomodoroPhase.breakTime,
-          remainingSeconds: _remainingSeconds(),
+          phase: PomodoroPhase.idle,
           pendingCompletion: pending,
         );
-        unawaited(_scheduleBreakEndNotification(_deadlineAt!));
-        _startTicker();
       } else {
         _playCompletionFeedback();
         _deadlineAt = null;

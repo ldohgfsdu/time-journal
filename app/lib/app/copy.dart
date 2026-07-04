@@ -121,6 +121,9 @@ class AppCopy {
 
   static const focusCompleteRecord = '记入今天';
   static const focusCompleteNote = '补一句备注';
+  static const focusStartBreakButton = '开始休息 5 分钟';
+  static const focusEndBreakButton = '结束休息';
+  static const focusCompleteHint = '备注一句…';
   static const focusCompleteRecorded = '这一段守住了，已记入今天';
   static String focusCompleteFeedback(int minutes) =>
       '专注了 $minutes 分钟，这一段完成了，歇一歇吧';
@@ -203,7 +206,7 @@ class AppCopy {
   static const weeklySoulLine2 = '而是「这一周，你是怎么过的」';
   static String weeklyHeader(int weekNumber, String range) =>
       '第 $weekNumber 周 · $range';
-  static String weeklyAttendance(int days) => '这周记录了 $days 天';
+  static String weeklyAttendance(int days) => '这周有记录 $days 天';
   static const weeklyTrackTitle = '这一周的节奏';
   static const weeklyTrackJournal = '手账';
   static const weeklyTrackFocus = '专注';
@@ -222,14 +225,23 @@ class AppCopy {
       '计划 ${_fmtMinutes(planned)} → 实际 ${_fmtMinutes(actual)}';
 
   static const weeklyFocusTitle = '专注';
-  static String weeklyFocusSummary(int sessions, int minutes) => sessions > 0
-      ? '完成 $sessions 段专注，共 ${_fmtMinutes(minutes)}'
-      : '本周还没有专注记录，挑一个安静的时间开始就好';
+  static String weeklyFocusSummary(int sessions, int minutes) {
+    if (sessions == 0) {
+      return '本周还没有专注记录，挑一个安静的时间开始就好';
+    }
+    final duration = minutes > 0 ? _fmtMinutes(minutes) : '不足 1 分钟';
+    return '完成 $sessions 段专注，共 $duration';
+  }
   static String weeklyFocusPreset(int minutes) => '最常专注：$minutes 分钟段';
 
   static const weeklySleepTitle = '睡眠';
+  static String weeklySleepNights(int nights) {
+    if (nights == 0) return '这周还没记录睡眠，今晚开始也不晚';
+    if (nights == 1) return '这周记录了 1 晚睡眠';
+    return '这周记录了 $nights 晚睡眠';
+  }
   static String weeklySleepEarly(int days) =>
-      days > 0 ? '早睡 $days 天' : '这周还没记录睡眠，今晚开始也不晚';
+      days > 0 ? '早睡 $days 天' : '暂无早睡记录';
   static String weeklySleepBedtime(String time) => '平均就寝 $time';
   static String weeklySleepProgress(int days) => '本周早睡 $days 天';
   static String weeklySleepStars(int stars) => '本周点亮 $stars 晚';

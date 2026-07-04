@@ -47,6 +47,7 @@ class WeeklyRepository {
     var focusSessions = 0;
     var focusMinutes = 0;
     var earlySleepDays = 0;
+    var sleepNights = 0;
     final bedtimeMinutes = <int>[];
     final presetCounts = <int, int>{};
 
@@ -92,6 +93,7 @@ class WeeklyRepository {
       if (sleep?.actualBedtime != null) {
         final bt = sleep!.actualBedtime!;
         bedtimeMinutes.add(bt.hour * 60 + bt.minute);
+        sleepNights++;
       }
 
       days.add(DayActivity(
@@ -119,6 +121,7 @@ class WeeklyRepository {
       focusSessions: focusSessions,
       focusMinutes: focusMinutes,
       earlySleepDays: earlySleepDays,
+      sleepNights: sleepNights,
       starsLit: earlySleepDays,
       days: days,
       avgBedtimeLabel: _formatAvgBedtime(bedtimeMinutes),

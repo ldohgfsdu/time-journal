@@ -100,6 +100,7 @@ class ExportService {
       final d = DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: i)));
       final sleep = await _db.sleepForDate(d);
       if (sleep == null) continue;
+      if (sleep.actualBedtime == null && sleep.actualWakeTime == null) continue;
       final bed = sleep.actualBedtime != null
           ? DateFormat('HH:mm').format(sleep.actualBedtime!)
           : '—';
@@ -191,6 +192,7 @@ class ExportService {
       final d = DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: i)));
       final sleep = await _db.sleepForDate(d);
       if (sleep == null) continue;
+      if (sleep.actualBedtime == null && sleep.actualWakeTime == null) continue;
       final ab = sleep.actualBedtime != null
           ? DateFormat('yyyy-MM-dd HH:mm').format(sleep.actualBedtime!)
           : '';

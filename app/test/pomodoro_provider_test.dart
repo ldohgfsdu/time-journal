@@ -154,22 +154,71 @@ void main() {
   // ── next round ──────────────────────────────────────────────
 
   group('next round', () {
-    test('readyForNextRound is true after break ends', () async {
+    test('focus complete does not force break', () async {
       controller.selectMinutes(5);
       await controller.startFocus();
-      // Simulate break ending by calling phase-complete twice.
-      await controller.onPhaseComplete(); // focus → break
+      await controller.onPhaseComplete(); // focus → idle + pending
+
+      expect(controller.state.phase, PomodoroPhase.idle);
+      expect(controller.state.pendingCompletion, isNotNull);
+      expect(controller.state.readyForNextRound, false);
+    });
+
+    test('user can start break after focus complete', () async {
+      controller.selectMinutes(5);
+      await controller.startFocus();
+      await controller.onPhaseComplete(); // focus → idle + pending
+
+      expect(controller.state.pendingCompletion, isNotNull);
+      controller.startBreak();
+
+      expect(controller.state.phase, PomodoroPhase.breakTime);
+      expect(controller.state.remainingSeconds, 5 * 60);
+    });
+
+    test('startBreak is no-op without pendingCompletion', () async {
+      controller.selectMinutes(25);
+      controller.startBreak(); // no pending → no-op
+      expect(controller.state.phase, PomodoroPhase.idle);
+    });
+
+    test('readyForNextRound is true after break ends naturally', () async {
+      controller.selectMinutes(5);
+      await controller.startFocus();
+      await controller.onPhaseComplete(); // focus → idle + pending
+      controller.startBreak(); // idle → break
       await controller.onPhaseComplete(); // break → ready
 
       expect(controller.state.phase, PomodoroPhase.idle);
       expect(controller.state.readyForNextRound, true);
     });
 
+    test('endBreakEarly goes to readyForNextRound', () async {
+      controller.selectMinutes(5);
+      await controller.startFocus();
+      await controller.onPhaseComplete(); // focus → idle + pending
+      controller.startBreak(); // idle → break
+
+      expect(controller.state.phase, PomodoroPhase.breakTime);
+      controller.endBreakEarly();
+
+      expect(controller.state.phase, PomodoroPhase.idle);
+      expect(controller.state.readyForNextRound, true);
+    });
+
+    test('endBreakEarly is no-op when not in break', () async {
+      controller.selectMinutes(25);
+      controller.endBreakEarly();
+      expect(controller.state.phase, PomodoroPhase.idle);
+      expect(controller.state.readyForNextRound, false);
+    });
+
     test('startNextRound begins a new focus session', () async {
       controller.setLinkedTask('背单词');
       controller.selectMinutes(25);
       await controller.startFocus();
-      await controller.onPhaseComplete(); // focus → break
+      await controller.onPhaseComplete(); // focus → idle + pending
+      controller.startBreak();
       await controller.onPhaseComplete(); // break → ready
 
       expect(controller.state.readyForNextRound, true);
@@ -187,7 +236,8 @@ void main() {
       controller.selectMinutes(25);
       await controller.startFocus();
       final firstSessionId = controller.state.sessionId;
-      await controller.onPhaseComplete(); // focus → break
+      await controller.onPhaseComplete(); // focus → idle + pending
+      controller.startBreak();
       await controller.onPhaseComplete(); // break → ready
 
       await controller.startNextRound();
@@ -201,7 +251,8 @@ void main() {
     test('abandon clears readyForNextRound', () async {
       controller.selectMinutes(5);
       await controller.startFocus();
-      await controller.onPhaseComplete(); // focus → break
+      await controller.onPhaseComplete(); // focus → idle + pending
+      controller.startBreak();
       await controller.onPhaseComplete(); // break → ready
 
       expect(controller.state.readyForNextRound, true);
@@ -214,7 +265,8 @@ void main() {
     test('pause is no-op in readyForNextRound state', () async {
       controller.selectMinutes(5);
       await controller.startFocus();
-      await controller.onPhaseComplete(); // focus → break
+      await controller.onPhaseComplete(); // focus → idle + pending
+      controller.startBreak();
       await controller.onPhaseComplete(); // break → ready
 
       controller.pause();
@@ -226,14 +278,49 @@ void main() {
       controller.selectMinutes(5);
       await controller.startFocus();
 
-      // focus → break: feedback fires, state still transitions correctly
+      // focus → idle + pendingCompletion
       await controller.onPhaseComplete();
+      expect(controller.state.phase, PomodoroPhase.idle);
+      expect(controller.state.pendingCompletion, isNotNull);
+
+      // start break → breakTime
+      controller.startBreak();
       expect(controller.state.phase, PomodoroPhase.breakTime);
 
-      // break → ready: feedback fires, state still transitions correctly
+      // break → ready
       await controller.onPhaseComplete();
       expect(controller.state.phase, PomodoroPhase.idle);
       expect(controller.state.readyForNextRound, true);
+    });
+  });
+
+  // ── break flow ─────────────────────────────────────────────
+
+  group('break flow', () {
+    test('skip break dismisses pending and goes to idle', () async {
+      controller.selectMinutes(5);
+      await controller.startFocus();
+      await controller.onPhaseComplete(); // focus → idle + pending
+
+      expect(controller.state.pendingCompletion, isNotNull);
+      controller.clearPendingCompletion();
+      expect(controller.state.pendingCompletion, isNull);
+      expect(controller.state.phase, PomodoroPhase.idle);
+      expect(controller.state.readyForNextRound, false);
+    });
+
+    test('pause and resume work during break', () async {
+      controller.selectMinutes(5);
+      await controller.startFocus();
+      await controller.onPhaseComplete(); // focus → idle + pending
+      controller.startBreak();
+
+      expect(controller.state.phase, PomodoroPhase.breakTime);
+      controller.pause();
+      expect(controller.state.isPaused, true);
+
+      controller.resume();
+      expect(controller.state.isPaused, false);
     });
   });
 

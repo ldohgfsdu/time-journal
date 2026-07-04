@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../app/copy.dart';
 import '../../app/gentle_feedback.dart';
+import '../../app/picker_helper.dart';
 import '../../app/theme.dart';
 import '../../data/local/database_provider.dart';
 import '../journal/widgets/section_card.dart';
@@ -24,8 +25,8 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
     required String current,
   }) async {
     final parts = current.split(':');
-    final picked = await showTimePicker(
-      context: context,
+    final picked = await safeShowTimePicker(
+      context,
       initialTime: TimeOfDay(
         hour: int.parse(parts[0]),
         minute: int.parse(parts[1]),

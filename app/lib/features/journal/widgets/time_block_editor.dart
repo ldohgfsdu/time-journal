@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import '../../../app/copy.dart';
 import '../../../app/gentle_feedback.dart';
+import '../../../app/picker_helper.dart';
 import '../../../app/theme.dart';
 import '../../../data/local/database.dart';
 import 'todo_pick_chips.dart';
@@ -69,8 +70,8 @@ class _TimeBlockEditorState extends State<TimeBlockEditor> {
       minute: int.parse(parts[1]),
     );
     final isPlanned = widget.block.source == 'planned';
-    final picked = await showTimePicker(
-      context: context,
+    final picked = await safeShowTimePicker(
+      context,
       initialTime: initial,
       helpText: isStart
           ? (isPlanned
@@ -79,14 +80,6 @@ class _TimeBlockEditorState extends State<TimeBlockEditor> {
           : (isPlanned
               ? AppCopy.scheduleEditPlanEnd
               : AppCopy.scheduleEditActualEnd),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(primary: AppTheme.tomato),
-          ),
-          child: child!,
-        );
-      },
     );
     if (!mounted || picked == null) return;
     final value =

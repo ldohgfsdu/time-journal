@@ -121,6 +121,7 @@ void main() {
       expect(summary.focusSessions, 0);
       expect(summary.focusMinutes, 0);
       expect(summary.earlySleepDays, 0);
+      expect(summary.sleepNights, 0);
       expect(summary.starsLit, 0);
       expect(summary.avgBedtimeLabel, isNull);
       expect(summary.topFocusPresetMinutes, isNull);

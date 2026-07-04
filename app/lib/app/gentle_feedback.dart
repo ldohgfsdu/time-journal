@@ -27,6 +27,7 @@ class GentleFeedback {
     BuildContext context, {
     required PendingFocusCompletion pending,
     required Future<void> Function({String? note}) onRecord,
+    required VoidCallback onStartBreak,
     required VoidCallback onDismiss,
   }) async {
     celebrate();
@@ -84,10 +85,19 @@ class GentleFeedback {
                 },
                 child: const Text(AppCopy.focusCompleteNote),
               ),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  onStartBreak();
+                },
+                icon: const Icon(Icons.self_improvement_rounded, size: 18),
+                label: const Text(AppCopy.focusStartBreakButton),
+              ),
               TextField(
                 controller: noteController,
                 decoration: const InputDecoration(
-                  hintText: '备注一句…',
+                  hintText: AppCopy.focusCompleteHint,
                   border: InputBorder.none,
                 ),
               ),

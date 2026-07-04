@@ -209,7 +209,7 @@ class _WeeklyScreenState extends ConsumerState<WeeklyScreen> {
                       const SizedBox(height: 8),
                       WeeklyDelta(
                         delta: summary.focusMinutesDelta,
-                        hasActivity: summary.focusMinutes > 0,
+                        hasActivity: summary.focusSessions > 0,
                       ),
                     ],
                   ),
@@ -223,15 +223,15 @@ class _WeeklyScreenState extends ConsumerState<WeeklyScreen> {
                         _Bullet(
                             AppCopy.weeklySleepBedtime(summary.avgBedtimeLabel!)),
                       const SizedBox(height: 6),
-                      _Bullet(AppCopy.weeklySleepEarly(summary.earlySleepDays)),
+                      _Bullet(AppCopy.weeklySleepNights(summary.sleepNights)),
                       if (summary.earlySleepDays > 0) ...[
                         const SizedBox(height: 6),
-                        _Bullet(AppCopy.weeklySleepStars(summary.starsLit)),
+                        _Bullet(AppCopy.weeklySleepEarly(summary.earlySleepDays)),
                       ],
                       const SizedBox(height: 8),
                       WeeklyDelta(
                         delta: summary.earlySleepDelta,
-                        hasActivity: summary.earlySleepDays > 0,
+                        hasActivity: summary.sleepNights > 0,
                       ),
                     ],
                   ),

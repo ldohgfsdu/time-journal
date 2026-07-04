@@ -117,6 +117,9 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
     final picked = await showTimePicker(
       context: context,
       initialTime: _start,
+      helpText: widget.catchUp
+          ? AppCopy.scheduleCatchUpPickStart
+          : AppCopy.schedulePickStart,
       builder: (context, child) => Theme(
         data: _timePickerTheme(),
         child: child!,
@@ -135,6 +138,9 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
     final picked = await showTimePicker(
       context: context,
       initialTime: _end,
+      helpText: widget.catchUp
+          ? AppCopy.scheduleCatchUpPickEnd
+          : AppCopy.schedulePickEnd,
       builder: (context, child) => Theme(
         data: _timePickerTheme(),
         child: child!,

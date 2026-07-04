@@ -79,6 +79,9 @@ class _ActualEditBodyState extends State<_ActualEditBody> {
     final picked = await showTimePicker(
       context: context,
       initialTime: start ? _start : _end,
+      helpText: start
+          ? AppCopy.scheduleEditActualStart
+          : AppCopy.scheduleEditActualEnd,
       builder: (context, child) => Theme(
         data: AppTheme.light().copyWith(
           colorScheme: AppTheme.light().colorScheme.copyWith(

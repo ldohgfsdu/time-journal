@@ -54,6 +54,16 @@ class AppCopy {
   static const scheduleEndLabel = '结束时间';
   static const scheduleStartNow = '现在';
   static const scheduleChangeTime = '改时间';
+  static const schedulePickStart = '选择开始时间';
+  static const schedulePickEnd = '选择结束时间';
+  static const scheduleCatchUpPickStart = '补记开始时间';
+  static const scheduleCatchUpPickEnd = '补记结束时间';
+  static const scheduleEditActualStart = '修改实际开始时间';
+  static const scheduleEditActualEnd = '修改实际结束时间';
+  static const scheduleEditPlanStart = '修改计划开始时间';
+  static const scheduleEditPlanEnd = '修改计划结束时间';
+  static const sleepPickBedtime = '修改就寝目标';
+  static const sleepPickWake = '修改起床目标';
   static const scheduleCustomDuration = '自定义时长';
   static const scheduleDurationLabel = '持续时间';
   static const scheduleDuration15 = '15 分钟';
@@ -120,7 +130,7 @@ class AppCopy {
   static const focusHoldToPause = '需要先停一下？长按确认';
   static const focusHolding = '好的，再按一会儿…';
   static String focusInterrupt(int count) => '刚才离开了一下（$count 次），没关系';
-  static const focusCustomDuration = '自定义时间';
+  static const focusCustomDuration = '自定义专注时长';
   static const focusCustomMinuteHint = '输入分钟数（1–180）';
   static const focusCustomMinuteHelper = '建议不超过 180 分钟';
   static const focusCancel = '取消';

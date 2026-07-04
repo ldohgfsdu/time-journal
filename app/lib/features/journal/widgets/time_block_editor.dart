@@ -68,9 +68,17 @@ class _TimeBlockEditorState extends State<TimeBlockEditor> {
       hour: int.parse(parts[0]),
       minute: int.parse(parts[1]),
     );
+    final isPlanned = widget.block.source == 'planned';
     final picked = await showTimePicker(
       context: context,
       initialTime: initial,
+      helpText: isStart
+          ? (isPlanned
+              ? AppCopy.scheduleEditPlanStart
+              : AppCopy.scheduleEditActualStart)
+          : (isPlanned
+              ? AppCopy.scheduleEditPlanEnd
+              : AppCopy.scheduleEditActualEnd),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(

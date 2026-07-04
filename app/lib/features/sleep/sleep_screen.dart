@@ -30,6 +30,7 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
         hour: int.parse(parts[0]),
         minute: int.parse(parts[1]),
       ),
+      helpText: bedtime ? AppCopy.sleepPickBedtime : AppCopy.sleepPickWake,
     );
     if (!mounted || picked == null) return;
     final value =

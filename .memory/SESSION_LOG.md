@@ -27,5 +27,9 @@
   - 待 P0: WeeklyRepository / ComparisonSlot 测试覆盖
 - MVP 审计复核完成（.external_outbox/mvp-audit-2026-07-03.md）
 - 发现 Drift bug: `insertOnConflictUpdate` 按主键 `id` 做冲突检测，对 `sleep_records`（unique on `date`）无效；改用 `update + where` 模式
-- Next recommended step:
-  P0-3: WeeklyRepository / ComparisonSlot 关键路径测试。
+- 真机验收修复批次 1 完成 (a23f3bd)。
+  1. Pomodoro 休息流程：专注完成后不强制进入 break，用户选择是否休息。
+  2. Weekly 文案矛盾：专注/睡眠卡不再显示矛盾文案。
+  3. 导出过滤：完全空 sleep record 不导出。
+  4. TimePicker：统一 safeShowTimePicker + input entry mode。
+- 测试覆盖：105/105 通过。

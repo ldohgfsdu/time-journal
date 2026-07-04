@@ -9,29 +9,26 @@
 
 ## Latest known commit
 
-- ea5d657 fix(journal): make pomodoro actual recording idempotent
+- a23f3bd fix(acceptance): resolve pomodoro and weekly polish issues
 
 ## Completed
 
 - P0-1/P0-2 今日对照与按钮防重复
 - P0-3 专注完成写入实际记录，linkedTodoId 贯通
-- P0-4 `addActualFromPomodoro` 幂等性修复（按时间段+linkedTodoId+content 去重）
+- P0-4 `addActualFromPomodoro` 幂等性修复
+- 真机验收修复批次 1：
+  - Pomodoro 休息流程：专注完成后不强制进入 break，用户选择是否休息
+  - Weekly 文案矛盾：专注/睡眠卡不再显示矛盾文案
+  - 导出过滤：完全空 sleep record 不导出
+  - TimePicker：统一 safeShowTimePicker + input entry mode
 - Drift Web 支持
 - Web 主题色修复
-- UI polish:
-  - 周报导航
-  - 首页纸张红线移除
-  - 待办空状态压缩
-  - 今日对照重复内容修复
-  - 专注 2×2 布局
-  - 专注自定义时间
-  - TimePicker 统一红棕暖色
-  - loading 暖色化
+- UI polish 多批次
 
 ## Last known validation
 
 - flutter analyze: passed (no issues found)
-- flutter test: 11/11 passed (journal 8 + sleep 3 + widget 1)
+- flutter test: 105/105 passed
 
 ## Known notes
 
@@ -41,3 +38,4 @@
 - 主开发目录必须是 Ubuntu home 下的 ~/code/time-journal。
 - /storage/emulated/0/time-journal 不是主开发目录。
 - `copyPlannedToActual` 是死代码（零调用方），待后续清理。
+- 所有 showTimePicker 调用已统一到 picker_helper.dart。

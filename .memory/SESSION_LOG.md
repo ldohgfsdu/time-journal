@@ -1,5 +1,14 @@
 # SESSION_LOG
 
+## 2026-07-05
+
+- OpenCode 接入准备完成：
+  - 安装 OpenCode 1.17.13（curl 安装脚本，linux-arm64）。
+  - 新增 `opencode.jsonc` 项目配置，instructions 指向 AGENTS.md + .memory/*。
+  - 新增 `.external_outbox/opencode-runbook.md`（安装状态、启动方式、安全规则、分工说明）。
+  - 未改 app/lib、测试、Drift schema。
+  - 提交 2064a40 chore(ai): add opencode project config。
+
 ## 2026-07-03
 
 - Claude Code installed and restored in Ubuntu/proot.

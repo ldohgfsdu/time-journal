@@ -9,7 +9,7 @@
 
 ## Latest known commit
 
-- a23f3bd fix(acceptance): resolve pomodoro and weekly polish issues
+- 2064a40 chore(ai): add opencode project config
 
 ## Completed
 
@@ -39,3 +39,4 @@
 - /storage/emulated/0/time-journal 不是主开发目录。
 - `copyPlannedToActual` 是死代码（零调用方），待后续清理。
 - 所有 showTimePicker 调用已统一到 picker_helper.dart。
+- OpenCode 1.17.13 已安装作为辅助 AI agent；配置见 opencode.jsonc；runbook 见 .external_outbox/opencode-runbook.md。

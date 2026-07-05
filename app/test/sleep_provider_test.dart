@@ -78,6 +78,80 @@ void main() {
       expect(record!.actualBedtime, isNotNull);
       expect(record.actualWakeTime, isNotNull);
     });
+
+    test('closes cross-midnight sleep on bedtime date record', () async {
+      const bedtimeDate = '2026-07-05';
+      const wakeDate = '2026-07-06';
+      final bedtime = DateTime(2026, 7, 5, 23, 30);
+      final wakeTime = DateTime(2026, 7, 6, 7, 0);
+
+      await checkInBedtime(db, now: bedtime);
+      await checkInWakeTime(db, now: wakeTime);
+
+      final bedtimeRecord = await db.sleepForDate(bedtimeDate);
+      expect(bedtimeRecord, isNotNull);
+      expect(bedtimeRecord!.actualBedtime, bedtime);
+      expect(bedtimeRecord.actualWakeTime, wakeTime);
+
+      final wakeDayRecord = await db.sleepForDate(wakeDate);
+      expect(wakeDayRecord?.actualWakeTime, isNull);
+
+      final all = await db.select(db.sleepRecords).get();
+      expect(all, hasLength(1));
+    });
+
+    test('falls back to today when no open bedtime exists', () async {
+      const wakeDate = '2026-07-06';
+      final wakeTime = DateTime(2026, 7, 6, 7, 0);
+
+      await checkInWakeTime(db, now: wakeTime);
+
+      final record = await db.sleepForDate(wakeDate);
+      expect(record, isNotNull);
+      expect(record!.actualWakeTime, wakeTime);
+      expect(record.actualBedtime, isNull);
+    });
+
+    test('does not close stale open bedtime outside max age window', () async {
+      const staleDate = '2026-07-03';
+      const wakeDate = '2026-07-06';
+      final staleBedtime = DateTime(2026, 7, 3, 23, 0);
+      final wakeTime = DateTime(2026, 7, 6, 7, 0);
+
+      final staleRecord = await db.ensureSleepRecord(staleDate);
+      await (db.update(db.sleepRecords)
+            ..where((t) => t.id.equals(staleRecord.id)))
+          .write(SleepRecordsCompanion(actualBedtime: Value(staleBedtime)));
+
+      await checkInWakeTime(db, now: wakeTime);
+
+      final staleUpdated = await db.sleepForDate(staleDate);
+      expect(staleUpdated, isNotNull);
+      expect(staleUpdated!.actualBedtime, staleBedtime);
+      expect(staleUpdated.actualWakeTime, isNull);
+
+      final wakeDayRecord = await db.sleepForDate(wakeDate);
+      expect(wakeDayRecord, isNotNull);
+      expect(wakeDayRecord!.actualWakeTime, wakeTime);
+      expect(wakeDayRecord.actualBedtime, isNull);
+    });
+
+    test('keeps same-day bedtime and wake on one record', () async {
+      const date = '2026-07-06';
+      final bedtime = DateTime(2026, 7, 6, 0, 30);
+      final wakeTime = DateTime(2026, 7, 6, 7, 0);
+
+      await checkInBedtime(db, now: bedtime);
+      await checkInWakeTime(db, now: wakeTime);
+
+      final record = await db.sleepForDate(date);
+      expect(record, isNotNull);
+      expect(record!.actualBedtime, bedtime);
+      expect(record.actualWakeTime, wakeTime);
+
+      final all = await db.select(db.sleepRecords).get();
+      expect(all, hasLength(1));
+    });
   });
 
   group('upsertSleepRecord', () {
@@ -211,6 +285,14 @@ void main() {
         actualWakeTime: DateTime(2026, 6, 26, 7, 15),
       );
       expect(result, '8 小时 15 分钟');
+    });
+
+    test('formats duration for cross-midnight sleep record pair', () {
+      final result = formatSleepDuration(
+        actualBedtime: DateTime(2026, 7, 5, 23, 30),
+        actualWakeTime: DateTime(2026, 7, 6, 7, 0),
+      );
+      expect(result, '7 小时 30 分钟');
     });
 
     test('formats cross-midnight sleep with wakeTime earlier in the day', () {

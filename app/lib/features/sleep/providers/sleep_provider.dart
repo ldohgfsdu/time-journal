@@ -5,6 +5,9 @@ import '../../../data/local/database.dart';
 import '../../../data/local/database_provider.dart';
 import '../../../app/copy.dart';
 
+/// 未闭合就寝记录的最大可补全窗口，避免误补几天前忘记关掉的 bedtime。
+const sleepOpenBedtimeMaxAge = Duration(hours: 24);
+
 class SleepViewData {
   const SleepViewData({
     required this.record,
@@ -55,13 +58,67 @@ Future<void> updateSleepSchedule(WidgetRef ref, {required String bedtime, requir
   ref.invalidate(sleepDataProvider);
 }
 
-Future<void> checkInWakeTime(AppDatabase db) async {
-  final now = DateTime.now();
-  final date = DateFormat('yyyy-MM-dd').format(now);
-  final record = await db.ensureSleepRecord(date);
+Future<SleepRecord?> findRecentOpenBedtimeRecord(
+  AppDatabase db, {
+  required DateTime wakeTime,
+}) async {
+  final all = await db.select(db.sleepRecords).get();
+  final openRecords = all
+      .where(
+        (record) =>
+            record.actualBedtime != null && record.actualWakeTime == null,
+      )
+      .toList()
+    ..sort(
+      (a, b) => b.actualBedtime!.compareTo(a.actualBedtime!),
+    );
+
+  for (final record in openRecords) {
+    final bedtime = record.actualBedtime!;
+    if (!wakeTime.isAfter(bedtime)) continue;
+    if (wakeTime.difference(bedtime) > sleepOpenBedtimeMaxAge) continue;
+    return record;
+  }
+  return null;
+}
+
+Future<void> checkInWakeTime(AppDatabase db, {DateTime? now}) async {
+  final wakeTime = now ?? DateTime.now();
+  final openRecord = await findRecentOpenBedtimeRecord(db, wakeTime: wakeTime);
+  final SleepRecord target;
+  if (openRecord != null) {
+    target = openRecord;
+  } else {
+    final date = DateFormat('yyyy-MM-dd').format(wakeTime);
+    target = await db.ensureSleepRecord(date);
+  }
   await (db.update(db.sleepRecords)
-        ..where((t) => t.id.equals(record.id)))
-      .write(SleepRecordsCompanion(actualWakeTime: Value(now)));
+        ..where((t) => t.id.equals(target.id)))
+      .write(SleepRecordsCompanion(actualWakeTime: Value(wakeTime)));
+}
+
+Future<String> checkInBedtime(AppDatabase db, {DateTime? now}) async {
+  final bedtime = now ?? DateTime.now();
+  final date = DateFormat('yyyy-MM-dd').format(bedtime);
+  final record = await db.ensureSleepRecord(date);
+  final score = calculateSleepScore(
+    targetBedtime: record.targetBedtime,
+    actualBedtime: bedtime,
+  );
+  final yesterday =
+      DateFormat('yyyy-MM-dd').format(bedtime.subtract(const Duration(days: 1)));
+  final yesterdayRecord = await db.sleepForDate(yesterday);
+  final newStreak = score >= 5 ? (yesterdayRecord?.streakDays ?? 0) + 1 : 0;
+  final bonus = newStreak > 1 ? 2 : 0;
+  final total = record.totalScore + score + bonus;
+  await db.upsertSleepRecord(SleepRecordsCompanion(
+    date: Value(date),
+    actualBedtime: Value(bedtime),
+    sleepScore: Value(score),
+    streakDays: Value(newStreak),
+    totalScore: Value(total),
+  ));
+  return AppCopy.sleepCheckInFeedback(score, newStreak);
 }
 
 String? formatSleepDuration({
@@ -82,24 +139,4 @@ String? formatSleepDuration({
   return '$hours 小时 $minutes 分钟';
 }
 
-Future<String> checkInBedtime(WidgetRef ref) async {
-  final db = ref.read(databaseProvider);
-  final now = DateTime.now();
-  final date = DateFormat('yyyy-MM-dd').format(now);
-  final record = await db.ensureSleepRecord(date);
-  final score = calculateSleepScore(targetBedtime: record.targetBedtime, actualBedtime: now);
-  final yesterday = DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 1)));
-  final yesterdayRecord = await db.sleepForDate(yesterday);
-  final newStreak = score >= 5 ? (yesterdayRecord?.streakDays ?? 0) + 1 : 0;
-  final bonus = newStreak > 1 ? 2 : 0;
-  final total = record.totalScore + score + bonus;
-  await db.upsertSleepRecord(SleepRecordsCompanion(
-    date: Value(date),
-    actualBedtime: Value(now),
-    sleepScore: Value(score),
-    streakDays: Value(newStreak),
-    totalScore: Value(total),
-  ));
-  ref.invalidate(sleepDataProvider);
-  return AppCopy.sleepCheckInFeedback(score, newStreak);
-}
+

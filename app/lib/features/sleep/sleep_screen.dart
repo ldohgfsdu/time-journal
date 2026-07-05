@@ -165,7 +165,9 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
                     minimumSize: const Size(double.infinity, 48),
                   ),
                   onPressed: () async {
-                    final message = await checkInBedtime(ref);
+                    final db = ref.read(databaseProvider);
+                    final message = await checkInBedtime(db);
+                    ref.invalidate(sleepDataProvider);
                     if (!context.mounted) return;
                     GentleFeedback.sleepCheckIn(context, message);
                   },

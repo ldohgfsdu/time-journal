@@ -1,6 +1,14 @@
 # SESSION_LOG
 
-## 2026-07-05
+## 2026-07-05 (session 2)
+
+- 记忆同步：修复 CURRENT_STATE / ACTIVE_OBJECT drift。
+  - OpenCode 只读审计误判当前阶段为"MVP 功能缺口审计前"，已更正为"真机验收与发布准备阶段"。
+  - 实际状态：P0/P1/UI polish 第一批均已关闭；真机验收已开始；analyze clean；105/105 passed。
+  - 明确 AI agent 分工：Claude Code 主线开发/提交/修复；OpenCode 只读审计/第二意见/小范围 patch。
+  - 未改 app/lib、测试、Drift schema、GitHub Actions。
+
+## 2026-07-05 (session 1)
 
 - OpenCode 接入准备完成：
   - 安装 OpenCode 1.17.13（curl 安装脚本，linux-arm64）。

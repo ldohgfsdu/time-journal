@@ -6,6 +6,7 @@ import '../../app/copy.dart';
 import '../../app/gentle_feedback.dart';
 import '../../app/shell_navigation.dart';
 import '../../app/theme.dart';
+import '../../core/utils/todo_reorder.dart';
 import '../../data/local/app_prefs.dart';
 import '../../data/local/database.dart';
 import 'providers/journal_providers.dart';
@@ -58,9 +59,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   void dispose() {
     _notesDebounce?.cancel();
     _notesController.dispose();
-    for (final c in _todoControllers.values) {
-      c.dispose();
-    }
+    _clearAllTodoControllers();
     super.dispose();
   }
 
@@ -71,6 +70,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
     setState(() {
       _showAllTodos = false;
       _clearDraftTodos();
+      _clearAllTodoControllers();
     });
   }
 
@@ -79,6 +79,13 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       _todoControllers.remove(id)?.dispose();
     }
     _draftTodoIds.clear();
+  }
+
+  void _clearAllTodoControllers() {
+    for (final c in _todoControllers.values) {
+      c.dispose();
+    }
+    _todoControllers.clear();
   }
 
   bool _isDraftTodo(int id) => id < 0;
@@ -243,7 +250,6 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
             final visiblePersisted = _showAllTodos
                 ? unscheduledIncomplete
                 : unscheduledIncomplete.take(5).toList();
-            final visibleTodos = [...draftTodos, ...visiblePersisted];
             final hiddenCount = _showAllTodos
                 ? 0
                 : unscheduledIncomplete.length - visiblePersisted.length;
@@ -254,7 +260,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
               color: AppTheme.tomato,
               onRefresh: () async => ref.invalidate(journalSnapshotProvider),
               child: ListView(
-                padding: const EdgeInsets.only(bottom: 88),
+                padding: const EdgeInsets.only(bottom: 100),
                 children: [
                   _DateHeader(
                     displayDate: displayDate,
@@ -284,33 +290,43 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                             ),
                           )
                         else ...[
-                          ReorderableListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: visibleTodos.length,
-                            onReorderItem: (oldIndex, newIndex) async {
-                              final reordered =
-                                  List<TodoItem>.from(visibleTodos);
-                              final moved = reordered.removeAt(oldIndex);
-                              reordered.insert(newIndex, moved);
-                              final repo =
-                                  ref.read(journalRepositoryProvider);
-                              for (var i = 0; i < reordered.length; i++) {
-                                await repo.updateTodo(
-                                    reordered[i].copyWith(sortOrder: i));
-                              }
-                              if (mounted) {
-                                ref.invalidate(journalSnapshotProvider);
-                              }
-                            },
-                            itemBuilder: (context, index) {
-                              final todo = visibleTodos[index];
-                              return KeyedSubtree(
-                                key: ValueKey(todo.id),
-                                child: _buildTodoRow(dateKey, todo),
-                              );
-                            },
-                          ),
+                          for (final todo in draftTodos)
+                            _buildTodoRow(dateKey, todo),
+                          if (visiblePersisted.isNotEmpty)
+                            ReorderableListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: visiblePersisted.length,
+                              onReorderItem: (oldIndex, newIndex) async {
+                                final indices = mapVisibleTodoReorder(
+                                  visibleTodos: visiblePersisted,
+                                  scopeTodos: unscheduledIncomplete,
+                                  oldIndex: oldIndex,
+                                  newIndex: newIndex,
+                                );
+                                if (indices == null) return;
+                                final repo =
+                                    ref.read(journalRepositoryProvider);
+                                await repo.reorderTodos(
+                                  dateKey,
+                                  indices.oldIndex,
+                                  indices.newIndex,
+                                  scopedTodoIds: unscheduledIncomplete
+                                      .map((t) => t.id)
+                                      .toList(),
+                                );
+                                if (mounted) {
+                                  ref.invalidate(journalSnapshotProvider);
+                                }
+                              },
+                              itemBuilder: (context, index) {
+                                final todo = visiblePersisted[index];
+                                return KeyedSubtree(
+                                  key: ValueKey(todo.id),
+                                  child: _buildTodoRow(dateKey, todo),
+                                );
+                              },
+                            ),
                           if (hiddenCount > 0)
                             TextButton(
                               onPressed: () =>
@@ -503,23 +519,25 @@ class _DateHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
+      padding: const EdgeInsets.fromLTRB(
+        AppTheme.pagePadding,
+        4,
+        AppTheme.pagePadding,
+        10,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             displayDate,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.ink,
-              letterSpacing: 0.2,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 4),
           Text(
             weekday,
-            style: const TextStyle(fontSize: 13, color: AppTheme.inkMuted),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppTheme.inkMuted,
+                ),
           ),
           if (attendanceHint != null) ...[
             const SizedBox(height: 4),

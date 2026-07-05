@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import '../../core/utils/time_utils.dart';
 import '../local/database.dart';
 import '../models/comparison_slot.dart';
 
@@ -48,8 +49,8 @@ class JournalSnapshot {
     }
 
     slots.sort((a, b) {
-      final aStart = _parse((a.planned ?? a.actual)!.startTime);
-      final bStart = _parse((b.planned ?? b.actual)!.startTime);
+      final aStart = parseTime(a.planned?.startTime ?? a.actual?.startTime ?? '00:00');
+      final bStart = parseTime(b.planned?.startTime ?? b.actual?.startTime ?? '00:00');
       return aStart.compareTo(bStart);
     });
     return slots;
@@ -64,24 +65,7 @@ class JournalSnapshot {
     return null;
   }
 
-  static int _sumMinutes(List<TimeBlock> blocks) {
-    var total = 0;
-    for (final b in blocks) {
-      if (b.content.trim().isEmpty) continue;
-      final start = _parse(b.startTime);
-      final end = _parse(b.endTime);
-      if (end > start) total += end - start;
-    }
-    return total;
-  }
-
-  static int _parse(String value) {
-    final parts = value.split(':');
-    if (parts.length != 2) return 0;
-    final h = int.tryParse(parts[0]) ?? 0;
-    final m = int.tryParse(parts[1]) ?? 0;
-    return h * 60 + m;
-  }
+  static int _sumMinutes(List<TimeBlock> blocks) => sumBlockMinutes(blocks);
 }
 
 class JournalRepository {
@@ -162,8 +146,24 @@ class JournalRepository {
 
   Future<void> removeTodo(int id) => _db.deleteTodo(id);
 
-  Future<void> reorderTodos(String date, int oldIndex, int newIndex) async {
-    final todos = List<TodoItem>.from(await _db.todosForDate(date));
+  Future<void> reorderTodos(
+    String date,
+    int oldIndex,
+    int newIndex, {
+    List<int>? scopedTodoIds,
+  }) async {
+    final allTodos = await _db.todosForDate(date);
+    final List<TodoItem> todos;
+    if (scopedTodoIds != null) {
+      final byId = {for (final todo in allTodos) todo.id: todo};
+      todos = [
+        for (final id in scopedTodoIds)
+          if (byId.containsKey(id)) byId[id]!,
+      ];
+    } else {
+      todos = List<TodoItem>.from(allTodos);
+    }
+
     if (oldIndex < 0 ||
         oldIndex >= todos.length ||
         newIndex < 0 ||
@@ -172,8 +172,11 @@ class JournalRepository {
     }
     final moved = todos.removeAt(oldIndex);
     todos.insert(newIndex, moved);
+    final baseSortOrder = todos
+        .map((todo) => todo.sortOrder)
+        .reduce((a, b) => a < b ? a : b);
     for (var i = 0; i < todos.length; i++) {
-      await updateTodo(todos[i].copyWith(sortOrder: i));
+      await updateTodo(todos[i].copyWith(sortOrder: baseSortOrder + i));
     }
   }
 
@@ -325,25 +328,6 @@ class JournalRepository {
       ),
     );
     return (_db.select(_db.timeBlocks)..where((t) => t.id.equals(id))).getSingle();
-  }
-
-  Future<void> copyPlannedToActual(String date) async {
-    final planned = await _db.blocksForDate(date, 'planned');
-    final actual = await _db.blocksForDate(date, 'actual');
-    var order = actual.isEmpty ? 0 : actual.last.sortOrder + 1;
-    for (final block in planned) {
-      await _db.into(_db.timeBlocks).insert(
-        TimeBlocksCompanion.insert(
-          journalDate: date,
-          startTime: block.startTime,
-          endTime: block.endTime,
-          content: Value(block.content),
-          source: 'actual',
-          linkedTodoId: Value(block.linkedTodoId),
-          sortOrder: Value(order++),
-        ),
-      );
-    }
   }
 
   Future<void> addActualFromPomodoro({

@@ -188,5 +188,50 @@ void main() {
       final snapshot = await repository.load(date);
       expect(snapshot.todos, hasLength(2));
     });
+
+    test('scoped reorder only updates sort order within scope', () async {
+      const date = '2026-07-04';
+      final a = await repository.createTodo(date, 'A');
+      final b = await repository.createTodo(date, 'B');
+      final c = await repository.createTodo(date, 'C');
+      await repository.updateTodo(a.copyWith(completed: true));
+
+      await repository.reorderTodos(
+        date,
+        0,
+        1,
+        scopedTodoIds: [b.id, c.id],
+      );
+
+      final snapshot = await repository.load(date);
+      final openTodos = snapshot.todos
+          .where((todo) => !todo.completed)
+          .map((todo) => todo.content)
+          .toList();
+      expect(openTodos, ['C', 'B']);
+      expect(snapshot.todos.singleWhere((todo) => todo.completed).content, 'A');
+    });
+
+    test('scoped reorder preserves base sort order offset', () async {
+      const date = '2026-07-04';
+      final a = await repository.createTodo(date, 'A');
+      final b = await repository.createTodo(date, 'B');
+      final c = await repository.createTodo(date, 'C');
+
+      await repository.reorderTodos(
+        date,
+        0,
+        2,
+        scopedTodoIds: [a.id, b.id, c.id],
+      );
+
+      final snapshot = await repository.load(date);
+      final orders = snapshot.todos.map((todo) => todo.sortOrder).toList();
+      expect(orders, [0, 1, 2]);
+      expect(
+        snapshot.todos.map((todo) => todo.content).toList(),
+        ['B', 'C', 'A'],
+      );
+    });
   });
 }

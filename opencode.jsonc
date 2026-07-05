@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "AGENTS.md",
+    ".memory/RULES.md",
+    ".memory/CURRENT_STATE.md",
+    ".memory/ACTIVE_OBJECT.md",
+    ".memory/ENVIRONMENT.md"
+  ],
+  "autoupdate": "notify",
+  "share": "manual"
+}

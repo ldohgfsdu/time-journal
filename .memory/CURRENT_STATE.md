@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- af20857 fix(main): guard notification init from blocking app launch
+- b174e67 fix(ui): P1 收口 4 项最小补丁 (已 push origin/p0/journal-compare)
 
 ## Completed
 

@@ -12,6 +12,11 @@
   - 验证：flutter analyze 无问题；flutter test 128/128 passed
   - 修改文件 8 个，纯样式收口
 
+- **推送到 GitHub**（供实机测试）：
+  - commit b174e67 已 push 到 origin/p0/journal-compare
+  - 用户可 git pull 后在真机 flutter run / 安装测试 UI 收口效果
+  - 未做 release 构建（按约束）
+
 ## 2026-07-06 (session 2)
 
 - **白屏修复**（Claude Code）：

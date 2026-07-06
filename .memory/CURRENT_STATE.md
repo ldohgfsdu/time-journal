@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- 9d8299a fix: address P0-5/P1-7 review follow-ups
+- df1fd1d fix: adapt clean cherry-pick to master baseline (clean PR #2)
 
 ## Completed
 

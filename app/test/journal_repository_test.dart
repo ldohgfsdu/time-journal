@@ -273,6 +273,51 @@ void main() {
       final orphans = snapshot.comparisonSlots.where((s) => s.orphanActual == true).toList();
       expect(orphans, hasLength(2));
     });
+
+    test('addActualFromPomodoro content update does not clear existing linkedPlanId when no matching planned', () async {
+      const date = '2026-07-06';
+      final todo = await repository.createTodo(date, '健身');
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '21:20',
+        endTime: '22:20',
+        content: '健身',
+        linkedTodoId: todo.id,
+      );
+
+      // 先手动插入一个 actual，已有非空的 linkedPlanId（模拟之前已关联）
+      await db.into(db.timeBlocks).insert(
+        TimeBlocksCompanion.insert(
+          journalDate: date,
+          startTime: '21:20',
+          endTime: '21:21',
+          content: const Value('旧内容'),
+          source: 'actual',
+          linkedTodoId: Value(todo.id),
+          linkedPlanId: Value(planned.id),
+          sortOrder: const Value(0),
+        ),
+      );
+
+      // 删除 planned，模拟本次 addActualFromPomodoro 调用时找不到 matching planned
+      await repository.removeBlock(planned.id);
+
+      // 调用（不同 content），会命中“时间段相同但 content 有变化”的 update 路径
+      // linkedPlanId 计算结果为 null，但不应清空原有的 linkedPlanId
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '21:20',
+        endTime: '21:21',
+        content: '新内容',
+        linkedTodoId: todo.id,
+      );
+
+      final actuals = (await repository.load(date)).actualBlocks;
+      final actual = actuals.singleWhere((b) => b.linkedTodoId == todo.id);
+      expect(actual.content, '新内容');
+      // 关键断言：原有 linkedPlanId 必须保留，不能被 null 覆盖导致 detach
+      expect(actual.linkedPlanId, planned.id);
+    });
   });
 
   group('reorderTodos', () {

@@ -414,14 +414,18 @@ class JournalRepository {
       }
     }
 
-    // 时间段相同但 content 有变化 → 更新已有行（同时 backfill linkedPlanId）
+    // 时间段相同但 content 有变化 → 更新已有行
+    // 只有本次找到 matching planned 时才设置 linkedPlanId，否则使用 absent 保留原值
+    // 避免已有关联的 actual 被意外 detach（linkedPlanId 被 null 清空）
     for (final block in existing) {
       if (block.startTime == startTime &&
           block.endTime == endTime &&
           block.linkedTodoId == linkedTodoId) {
         await updateBlock(block.copyWith(
           content: content,
-          linkedPlanId: Value(linkedPlanId),
+          linkedPlanId: linkedPlanId != null
+              ? Value<int?>(linkedPlanId)
+              : const Value<int?>.absent(),
         ));
         return;
       }

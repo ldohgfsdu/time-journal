@@ -78,6 +78,7 @@ P0-5 / P1-7 已 squash 合入 master。P0-6 `linkedPlanId` 完成（最小 migra
 
 - flutter analyze: No issues found
 - flutter test: 44/44 passed（P0-6 final: legacy fallback boundary fix）
+- PR #3 body 仍为旧版（35/35），已准备好 .memory/PR3_FINAL_BODY.md 供手动复制更新（API token 失效无法自动 PATCH）
 
 ## Release blockers
 

@@ -12,7 +12,7 @@
     * clearActualForPlan does not delete actual linked to another plan with same time
   - flutter analyze: No issues
   - flutter test: 44/44 passed
-  - Updated .memory (test count); PR body update attempted
+  - Updated .memory (44/44); PR body update prepared in .memory/PR3_FINAL_BODY.md (API token expired, manual copy-paste needed on GitHub)
   - No schema/UI/unrelated changes
 
 ## 2026-07-06 (P0-6 follow-up)

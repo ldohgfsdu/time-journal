@@ -35,7 +35,7 @@ P0-5 / P1-7 已 squash 合入 master。P0-6 `linkedPlanId` 完成（最小 migra
   - P0-1/P0-2 今日对照与按钮防重复
   - P0-3 专注完成写入实际记录，linkedTodoId 贯通
   - P0-4 `addActualFromPomodoro` 幂等性修复
-  - P0-6 linkedPlanId 最小 Drift migration + 匹配逻辑（actual 改时间仍稳定配对 planned；legacy fallback；5 条测试覆盖）
+  - P0-6 linkedPlanId 最小 Drift migration + 匹配逻辑 + 边界修复（explicit link > unlinked legacy time only；44/44；未复用已链接 actual）
 - P1 系列（全部关闭）
 - UI polish 第一批（全部关闭）
 - 真机验收修复批次 1：
@@ -77,7 +77,7 @@ P0-5 / P1-7 已 squash 合入 master。P0-6 `linkedPlanId` 完成（最小 migra
 ## Last known validation
 
 - flutter analyze: No issues found
-- flutter test: 42/42 passed（P0-6 follow-up after review comments）
+- flutter test: 44/44 passed（P0-6 final: legacy fallback boundary fix）
 
 ## Release blockers
 

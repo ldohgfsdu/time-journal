@@ -380,5 +380,72 @@ void main() {
       expect(slot.actual!.startTime, '11:10');
       expect(slot.status, SlotStatus.changed);
     });
+
+    test('linked actual is not reused by another plan through legacy fallback', () async {
+      const date = '2026-07-06';
+      final planA = await repository.createPlannedBlock(
+        date: date,
+        startTime: '09:00',
+        endTime: '10:00',
+        content: 'Plan A',
+      );
+      final planB = await repository.createPlannedBlock(
+        date: date,
+        startTime: '09:00',
+        endTime: '10:00',
+        content: 'Plan B',
+      );
+
+      // actual explicitly linked to plan A
+      await repository.completePlannedAsActual(date, planA);
+
+      final snapshot = await repository.load(date);
+      // plan A should have the actual
+      final slotA = snapshot.comparisonSlots.firstWhere((s) => s.planned?.id == planA.id);
+      expect(slotA.actual, isNotNull);
+      expect(slotA.actual!.linkedPlanId, planA.id);
+
+      // plan B (same time) must NOT reuse it via legacy fallback; should be pending
+      final slotB = snapshot.comparisonSlots.firstWhere((s) => s.planned?.id == planB.id);
+      expect(slotB.actual, isNull);
+      expect(slotB.status, SlotStatus.pending);
+    });
+
+    test('clearActualForPlan does not delete actual linked to another plan with same time', () async {
+      const date = '2026-07-06';
+      final planA = await repository.createPlannedBlock(
+        date: date,
+        startTime: '11:00',
+        endTime: '12:00',
+        content: 'Plan A',
+      );
+      final planB = await repository.createPlannedBlock(
+        date: date,
+        startTime: '11:00',
+        endTime: '12:00',
+        content: 'Plan B',
+      );
+
+      // actual linked only to A
+      await repository.completePlannedAsActual(date, planA);
+      final initialSnapshot = await repository.load(date);
+      final actualForA = initialSnapshot.actualBlocks.singleWhere((b) => b.linkedPlanId == planA.id);
+      expect(actualForA.linkedPlanId, planA.id);
+
+      // clear for B must not touch A's actual
+      await repository.clearActualForPlan(date, planB);
+
+      final afterClear = await repository.load(date);
+      expect(afterClear.actualBlocks, hasLength(1));
+      final remaining = afterClear.actualBlocks.single;
+      expect(remaining.linkedPlanId, planA.id);
+      expect(remaining.content.trim(), 'Plan A');
+
+      // plan A still matched, plan B pending
+      final slotA = afterClear.comparisonSlots.firstWhere((s) => s.planned?.id == planA.id);
+      expect(slotA.actual, isNotNull);
+      final slotB = afterClear.comparisonSlots.firstWhere((s) => s.planned?.id == planB.id);
+      expect(slotB.actual, isNull);
+    });
   });
 }

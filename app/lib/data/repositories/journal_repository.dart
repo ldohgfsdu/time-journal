@@ -63,8 +63,10 @@ class JournalSnapshot {
         return a;
       }
     }
-    // 2. legacy exact time fallback (for data without link)
+    // 2. legacy exact-time fallback ONLY for unlinked actuals (linkedPlanId == null)
+    //    explicit link > unlinked legacy; already-linked actuals must not be reused by time match
     for (final a in actualBlocks) {
+      if (a.linkedPlanId != null) continue;
       if (a.startTime == planned.startTime && a.endTime == planned.endTime) {
         return a;
       }

@@ -1,5 +1,20 @@
 # SESSION_LOG
 
+## 2026-07-06 (P0-6 final boundary fix)
+
+- P0-6 matching semantics blocker fix (draft PR #3, no merge):
+  - `_matchActual` legacy fallback now skips any a.linkedPlanId != null
+  - explicit link > unlinked (linkedPlanId==null) exact-time only
+  - Prevents cross-plan reuse when times coincide (e.g. Plan A linked actual not stolen by Plan B)
+  - clearActualForPlan (which falls back to match) also protected
+  - Added 2 tests:
+    * linked actual is not reused by another plan through legacy fallback
+    * clearActualForPlan does not delete actual linked to another plan with same time
+  - flutter analyze: No issues
+  - flutter test: 44/44 passed
+  - Updated .memory (test count); PR body update attempted
+  - No schema/UI/unrelated changes
+
 ## 2026-07-06 (P0-6 follow-up)
 
 - P0-6 review fixes (no merge):

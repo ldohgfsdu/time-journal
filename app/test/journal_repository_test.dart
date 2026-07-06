@@ -1,6 +1,8 @@
+import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:time_journal/data/local/database.dart';
+import 'package:time_journal/data/models/comparison_slot.dart';
 import 'package:time_journal/data/repositories/journal_repository.dart';
 
 void main() {
@@ -277,5 +279,273 @@ void main() {
         );
       },
     );
+  });
+
+  group('P0-6 linkedPlanId matching', () {
+    test('actual edited time remains paired with original planned block', () async {
+      const date = '2026-07-06';
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '09:00',
+        endTime: '10:00',
+        content: '复习',
+      );
+      var slotActual = await repository.ensureActualSlot(date, planned);
+      // set content (ensure creates empty slot for "实际有变")
+      await repository.updateBlock(slotActual.copyWith(content: '复习'));
+
+      // edit the actual time
+      var snapshot = await repository.load(date);
+      var actual = snapshot.actualBlocks.single;
+      await repository.updateBlock(actual.copyWith(
+        startTime: '09:20',
+        endTime: '10:10',
+      ));
+
+      // reload
+      snapshot = await repository.load(date);
+      expect(snapshot.comparisonSlots, hasLength(1));
+      final slot = snapshot.comparisonSlots.single;
+      expect(slot.planned, isNotNull);
+      expect(slot.actual, isNotNull);
+      expect(slot.actual!.startTime, '09:20');
+      expect(slot.actual!.endTime, '10:10');
+      expect(slot.status, SlotStatus.changed);
+      // linked still holds
+      expect(slot.actual!.linkedPlanId, planned.id);
+    });
+
+    test('complete planned writes linkedPlanId', () async {
+      const date = '2026-07-06';
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '10:00',
+        endTime: '11:00',
+        content: '背单词',
+      );
+      await repository.completePlannedAsActual(date, planned);
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.actualBlocks, hasLength(1));
+      expect(snapshot.actualBlocks.single.linkedPlanId, planned.id);
+    });
+
+    test('clear actual for plan prefers linkedPlanId', () async {
+      const date = '2026-07-06';
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '11:00',
+        endTime: '12:00',
+        content: '运动',
+      );
+      await repository.ensureActualSlot(date, planned);
+
+      // change time so time match would fail
+      var actual = (await repository.load(date)).actualBlocks.single;
+      await repository.updateBlock(actual.copyWith(startTime: '11:30', endTime: '12:30'));
+
+      // clear should still find via link
+      await repository.clearActualForPlan(date, planned);
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.actualBlocks.where((b) => b.content == '运动'), isEmpty);
+      expect(snapshot.comparisonSlots.single.actual, isNull);
+    });
+
+    test('legacy exact-time fallback still works', () async {
+      const date = '2026-07-06';
+      await repository.createPlannedBlock(
+        date: date,
+        startTime: '13:00',
+        endTime: '14:00',
+        content: 'legacy',
+      );
+
+      // insert legacy actual WITHOUT linkedPlanId (simulate old data)
+      // (planned var intentionally not captured to simulate legacy)
+      await db.into(db.timeBlocks).insert(
+        TimeBlocksCompanion.insert(
+          journalDate: date,
+          startTime: '13:00',
+          endTime: '14:00',
+          content: const Value('legacy'),
+          source: 'actual',
+          // no linkedPlanId -> null
+          sortOrder: const Value(0),
+        ),
+      );
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.comparisonSlots, hasLength(1));
+      final slot = snapshot.comparisonSlots.single;
+      expect(slot.planned, isNotNull);
+      expect(slot.actual, isNotNull);
+      expect(slot.actual!.linkedPlanId, isNull); // legacy
+      expect(slot.status, SlotStatus.match);
+    });
+
+    test('time-only change is changed status', () async {
+      const date = '2026-07-06';
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '15:00',
+        endTime: '16:00',
+        content: 'same content',
+      );
+      var ensured = await repository.ensureActualSlot(date, planned);
+      await repository.updateBlock(ensured.copyWith(content: 'same content'));
+
+      var actual = (await repository.load(date)).actualBlocks.single;
+      await repository.updateBlock(actual.copyWith(
+        startTime: '15:05',
+        endTime: '16:05',
+        // content unchanged
+      ));
+
+      final snapshot = await repository.load(date);
+      final slot = snapshot.comparisonSlots.single;
+      expect(slot.status, SlotStatus.changed);
+      expect(slot.actual!.content.trim(), 'same content');
+    });
+
+    test('completePlannedAsActual resets changed actual time back to planned time', () async {
+      const date = '2026-07-06';
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '09:00',
+        endTime: '10:00',
+        content: '学习',
+      );
+      await repository.completePlannedAsActual(date, planned);
+
+      // simulate change: edit time and content
+      var actual = (await repository.load(date)).actualBlocks.single;
+      await repository.updateBlock(actual.copyWith(
+        startTime: '09:15',
+        endTime: '10:15',
+        content: '学习（有变）',
+      ));
+
+      // now "标为按计划"
+      await repository.completePlannedAsActual(date, planned);
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.comparisonSlots, hasLength(1));
+      final slot = snapshot.comparisonSlots.single;
+      expect(slot.actual, isNotNull);
+      expect(slot.actual!.startTime, planned.startTime);
+      expect(slot.actual!.endTime, planned.endTime);
+      expect(slot.actual!.content.trim(), '学习');
+      expect(slot.status, SlotStatus.match);
+      expect(slot.actual!.linkedPlanId, planned.id);
+    });
+
+    test('legacy actual edited through ensureActualSlot gets linked before time change', () async {
+      const date = '2026-07-06';
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '11:00',
+        endTime: '12:00',
+        content: '复习',
+      );
+
+      // insert legacy actual (no linkedPlanId, exact time)
+      await db.into(db.timeBlocks).insert(
+        TimeBlocksCompanion.insert(
+          journalDate: date,
+          startTime: '11:00',
+          endTime: '12:00',
+          content: const Value('复习'),
+          source: 'actual',
+          sortOrder: const Value(0),
+        ),
+      );
+
+      // call ensureActualSlot -> should backfill link (even though time not yet changed here)
+      final ensured = await repository.ensureActualSlot(date, planned);
+      expect(ensured.linkedPlanId, planned.id);
+
+      // now change time on the (now linked) actual
+      await repository.updateBlock(ensured.copyWith(
+        startTime: '11:10',
+        endTime: '12:10',
+      ));
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.comparisonSlots, hasLength(1));
+      final slot = snapshot.comparisonSlots.single;
+      expect(slot.planned, isNotNull);
+      expect(slot.actual, isNotNull);
+      expect(slot.actual!.linkedPlanId, planned.id);
+      expect(slot.actual!.startTime, '11:10');
+      expect(slot.status, SlotStatus.changed);
+    });
+
+    test('linked actual is not reused by another plan through legacy fallback', () async {
+      const date = '2026-07-06';
+      final planA = await repository.createPlannedBlock(
+        date: date,
+        startTime: '09:00',
+        endTime: '10:00',
+        content: 'Plan A',
+      );
+      final planB = await repository.createPlannedBlock(
+        date: date,
+        startTime: '09:00',
+        endTime: '10:00',
+        content: 'Plan B',
+      );
+
+      // actual explicitly linked to plan A
+      await repository.completePlannedAsActual(date, planA);
+
+      final snapshot = await repository.load(date);
+      // plan A should have the actual
+      final slotA = snapshot.comparisonSlots.firstWhere((s) => s.planned?.id == planA.id);
+      expect(slotA.actual, isNotNull);
+      expect(slotA.actual!.linkedPlanId, planA.id);
+
+      // plan B (same time) must NOT reuse it via legacy fallback; should be pending
+      final slotB = snapshot.comparisonSlots.firstWhere((s) => s.planned?.id == planB.id);
+      expect(slotB.actual, isNull);
+      expect(slotB.status, SlotStatus.pending);
+    });
+
+    test('clearActualForPlan does not delete actual linked to another plan with same time', () async {
+      const date = '2026-07-06';
+      final planA = await repository.createPlannedBlock(
+        date: date,
+        startTime: '11:00',
+        endTime: '12:00',
+        content: 'Plan A',
+      );
+      final planB = await repository.createPlannedBlock(
+        date: date,
+        startTime: '11:00',
+        endTime: '12:00',
+        content: 'Plan B',
+      );
+
+      // actual linked only to A
+      await repository.completePlannedAsActual(date, planA);
+      final initialSnapshot = await repository.load(date);
+      final actualForA = initialSnapshot.actualBlocks.singleWhere((b) => b.linkedPlanId == planA.id);
+      expect(actualForA.linkedPlanId, planA.id);
+
+      // clear for B must not touch A's actual
+      await repository.clearActualForPlan(date, planB);
+
+      final afterClear = await repository.load(date);
+      expect(afterClear.actualBlocks, hasLength(1));
+      final remaining = afterClear.actualBlocks.single;
+      expect(remaining.linkedPlanId, planA.id);
+      expect(remaining.content.trim(), 'Plan A');
+
+      // plan A still matched, plan B pending
+      final slotA = afterClear.comparisonSlots.firstWhere((s) => s.planned?.id == planA.id);
+      expect(slotA.actual, isNotNull);
+      final slotB = afterClear.comparisonSlots.firstWhere((s) => s.planned?.id == planB.id);
+      expect(slotB.actual, isNull);
+    });
   });
 }

@@ -26,6 +26,7 @@ class TimeBlocks extends Table {
   TextColumn get content => text().withDefault(const Constant(''))();
   TextColumn get source => text()();
   IntColumn get linkedTodoId => integer().nullable()();
+  IntColumn get linkedPlanId => integer().nullable()();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 }
 

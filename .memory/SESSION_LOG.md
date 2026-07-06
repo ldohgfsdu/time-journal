@@ -1,5 +1,21 @@
 # SESSION_LOG
 
+## 2026-07-06 (P0-6 session)
+
+- **P0-6 linkedPlanId 稳定匹配**（从最新 master 单独开 branch）：
+  - 读 AGENTS / PRD / 开发计划 / .memory / 代码
+  - TimeBlocks 新增 nullable linkedPlanId（actual -> planned.id），命名与 linkedTodoId 一致
+  - schemaVersion 2 -> 3，最小 addColumn migration
+  - build_runner  regen
+  - JournalSnapshot._matchActual：优先 linkedPlanId，回退 exact start+end（无 content/time-near 猜测）
+  - repository 路径更新：completePlannedAsActual、ensureActualSlot、updateBlock、clearActualForPlan 均写/保留 linkedPlanId
+  - ComparisonSlot.status：仅 content+time 完全相同为 match，否则 changed（时间变也算 changed）
+  - 新增 5 条测试覆盖指定场景（edited time 仍配对、写 link、clear 优先 link、legacy fallback、time-only=changed）
+  - 仅改 data/ 相关；无 UI、无其他 feature、无 P0-5/P1-7 diff 带入
+  - flutter analyze + flutter test 全部通过
+  - 更新 开发计划.txt + .memory/CURRENT_STATE.md + SESSION_LOG.md
+  - branch: p0/p0-6-linked-plan-id from master；仅 draft PR
+
 ## 2026-07-06 (session 1)
 
 - **Claude 风格 UI 设计落地**（Grok）：

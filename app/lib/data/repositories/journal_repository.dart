@@ -57,6 +57,13 @@ class JournalSnapshot {
   }
 
   static TimeBlock? _matchActual(TimeBlock planned, List<TimeBlock> actualBlocks) {
+    // 1. explicit link (P0-6)
+    for (final a in actualBlocks) {
+      if (a.linkedPlanId == planned.id) {
+        return a;
+      }
+    }
+    // 2. legacy exact time fallback (for data without link)
     for (final a in actualBlocks) {
       if (a.startTime == planned.startTime && a.endTime == planned.endTime) {
         return a;
@@ -219,6 +226,7 @@ class JournalRepository {
       content: Value(block.content),
       source: Value(block.source),
       linkedTodoId: Value(block.linkedTodoId),
+      linkedPlanId: Value(block.linkedPlanId),
       sortOrder: Value(block.sortOrder),
     ));
   }
@@ -232,6 +240,7 @@ class JournalRepository {
       await updateBlock(existing.copyWith(
         content: planned.content,
         linkedTodoId: Value(planned.linkedTodoId),
+        linkedPlanId: Value<int?>(planned.id),
       ));
       return;
     }
@@ -244,6 +253,7 @@ class JournalRepository {
         content: Value(planned.content),
         source: 'actual',
         linkedTodoId: Value(planned.linkedTodoId),
+        linkedPlanId: Value<int?>(planned.id),
         sortOrder: Value(order),
       ),
     );
@@ -260,6 +270,7 @@ class JournalRepository {
         startTime: planned.startTime,
         endTime: planned.endTime,
         source: 'actual',
+        linkedPlanId: Value<int?>(planned.id),
         sortOrder: Value(order),
       ),
     );
@@ -319,7 +330,15 @@ class JournalRepository {
 
   Future<void> clearActualForPlan(String date, TimeBlock planned) async {
     final actualBlocks = await _db.blocksForDate(date, 'actual');
-    final existing = JournalSnapshot._matchActual(planned, actualBlocks);
+    // prefer linkedPlanId for clear (P0-6), fallback to match
+    TimeBlock? existing;
+    for (final a in actualBlocks) {
+      if (a.linkedPlanId == planned.id) {
+        existing = a;
+        break;
+      }
+    }
+    existing ??= JournalSnapshot._matchActual(planned, actualBlocks);
     if (existing != null) {
       await removeBlock(existing.id);
     }

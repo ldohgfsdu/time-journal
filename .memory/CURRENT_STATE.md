@@ -13,6 +13,7 @@ P0-5 / P1-7 已 squash 合入 master。P0-6 `linkedPlanId` migration 仍 blocked
 
 ## Latest known commit
 
+- d32443c chore(memory): record PR #2 squash merge
 - c120220 fix: P0-5 todo reorder + P1-7 sleep cross-midnight (PR #2 squash merge)
 
 ## Completed

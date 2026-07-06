@@ -49,6 +49,28 @@
   - migration: no ; UI: no
   - 已 push 到 fix/pomodoro-actual-linked-plan (PR #7)
 
+## 2026-07-06 (session 5) - 合并 PR #7
+
+- **合并 PR #7 到 p0/journal-compare**（Grok）：
+  - git checkout p0/journal-compare && git pull
+  - git merge --no-ff fix/pomodoro-actual-linked-plan
+  - merge commit: 747a59e
+  - 包含：
+    - 初始 linkedPlanId 回填
+    - 内容更新路径 guard (使用 absent() 避免 detach)
+    - 4 个测试覆盖 link / backfill / orphan / no-clear 场景
+  - 验证命令：
+    - cd app && flutter analyze → No issues found
+    - cd app && flutter test → 132/132 passed
+  - 真机复测模拟（通过 repo 测试复现场景）：
+    - create todo + planned（健身 21:20-22:20 linkedTodoId）
+    - addActualFromPomodoro（番茄专注 21:20-21:21 linkedTodoId）
+    - load snapshot → planned 卡片下显示 actual，无 orphan
+  - 符合预期：不再 "健身待补 + orphan actual"
+  - 未改 UI / schema / GA
+  - 未切 master
+  - 已更新 CURRENT_STATE / SESSION_LOG
+
 ## 2026-07-06 (session 2)
 
 - **白屏修复**（Claude Code）：

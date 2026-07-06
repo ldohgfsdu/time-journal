@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- 4a5906f fix(repo): addActualFromPomodoro backfills linkedPlanId from matching planned by linkedTodoId
+- 747a59e Merge pull request #7 from ldohgfsdu/fix/pomodoro-actual-linked-plan (pomodoro linkedPlanId fix + follow-up)
 
 ## Completed
 
@@ -91,6 +91,7 @@
 - P1 UI 收口 4 项最小补丁：analyze clean + 128/128 pass（Grok）
 - Pomodoro actual linkedPlanId 修复：analyze clean + 131/131 pass（Grok）
 - PR #7 follow-up: 修复 content-update 清空 linkedPlanId 风险，analyze clean + 132/132 pass（Grok）
+- 合并 PR #7 到 p0/journal-compare：analyze clean + 132/132 pass（Grok）
 
 ## Release blockers
 

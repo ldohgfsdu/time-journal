@@ -62,6 +62,106 @@ void main() {
     expect(snapshot.todos.single.content, isEmpty);
   });
 
+  test('addActualFromPomodoro writes actual block with linkedTodoId', () async {
+    const date = '2026-06-25';
+    await repository.addActualFromPomodoro(
+      date: date,
+      startTime: '14:00',
+      endTime: '14:25',
+      content: '复习高数',
+      linkedTodoId: 42,
+    );
+
+    final snapshot = await repository.load(date);
+    expect(snapshot.actualBlocks, hasLength(1));
+    final block = snapshot.actualBlocks.single;
+    expect(block.source, 'actual');
+    expect(block.content, '复习高数');
+    expect(block.startTime, '14:00');
+    expect(block.endTime, '14:25');
+    expect(block.linkedTodoId, 42);
+  });
+
+  test(
+    'addActualFromPomodoro works without linkedTodoId for manual tasks',
+    () async {
+      const date = '2026-06-25';
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '10:00',
+        endTime: '10:25',
+        content: '临时任务',
+      );
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.actualBlocks, hasLength(1));
+      expect(snapshot.actualBlocks.single.linkedTodoId, isNull);
+    },
+  );
+
+  test(
+    'addActualFromPomodoro is idempotent on duplicate call with same params',
+    () async {
+      const date = '2026-06-25';
+      const params = (
+        date: date,
+        startTime: '14:00',
+        endTime: '14:25',
+        content: '复习高数',
+        linkedTodoId: 42,
+      );
+
+      await repository.addActualFromPomodoro(
+        date: params.date,
+        startTime: params.startTime,
+        endTime: params.endTime,
+        content: params.content,
+        linkedTodoId: params.linkedTodoId,
+      );
+      await repository.addActualFromPomodoro(
+        date: params.date,
+        startTime: params.startTime,
+        endTime: params.endTime,
+        content: params.content,
+        linkedTodoId: params.linkedTodoId,
+      );
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.actualBlocks, hasLength(1));
+      expect(snapshot.actualBlocks.single.content, '复习高数');
+      expect(snapshot.actualBlocks.single.linkedTodoId, 42);
+      expect(snapshot.actualBlocks.single.startTime, '14:00');
+      expect(snapshot.actualBlocks.single.endTime, '14:25');
+    },
+  );
+
+  test(
+    'addActualFromPomodoro does not deduplicate different time slots',
+    () async {
+      const date = '2026-06-25';
+
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '09:00',
+        endTime: '09:25',
+        content: '背单词',
+        linkedTodoId: 1,
+      );
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '14:00',
+        endTime: '14:25',
+        content: '复习高数',
+        linkedTodoId: 2,
+      );
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.actualBlocks, hasLength(2));
+      final contents = snapshot.actualBlocks.map((b) => b.content).toSet();
+      expect(contents, {'背单词', '复习高数'});
+    },
+  );
+
   group('reorderTodos', () {
     test('reorders three todos correctly', () async {
       const date = '2026-07-04';
@@ -69,6 +169,7 @@ void main() {
       await repository.createTodo(date, 'B');
       await repository.createTodo(date, 'C');
 
+      // Move A (index 0) to after C (index 2)
       await repository.reorderTodos(date, 0, 2);
 
       final snapshot = await repository.load(date);
@@ -81,6 +182,7 @@ void main() {
       await repository.createTodo(date, 'A');
       await repository.createTodo(date, 'B');
 
+      // Both indices out of range — should not throw
       await repository.reorderTodos(date, 5, 10);
 
       final snapshot = await repository.load(date);
@@ -110,7 +212,7 @@ void main() {
       expect(snapshot.todos.singleWhere((todo) => todo.completed).content, 'A');
     });
 
-    test('scoped reorder preserves base sort order offset', () async {
+    test('scoped reorder assigns unique global sortOrder across full list', () async {
       const date = '2026-07-04';
       final a = await repository.createTodo(date, 'A');
       final b = await repository.createTodo(date, 'B');
@@ -131,5 +233,49 @@ void main() {
         ['B', 'C', 'A'],
       );
     });
+
+    test(
+      'scoped reorder keeps excluded todos in place without sortOrder collisions',
+      () async {
+        const date = '2026-07-04';
+        final a = await repository.createTodo(date, 'A');
+        final b = await repository.createTodo(date, 'B');
+        final c = await repository.createTodo(date, 'C');
+        final d = await repository.createTodo(date, 'D');
+        final e = await repository.createTodo(date, 'E');
+
+        await repository.updateTodo(a.copyWith(completed: true, sortOrder: 0));
+        await repository.updateTodo(b.copyWith(sortOrder: 1));
+        await repository.updateTodo(c.copyWith(completed: true, sortOrder: 2));
+        await repository.updateTodo(d.copyWith(sortOrder: 3));
+        await repository.updateTodo(e.copyWith(sortOrder: 4));
+
+        await repository.reorderTodos(
+          date,
+          0,
+          2,
+          scopedTodoIds: [b.id, d.id, e.id],
+        );
+
+        final snapshot = await repository.load(date);
+        final todos = snapshot.todos;
+        expect(todos.map((todo) => todo.content).toList(), [
+          'A',
+          'D',
+          'C',
+          'E',
+          'B',
+        ]);
+        expect(todos.map((todo) => todo.sortOrder).toList(), [0, 1, 2, 3, 4]);
+        expect(
+          todos.where((todo) => todo.completed).map((todo) => todo.content),
+          ['A', 'C'],
+        );
+        expect(
+          todos.where((todo) => !todo.completed).map((todo) => todo.content),
+          ['D', 'E', 'B'],
+        );
+      },
+    );
   });
 }

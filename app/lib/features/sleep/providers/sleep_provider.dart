@@ -40,8 +40,8 @@ DateTime _parseTodayTime(String hhmm, DateTime reference) {
 
 final sleepDataProvider = FutureProvider.autoDispose<SleepViewData>((ref) async {
   final db = ref.watch(databaseProvider);
-  final date = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  final record = await db.ensureSleepRecord(date);
+  final now = DateTime.now();
+  final record = await resolveSleepDisplayRecord(db, now: now);
   final all = await db.select(db.sleepRecords).get();
   final totalScore = all.fold<int>(0, (sum, r) => sum + r.sleepScore);
   return SleepViewData(record: record, streakDays: record.streakDays, totalScore: totalScore);
@@ -58,40 +58,51 @@ Future<void> updateSleepSchedule(WidgetRef ref, {required String bedtime, requir
   ref.invalidate(sleepDataProvider);
 }
 
-Future<SleepRecord?> findRecentOpenBedtimeRecord(
+Future<SleepRecord?> findRecentBedtimeRecordNear(
   AppDatabase db, {
-  required DateTime wakeTime,
+  required DateTime referenceTime,
 }) async {
   final all = await db.select(db.sleepRecords).get();
-  final openRecords = all
-      .where(
-        (record) =>
-            record.actualBedtime != null && record.actualWakeTime == null,
-      )
+  final candidates = all
+      .where((record) => record.actualBedtime != null)
       .toList()
     ..sort(
       (a, b) => b.actualBedtime!.compareTo(a.actualBedtime!),
     );
 
-  for (final record in openRecords) {
+  for (final record in candidates) {
     final bedtime = record.actualBedtime!;
-    if (!wakeTime.isAfter(bedtime)) continue;
-    if (wakeTime.difference(bedtime) > sleepOpenBedtimeMaxAge) continue;
+    if (!referenceTime.isAfter(bedtime)) continue;
+    if (referenceTime.difference(bedtime) > sleepOpenBedtimeMaxAge) continue;
     return record;
   }
   return null;
 }
 
+Future<SleepRecord> resolveSleepDisplayRecord(
+  AppDatabase db, {
+  required DateTime now,
+}) async {
+  final today = DateFormat('yyyy-MM-dd').format(now);
+  final todayRecord = await db.sleepForDate(today);
+  if (todayRecord != null &&
+      (todayRecord.actualBedtime != null ||
+          todayRecord.actualWakeTime != null)) {
+    return todayRecord;
+  }
+
+  final recent = await findRecentBedtimeRecordNear(db, referenceTime: now);
+  if (recent != null) {
+    return recent;
+  }
+
+  return db.ensureSleepRecord(today);
+}
+
 Future<void> checkInWakeTime(AppDatabase db, {DateTime? now}) async {
   final wakeTime = now ?? DateTime.now();
-  final openRecord = await findRecentOpenBedtimeRecord(db, wakeTime: wakeTime);
-  final SleepRecord target;
-  if (openRecord != null) {
-    target = openRecord;
-  } else {
-    final date = DateFormat('yyyy-MM-dd').format(wakeTime);
-    target = await db.ensureSleepRecord(date);
-  }
+  final target = await findRecentBedtimeRecordNear(db, referenceTime: wakeTime) ??
+      await db.ensureSleepRecord(DateFormat('yyyy-MM-dd').format(wakeTime));
   await (db.update(db.sleepRecords)
         ..where((t) => t.id.equals(target.id)))
       .write(SleepRecordsCompanion(actualWakeTime: Value(wakeTime)));

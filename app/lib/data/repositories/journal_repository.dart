@@ -152,31 +152,46 @@ class JournalRepository {
     int newIndex, {
     List<int>? scopedTodoIds,
   }) async {
-    final allTodos = await _db.todosForDate(date);
-    final List<TodoItem> todos;
+    var allTodos = List<TodoItem>.from(await _db.todosForDate(date));
+
     if (scopedTodoIds != null) {
-      final byId = {for (final todo in allTodos) todo.id: todo};
-      todos = [
+      final scopeIdSet = scopedTodoIds.toSet();
+      final scopedTodos = <TodoItem>[
         for (final id in scopedTodoIds)
-          if (byId.containsKey(id)) byId[id]!,
+          ...allTodos.where((todo) => todo.id == id),
+      ];
+
+      if (oldIndex < 0 ||
+          oldIndex >= scopedTodos.length ||
+          newIndex < 0 ||
+          newIndex >= scopedTodos.length) {
+        return;
+      }
+
+      final moved = scopedTodos.removeAt(oldIndex);
+      scopedTodos.insert(newIndex, moved);
+
+      var scopedCursor = 0;
+      allTodos = [
+        for (final todo in allTodos)
+          if (scopeIdSet.contains(todo.id))
+            scopedTodos[scopedCursor++]
+          else
+            todo,
       ];
     } else {
-      todos = List<TodoItem>.from(allTodos);
+      if (oldIndex < 0 ||
+          oldIndex >= allTodos.length ||
+          newIndex < 0 ||
+          newIndex >= allTodos.length) {
+        return;
+      }
+      final moved = allTodos.removeAt(oldIndex);
+      allTodos.insert(newIndex, moved);
     }
 
-    if (oldIndex < 0 ||
-        oldIndex >= todos.length ||
-        newIndex < 0 ||
-        newIndex >= todos.length) {
-      return;
-    }
-    final moved = todos.removeAt(oldIndex);
-    todos.insert(newIndex, moved);
-    final baseSortOrder = todos
-        .map((todo) => todo.sortOrder)
-        .reduce((a, b) => a < b ? a : b);
-    for (var i = 0; i < todos.length; i++) {
-      await updateTodo(todos[i].copyWith(sortOrder: baseSortOrder + i));
+    for (var i = 0; i < allTodos.length; i++) {
+      await updateTodo(allTodos[i].copyWith(sortOrder: i));
     }
   }
 
@@ -335,8 +350,30 @@ class JournalRepository {
     required String startTime,
     required String endTime,
     required String content,
+    int? linkedTodoId,
   }) async {
     final existing = await _db.blocksForDate(date, 'actual');
+
+    // 去重：按时间段 + linkedTodoId + content 匹配已有 actual 块
+    for (final block in existing) {
+      if (block.startTime == startTime &&
+          block.endTime == endTime &&
+          block.linkedTodoId == linkedTodoId &&
+          block.content.trim() == content.trim()) {
+        return; // 完全匹配，跳过
+      }
+    }
+
+    // 时间段相同但 content 有变化 → 更新已有行
+    for (final block in existing) {
+      if (block.startTime == startTime &&
+          block.endTime == endTime &&
+          block.linkedTodoId == linkedTodoId) {
+        await updateBlock(block.copyWith(content: content));
+        return;
+      }
+    }
+
     final order = existing.isEmpty ? 0 : existing.last.sortOrder + 1;
     await _db.into(_db.timeBlocks).insert(
       TimeBlocksCompanion.insert(
@@ -345,6 +382,7 @@ class JournalRepository {
         endTime: endTime,
         content: Value(content),
         source: 'actual',
+        linkedTodoId: Value(linkedTodoId),
         sortOrder: Value(order),
       ),
     );

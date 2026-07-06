@@ -173,3 +173,10 @@
 - 测试新增 5 条：跨午夜闭合、fallback、stale 超窗、同日、跨夜时长
 - 验证：`flutter analyze` 无问题；`flutter test` 124/124 通过
 - 未做：Drift schema / P0-6 `linkedPlanId`
+
+## 2026-07-06 Grok — P0-5/P1-7 review follow-up (9d8299a)
+
+- reorderTodos(scoped)：重排 scoped 后填回原 slots，全列表 0..n-1 写 sortOrder
+- resolveSleepDisplayRecord + findRecentBedtimeRecordNear：跨夜 wake 后展示前一晚完整记录
+- checkInWakeTime：24h 内近期 bedtime（含已闭合）优先，避免 repeat wake 产生 orphan
+- 验证：flutter analyze 无问题；flutter test 127/127 通过；已 push `p0/journal-compare`

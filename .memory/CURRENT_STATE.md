@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- （待 follow-up push 后更新 sha）fix: P0-5/P1-7 review follow-up
+- 9d8299a fix: address P0-5/P1-7 review follow-ups
 
 ## Completed
 

@@ -17,6 +17,24 @@
   - 用户可 git pull 后在真机 flutter run / 安装测试 UI 收口效果
   - 未做 release 构建（按约束）
 
+## 2026-07-06 (session 4)
+
+- **修复 Pomodoro actual 未挂回 planned block**（Grok）：
+  - 现象：planned「健身」显示未记录，但实际产生 orphan actual「番茄专注」（短时长无法 legacy time 匹配）
+  - 根因：addActualFromPomodoro 只写 linkedTodoId，未写 linkedPlanId
+  - 修复（最小，仅 repository 层）：
+    - 在 addActualFromPomodoro 中，若 linkedTodoId != null，查询当日同 linkedTodoId 的 planned，取得其 id 作为 linkedPlanId
+    - insert 时写入；update content 时 backfill；dedup 命中时也 backfill（若需要）
+    - 无匹配 planned 时保持原 orphan 行为
+  - 不改 _matchActual (P0-6 逻辑)、不改 schema、不改 UI、不改其他
+  - 新增测试 3 条：
+    1. 正常 link：create todo+planned → addActual(short time) → snapshot.comparisonSlots 中 planned 带 actual，linkedPlanId 正确，无 orphan
+    2. backfill update：先插入 linkedTodoId 但 linkedPlanId=null 的 actual → 再 addActual → linkedPlanId 被更新
+    3. 无匹配保持 orphan：linkedTodoId null 或无 planned → linkedPlanId 仍 null，产生 orphan
+  - 验证：flutter analyze 无问题；flutter test 131/131 passed（含原测试）
+  - 修改文件：仅 journal_repository.dart + journal_repository_test.dart
+  - migration：否
+
 ## 2026-07-06 (session 2)
 
 - **白屏修复**（Claude Code）：

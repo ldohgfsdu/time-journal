@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- b174e67 fix(ui): P1 收口 4 项最小补丁 (已 push origin/p0/journal-compare)
+- 4a5906f fix(repo): addActualFromPomodoro backfills linkedPlanId from matching planned by linkedTodoId
 
 ## Completed
 
@@ -43,6 +43,10 @@
   - SnackBar 暖色圆角轻阴影（替代黑底）
   - 卡片/sheet 分割线减淡（仅色）
   - 验证：analyze clean；test 128/128；8 文件少量样式；无结构/无 migration
+- 真机验收修复：Pomodoro actual 未挂 planned（Grok 2026-07-06）
+  - addActualFromPomodoro 按 linkedTodoId 回填 linkedPlanId（insert/update/dedup）
+  - 仅 repository 层；不改匹配逻辑、不 schema、不 UI
+  - 新增 3 测试；analyze clean + 131/131 pass
 - 真机验收修复批次 1：
   - Pomodoro 休息流程：专注完成后不强制进入 break，用户选择是否休息
   - Weekly 文案矛盾：专注/睡眠卡不再显示矛盾文案
@@ -85,6 +89,7 @@
 - flutter test: 128/128 passed
 - P0-6 linkedPlanId migration 已合入默认分支 (p0/journal-compare)
 - P1 UI 收口 4 项最小补丁：analyze clean + 128/128 pass（Grok）
+- Pomodoro actual linkedPlanId 修复：analyze clean + 131/131 pass（Grok）
 
 ## Release blockers
 

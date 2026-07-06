@@ -5,15 +5,15 @@
 - Name: time-journal
 - Type: Flutter 轻量时间管理手账 App
 - Main path: ~/code/time-journal
-- Main development branch: p0/journal-compare
+- Main development branch: master
 
 ## Current stage
 
-真机验收与发布准备阶段。MVP 缺口修补第一轮、第二轮完成（待办拖拽 + 睡眠跨午夜）。
+P0-5 / P1-7 已 squash 合入 master。P0-6 `linkedPlanId` migration 仍 blocked。
 
 ## Latest known commit
 
-- df1fd1d fix: adapt clean cherry-pick to master baseline (clean PR #2)
+- c120220 fix: P0-5 todo reorder + P1-7 sleep cross-midnight (PR #2 squash merge)
 
 ## Completed
 
@@ -75,7 +75,7 @@
 ## Last known validation
 
 - flutter analyze: No issues found
-- flutter test: 127/127 passed
+- flutter test: 35/35 passed (master baseline after PR #2 merge)
 
 ## Release blockers
 

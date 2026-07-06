@@ -180,3 +180,10 @@
 - resolveSleepDisplayRecord + findRecentBedtimeRecordNear：跨夜 wake 后展示前一晚完整记录
 - checkInWakeTime：24h 内近期 bedtime（含已闭合）优先，避免 repeat wake 产生 orphan
 - 验证：flutter analyze 无问题；flutter test 127/127 通过；已 push `p0/journal-compare`
+
+## 2026-07-06 Grok — PR #2 squash merge 收口
+
+- PR #2（`fix/p0-5-p1-7-clean` → `master`）squash merge：`c120220`
+- PR #1 closed，标注 superseded by #2
+- 本地 `master` 已 fast-forward 同步
+- P0-6 `linkedPlanId` migration 仍 out of scope / blocked

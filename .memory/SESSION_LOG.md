@@ -180,3 +180,25 @@
 - resolveSleepDisplayRecord + findRecentBedtimeRecordNear：跨夜 wake 后展示前一晚完整记录
 - checkInWakeTime：24h 内近期 bedtime（含已闭合）优先，避免 repeat wake 产生 orphan
 - 验证：flutter analyze 无问题；flutter test 127/127 通过；已 push `p0/journal-compare`
+
+## 2026-07-06 Grok — 合并 PR #6 到 p0/journal-compare (P0-6 converge)
+
+- 使用正常 merge 合并 PR #6（chore/converge-p0-master → p0/journal-compare），未改 PR 内容
+- 合并后 `git checkout p0/journal-compare && git pull`
+- 在 app/ 执行：
+  - flutter pub get
+  - dart run build_runner build --delete-conflicting-outputs
+  - flutter analyze（clean）
+  - flutter test（128/128 passed）
+- 确认：
+  - schemaVersion 3 + linkedPlanId migration 仍在
+  - 今日对照匹配逻辑（_matchActual 优先 linkedPlanId，legacy fallback 仅 unlinked）仍在
+  - ComparisonSlot.status（content+time）仍在
+- 更新 .memory/CURRENT_STATE.md 和 .memory/SESSION_LOG.md：
+  - P0-6 linkedPlanId migration 已合入默认分支
+  - flutter analyze clean
+  - flutter test 128/128 passed
+  - master 进入待归档/不再作为开发主线
+- 严格遵守：不修改 GitHub Actions，不做 UI，不做 P2/P3
+- 验证命令全部在 app/ 下执行；仅数据 + 记忆文件更新
+- 当前主线：p0/journal-compare（4ea00a9）

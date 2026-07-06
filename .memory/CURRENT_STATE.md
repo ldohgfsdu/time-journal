@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- 9d8299a fix: address P0-5/P1-7 review follow-ups
+- 4ea00a9 Merge pull request #6 from ldohgfsdu/chore/converge-p0-master (P0-6 linkedPlanId)
 
 ## Completed
 
@@ -34,6 +34,7 @@
   - P0-1/P0-2 今日对照与按钮防重复
   - P0-3 专注完成写入实际记录，linkedTodoId 贯通
   - P0-4 `addActualFromPomodoro` 幂等性修复
+  - P0-5 待办拖拽 scoped + P0-6 linkedPlanId migration（PR #6 合入 p0/journal-compare）
 - P1 系列（全部关闭）
 - UI polish 第一批（全部关闭）
 - 真机验收修复批次 1：
@@ -74,12 +75,13 @@
 
 ## Last known validation
 
-- flutter analyze: No issues found
-- flutter test: 127/127 passed
+- flutter analyze: No issues found (clean)
+- flutter test: 128/128 passed
+- P0-6 linkedPlanId migration 已合入默认分支 (p0/journal-compare)
 
 ## Release blockers
 
-- **P0-6 今日对照匹配**：`actual` 改时间后无法稳定匹配 `planned`；需 `linkedPlanId` Drift migration（等待解除 schema 禁令）
+（无；P0-6 linkedPlanId 已合入 p0/journal-compare 作为默认主线）
 
 ## UI (Claude 暖色主题)
 
@@ -108,3 +110,5 @@
 - OpenCode 配置见 opencode.jsonc；runbook 见 .external_outbox/opencode-runbook.md。
 
 - Termux `agent` 菜单合并（2026-07-05 session 8）：替换旧 `claude` 入口为 `agent`，整合 OpenCode/Claude Code/Proxy/用量/validate/git/项目管理。`claude` 保留为 symlink。
+
+- **2026-07-06 P0-6 converge**：PR #6 已合并到 p0/journal-compare（默认主线）。master 进入待归档/不再作为开发主线。仅数据层（schema 3 + linkedPlanId + 匹配逻辑），无 UI/GA/P2/P3 改动。

@@ -16,6 +16,7 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text(AppCopy.profileTitle)),
       body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
           _SettingsTile(
             icon: Icons.calendar_view_week_outlined,
@@ -51,7 +52,7 @@ class ProfileScreen extends ConsumerWidget {
       context: context,
       backgroundColor: AppTheme.card,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (sheetContext) => SafeArea(
         child: Padding(

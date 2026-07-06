@@ -23,29 +23,16 @@ class SectionCard extends StatelessWidget {
       width: double.infinity,
       margin: EdgeInsets.symmetric(
         horizontal: AppTheme.pagePadding,
-        vertical: dense ? 6 : 8,
+        vertical: dense ? 6 : 10,
       ),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
-        border: Border.all(color: AppTheme.rule),
-      ),
+      decoration: AppTheme.cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.fromLTRB(16, dense ? 12 : 14, 16, dense ? 8 : 10),
+            padding: EdgeInsets.fromLTRB(16, dense ? 14 : 16, 16, dense ? 8 : 10),
             child: Row(
               children: [
-                Container(
-                  width: 3,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: AppTheme.tomato,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +46,7 @@ class SectionCard extends StatelessWidget {
                         ),
                       ),
                       if (subtitle != null) ...[
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 3),
                         Text(
                           subtitle!,
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -74,9 +61,13 @@ class SectionCard extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(height: 1),
+          if (!dense)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Divider(height: 1, thickness: 0.5, color: AppTheme.rule),
+            ),
           Padding(
-            padding: EdgeInsets.fromLTRB(16, dense ? 8 : 10, 16, dense ? 12 : 14),
+            padding: EdgeInsets.fromLTRB(16, dense ? 8 : 12, 16, dense ? 14 : 16),
             child: child,
           ),
         ],

@@ -46,57 +46,66 @@ class _MainShellState extends ConsumerState<MainShell> {
   }
 
   Widget _buildTabBar(int index) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppTheme.card,
-        border: Border(top: BorderSide(color: AppTheme.rule)),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: Row(
-            children: List.generate(_tabs.length, (i) {
-              final tab = _tabs[i];
-              final selected = index == i;
-              return Expanded(
-                child: InkWell(
-                  onTap: () => ref.read(shellTabIndexProvider.notifier).state = i,
-                  borderRadius: BorderRadius.circular(12),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      color: selected
-                          ? AppTheme.tomatoSoft.withValues(alpha: 0.8)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          selected ? tab.activeIcon : tab.icon,
-                          size: 22,
-                          color:
-                              selected ? AppTheme.tomato : AppTheme.inkFaint,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          tab.label,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight:
-                                selected ? FontWeight.w600 : FontWeight.w400,
-                            color:
-                                selected ? AppTheme.tomato : AppTheme.inkFaint,
+    // Claude-style floating rounded bottom nav (inside SafeArea)
+    return SafeArea(
+      minimum: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppTheme.card,
+            borderRadius: BorderRadius.circular(999),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x0F000000),
+                blurRadius: 12,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Row(
+              children: List.generate(_tabs.length, (i) {
+                final tab = _tabs[i];
+                final selected = index == i;
+                return Expanded(
+                  child: InkWell(
+                    onTap: () => ref.read(shellTabIndexProvider.notifier).state = i,
+                    borderRadius: BorderRadius.circular(999),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 160),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? AppTheme.tomatoSoft
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            selected ? tab.activeIcon : tab.icon,
+                            size: 22,
+                            color: selected ? AppTheme.clay : AppTheme.inkFaint,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 1),
+                          Text(
+                            tab.label,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                              color: selected ? AppTheme.clay : AppTheme.inkFaint,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
         ),
       ),

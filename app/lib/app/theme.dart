@@ -2,33 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AppTheme {
-  static const Color paper = Color(0xFFFAF6EF);
-  static const Color paperDeep = Color(0xFFF0E8DA);
-  static const Color card = Color(0xFFFFFCF7);
-  static const Color ink = Color(0xFF1E1E1E);
-  static const Color inkMuted = Color(0xFF5A554E);
+  // Claude-inspired warm, low-contrast, editorial palette
+  static const Color background = Color(0xFFFAF8F3); // warm ivory / paper
+  static const Color paper = Color(0xFFFAF8F3);
+  static const Color paperDeep = Color(0xFFF5F0E8);
+  static const Color surface = Color(0xFFFFFEFA); // soft warm white
+  static const Color card = Color(0xFFFFFFFF);
+  static const Color ink = Color(0xFF2C2A27); // deep ink, not pure black
+  static const Color inkMuted = Color(0xFF5C5750);
   static const Color inkFaint = Color(0xFF8A837A);
-  static const Color subtitle = Color(0xFF4F4A44);
-  static const Color tomato = Color(0xFFC45C4A);
-  static const Color tomatoSoft = Color(0xFFF3DDD8);
+  static const Color subtitle = Color(0xFF6B665E);
+  static const Color clay = Color(0xFFD17B5F); // soft clay / muted coral accent
+  static const Color tomato = Color(0xFFD17B5F); // alias for backward compat in accents
+  static const Color tomatoSoft = Color(0xFFF5E6DF);
   static const Color sleepBlue = Color(0xFF5B7A96);
   static const Color sleepMist = Color(0xFFE8EEF3);
-  static const Color tagBg = Color(0xFFF0EBE3);
+  static const Color tagBg = Color(0xFFF5F0E8);
   static const Color danger = Color(0xFFB85C50);
 
-  static const double cardRadius = 16;
+  static const double cardRadius = 20; // larger rounded surfaces
   static const double pagePadding = 16;
-  static const Color rule = Color(0xFFE3D9C8);
+  static const Color rule = Color(0xFFEDE6DC); // much weaker divider
   static const Color fold = Color(0xFFD4C8B5);
+
+  static BoxDecoration cardDecoration({double? radius}) {
+    return BoxDecoration(
+      color: card,
+      borderRadius: BorderRadius.circular(radius ?? cardRadius),
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x0A000000),
+          blurRadius: 10,
+          offset: Offset(0, 2),
+          spreadRadius: 0,
+        ),
+      ],
+    );
+  }
 
   static ThemeData light() {
     const scheme = ColorScheme(
       brightness: Brightness.light,
-      primary: tomato,
+      primary: clay,
       onPrimary: Colors.white,
       secondary: sleepBlue,
       onSecondary: Colors.white,
-      surface: paper,
+      surface: surface,
       onSurface: ink,
       error: Color(0xFFB3261E),
       onError: Colors.white,
@@ -37,9 +56,9 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      scaffoldBackgroundColor: paper,
+      scaffoldBackgroundColor: background,
       appBarTheme: const AppBarTheme(
-        backgroundColor: paper,
+        backgroundColor: background,
         foregroundColor: ink,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -48,11 +67,18 @@ class AppTheme {
           color: ink,
           fontSize: 17,
           fontWeight: FontWeight.w600,
-          letterSpacing: 0.5,
+          letterSpacing: 0.3,
         ),
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
-      dividerTheme: const DividerThemeData(color: rule, thickness: 1, space: 1),
+      dividerTheme: const DividerThemeData(color: rule, thickness: 0.5, space: 8),
+      cardTheme: CardThemeData(
+        color: card,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(cardRadius),
+        ),
+      ),
       textTheme: const TextTheme(
         bodyLarge: TextStyle(color: ink, fontSize: 16, height: 1.5),
         bodyMedium: TextStyle(color: ink, fontSize: 14, height: 1.45),
@@ -61,10 +87,10 @@ class AppTheme {
           color: ink,
           fontSize: 15,
           fontWeight: FontWeight.w600,
-          letterSpacing: 0.3,
+          letterSpacing: 0.2,
         ),
         labelLarge: TextStyle(
-          color: tomato,
+          color: clay,
           fontSize: 13,
           fontWeight: FontWeight.w600,
         ),
@@ -76,25 +102,25 @@ class AppTheme {
         hintStyle: const TextStyle(color: inkFaint, fontSize: 15),
         border: InputBorder.none,
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: rule, width: 1),
+          borderSide: BorderSide(color: rule, width: 0.75),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: tomato, width: 1.5),
+          borderSide: BorderSide(color: clay, width: 1.5),
         ),
       ),
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return tomato;
+          if (states.contains(WidgetState.selected)) return clay;
           return Colors.transparent;
         }),
-        side: const BorderSide(color: inkFaint, width: 1.5),
+        side: const BorderSide(color: inkFaint, width: 1.25),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         visualDensity: VisualDensity.compact,
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: tomato,
+          foregroundColor: clay,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           minimumSize: Size.zero,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -103,10 +129,10 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: tomato,
+          backgroundColor: clay,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );

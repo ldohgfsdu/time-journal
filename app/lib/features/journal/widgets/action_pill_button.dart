@@ -19,26 +19,26 @@ class ActionPillButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: AppTheme.tomatoSoft,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(999),
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(999),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: compact ? 8 : 10,
-            vertical: compact ? 5 : 6,
+            horizontal: compact ? 10 : 12,
+            vertical: compact ? 6 : 7,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: compact ? 14 : 16, color: AppTheme.tomato),
-              const SizedBox(width: 2),
+              Icon(icon, size: compact ? 14 : 15, color: AppTheme.clay),
+              const SizedBox(width: 3),
               Text(
                 label,
                 style: TextStyle(
-                  color: AppTheme.tomato,
+                  color: AppTheme.clay,
                   fontSize: compact ? 12 : 13,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],

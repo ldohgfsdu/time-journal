@@ -27,19 +27,21 @@ class PaperBackground extends StatelessWidget {
 class _RuledPaperPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    // Softer, calmer ruled lines (low contrast, editorial)
     final paint = Paint()
-      ..color = AppTheme.rule.withValues(alpha: 0.35)
-      ..strokeWidth = 0.5;
+      ..color = AppTheme.rule.withValues(alpha: 0.22)
+      ..strokeWidth = 0.6;
 
-    const gap = 28.0;
+    const gap = 32.0;
     for (var y = gap; y < size.height; y += gap) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
 
+    // Very subtle left margin, no strong tomato
     final marginPaint = Paint()
-      ..color = AppTheme.tomato.withValues(alpha: 0.12)
+      ..color = AppTheme.ink.withValues(alpha: 0.04)
       ..strokeWidth = 1;
-    canvas.drawLine(const Offset(20, 0), Offset(20, size.height), marginPaint);
+    canvas.drawLine(const Offset(24, 0), Offset(24, size.height), marginPaint);
   }
 
   @override

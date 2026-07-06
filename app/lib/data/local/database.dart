@@ -108,8 +108,21 @@ class AppDatabase extends _$AppDatabase {
     return (select(sleepRecords)..where((t) => t.id.equals(id))).getSingle();
   }
 
-  Future<void> upsertSleepRecord(SleepRecordsCompanion record) =>
-      into(sleepRecords).insertOnConflictUpdate(record);
+  Future<void> upsertSleepRecord(SleepRecordsCompanion record) async {
+    if (!record.date.present) {
+      await into(sleepRecords).insert(record);
+      return;
+    }
+    final date = record.date.value;
+    final existing = await sleepForDate(date);
+    if (existing != null) {
+      await (update(sleepRecords)
+            ..where((t) => t.id.equals(existing.id)))
+          .write(record);
+      return;
+    }
+    await into(sleepRecords).insert(record);
+  }
 
   Future<List<PomodoroSession>> sessionsForDate(String date) {
     return (select(pomodoroSessions)

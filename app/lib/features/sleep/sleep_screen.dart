@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../app/copy.dart';
 import '../../app/gentle_feedback.dart';
-import '../../app/picker_helper.dart';
 import '../../app/theme.dart';
 import '../../data/local/database_provider.dart';
 import '../journal/widgets/section_card.dart';
@@ -25,15 +24,14 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
     required String current,
   }) async {
     final parts = current.split(':');
-    final picked = await safeShowTimePicker(
-      context,
+    final picked = await showTimePicker(
+      context: context,
       initialTime: TimeOfDay(
         hour: int.parse(parts[0]),
         minute: int.parse(parts[1]),
       ),
-      helpText: bedtime ? AppCopy.sleepPickBedtime : AppCopy.sleepPickWake,
     );
-    if (!mounted || picked == null) return;
+    if (picked == null) return;
     final value =
         '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
     final data = await ref.read(sleepDataProvider.future);
@@ -53,7 +51,7 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text(AppCopy.sleepTitle)),
       body: sleepAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.tomato)),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(AppCopy.loadErrorDetail(e))),
         data: (data) {
           final weekDots = (data.streakDays % 7).clamp(0, 7);
@@ -63,9 +61,7 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
           final checkedIn = data.record.actualBedtime != null;
           final wakeText = data.record.actualWakeTime == null
               ? AppCopy.sleepWakePending
-              : AppCopy.sleepWakeRecorded(
-                  DateFormat('HH:mm').format(data.record.actualWakeTime!),
-                );
+              : DateFormat('HH:mm').format(data.record.actualWakeTime!);
           final wokeUp = data.record.actualWakeTime != null;
           final durationText = formatSleepDuration(
             actualBedtime: data.record.actualBedtime,
@@ -293,13 +289,14 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
                     _RecordRow(
                       label: AppCopy.sleepWakeLabel,
                       value: wakeText,
-                      valueColor: wokeUp ? AppTheme.sleepBlue : AppTheme.inkFaint,
+                      valueColor:
+                          wokeUp ? AppTheme.sleepBlue : AppTheme.inkFaint,
                       emphasized: wokeUp,
                     ),
                     if (durationText != null) ...[
                       const SizedBox(height: 10),
                       _RecordRow(
-                        label: AppCopy.sleepDurationLabel,
+                        label: '睡眠时长',
                         value: durationText,
                         valueColor: AppTheme.sleepBlue,
                         emphasized: true,
@@ -468,7 +465,7 @@ class _NoiseChip extends StatelessWidget {
                 const SizedBox(
                   width: 12,
                   height: 12,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.tomato),
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
                 const SizedBox(width: 6),
               ],

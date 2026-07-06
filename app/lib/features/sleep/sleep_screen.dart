@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../app/copy.dart';
 import '../../app/gentle_feedback.dart';
 import '../../app/theme.dart';
+import '../../data/local/database_provider.dart';
 import '../journal/widgets/section_card.dart';
 import 'providers/sleep_noise_provider.dart';
 import 'providers/sleep_provider.dart';
@@ -58,6 +59,14 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
               ? AppCopy.sleepCheckInPending
               : DateFormat('HH:mm').format(data.record.actualBedtime!);
           final checkedIn = data.record.actualBedtime != null;
+          final wakeText = data.record.actualWakeTime == null
+              ? AppCopy.sleepWakePending
+              : DateFormat('HH:mm').format(data.record.actualWakeTime!);
+          final wokeUp = data.record.actualWakeTime != null;
+          final durationText = formatSleepDuration(
+            actualBedtime: data.record.actualBedtime,
+            actualWakeTime: data.record.actualWakeTime,
+          );
 
           return ListView(
             padding: const EdgeInsets.only(bottom: 24),
@@ -152,11 +161,40 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
                     minimumSize: const Size(double.infinity, 48),
                   ),
                   onPressed: () async {
-                    final message = await checkInBedtime(ref);
+                    final db = ref.read(databaseProvider);
+                    final message = await checkInBedtime(db);
+                    ref.invalidate(sleepDataProvider);
                     if (!context.mounted) return;
                     GentleFeedback.sleepCheckIn(context, message);
                   },
                   child: const Text(AppCopy.sleepCheckInButton),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.sleepBlue,
+                    side: const BorderSide(color: AppTheme.sleepBlue),
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                  onPressed: () async {
+                    final db = ref.read(databaseProvider);
+                    await checkInWakeTime(db);
+                    ref.invalidate(sleepDataProvider);
+                    if (!context.mounted) return;
+                    GentleFeedback.lightTap();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(AppCopy.sleepWakeFeedback),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                  child: const Text(AppCopy.sleepWakeButton),
                 ),
               ),
               SectionCard(
@@ -248,11 +286,22 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
                       emphasized: checkedIn,
                     ),
                     const SizedBox(height: 10),
-                    const _RecordRow(
+                    _RecordRow(
                       label: AppCopy.sleepWakeLabel,
-                      value: AppCopy.sleepWakePending,
-                      valueColor: AppTheme.inkFaint,
+                      value: wakeText,
+                      valueColor:
+                          wokeUp ? AppTheme.sleepBlue : AppTheme.inkFaint,
+                      emphasized: wokeUp,
                     ),
+                    if (durationText != null) ...[
+                      const SizedBox(height: 10),
+                      _RecordRow(
+                        label: '睡眠时长',
+                        value: durationText,
+                        valueColor: AppTheme.sleepBlue,
+                        emphasized: true,
+                      ),
+                    ],
                     const SizedBox(height: 10),
                     _RecordRow(
                       label: AppCopy.sleepScoreLabel,

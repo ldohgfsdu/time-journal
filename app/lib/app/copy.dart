@@ -141,6 +141,8 @@ class AppCopy {
   static const sleepScorePending = '待记录';
 
   static const sleepCheckInButton = '我准备去睡了';
+  static const sleepWakeButton = '我起床了';
+  static const sleepWakeFeedback = '已记录起床时间';
   static const sleepNoiseTitle = '白噪音';
   static const sleepNoiseSubtitle = '选一个舒服的声音，慢慢放松';
   static const sleepNoisePlaying = '正在播放';

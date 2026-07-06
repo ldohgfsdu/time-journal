@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import '../../core/utils/time_utils.dart';
 import '../local/database.dart';
 import '../models/comparison_slot.dart';
 
@@ -48,8 +49,8 @@ class JournalSnapshot {
     }
 
     slots.sort((a, b) {
-      final aStart = _parse((a.planned ?? a.actual)!.startTime);
-      final bStart = _parse((b.planned ?? b.actual)!.startTime);
+      final aStart = parseTime(a.planned?.startTime ?? a.actual?.startTime ?? '00:00');
+      final bStart = parseTime(b.planned?.startTime ?? b.actual?.startTime ?? '00:00');
       return aStart.compareTo(bStart);
     });
     return slots;
@@ -64,24 +65,7 @@ class JournalSnapshot {
     return null;
   }
 
-  static int _sumMinutes(List<TimeBlock> blocks) {
-    var total = 0;
-    for (final b in blocks) {
-      if (b.content.trim().isEmpty) continue;
-      final start = _parse(b.startTime);
-      final end = _parse(b.endTime);
-      if (end > start) total += end - start;
-    }
-    return total;
-  }
-
-  static int _parse(String value) {
-    final parts = value.split(':');
-    if (parts.length != 2) return 0;
-    final h = int.tryParse(parts[0]) ?? 0;
-    final m = int.tryParse(parts[1]) ?? 0;
-    return h * 60 + m;
-  }
+  static int _sumMinutes(List<TimeBlock> blocks) => sumBlockMinutes(blocks);
 }
 
 class JournalRepository {
@@ -162,18 +146,52 @@ class JournalRepository {
 
   Future<void> removeTodo(int id) => _db.deleteTodo(id);
 
-  Future<void> reorderTodos(String date, int oldIndex, int newIndex) async {
-    final todos = List<TodoItem>.from(await _db.todosForDate(date));
-    if (oldIndex < 0 ||
-        oldIndex >= todos.length ||
-        newIndex < 0 ||
-        newIndex >= todos.length) {
-      return;
+  Future<void> reorderTodos(
+    String date,
+    int oldIndex,
+    int newIndex, {
+    List<int>? scopedTodoIds,
+  }) async {
+    var allTodos = List<TodoItem>.from(await _db.todosForDate(date));
+
+    if (scopedTodoIds != null) {
+      final scopeIdSet = scopedTodoIds.toSet();
+      final scopedTodos = <TodoItem>[
+        for (final id in scopedTodoIds)
+          ...allTodos.where((todo) => todo.id == id),
+      ];
+
+      if (oldIndex < 0 ||
+          oldIndex >= scopedTodos.length ||
+          newIndex < 0 ||
+          newIndex >= scopedTodos.length) {
+        return;
+      }
+
+      final moved = scopedTodos.removeAt(oldIndex);
+      scopedTodos.insert(newIndex, moved);
+
+      var scopedCursor = 0;
+      allTodos = [
+        for (final todo in allTodos)
+          if (scopeIdSet.contains(todo.id))
+            scopedTodos[scopedCursor++]
+          else
+            todo,
+      ];
+    } else {
+      if (oldIndex < 0 ||
+          oldIndex >= allTodos.length ||
+          newIndex < 0 ||
+          newIndex >= allTodos.length) {
+        return;
+      }
+      final moved = allTodos.removeAt(oldIndex);
+      allTodos.insert(newIndex, moved);
     }
-    final moved = todos.removeAt(oldIndex);
-    todos.insert(newIndex, moved);
-    for (var i = 0; i < todos.length; i++) {
-      await updateTodo(todos[i].copyWith(sortOrder: i));
+
+    for (var i = 0; i < allTodos.length; i++) {
+      await updateTodo(allTodos[i].copyWith(sortOrder: i));
     }
   }
 
@@ -327,32 +345,35 @@ class JournalRepository {
     return (_db.select(_db.timeBlocks)..where((t) => t.id.equals(id))).getSingle();
   }
 
-  Future<void> copyPlannedToActual(String date) async {
-    final planned = await _db.blocksForDate(date, 'planned');
-    final actual = await _db.blocksForDate(date, 'actual');
-    var order = actual.isEmpty ? 0 : actual.last.sortOrder + 1;
-    for (final block in planned) {
-      await _db.into(_db.timeBlocks).insert(
-        TimeBlocksCompanion.insert(
-          journalDate: date,
-          startTime: block.startTime,
-          endTime: block.endTime,
-          content: Value(block.content),
-          source: 'actual',
-          linkedTodoId: Value(block.linkedTodoId),
-          sortOrder: Value(order++),
-        ),
-      );
-    }
-  }
-
   Future<void> addActualFromPomodoro({
     required String date,
     required String startTime,
     required String endTime,
     required String content,
+    int? linkedTodoId,
   }) async {
     final existing = await _db.blocksForDate(date, 'actual');
+
+    // 去重：按时间段 + linkedTodoId + content 匹配已有 actual 块
+    for (final block in existing) {
+      if (block.startTime == startTime &&
+          block.endTime == endTime &&
+          block.linkedTodoId == linkedTodoId &&
+          block.content.trim() == content.trim()) {
+        return; // 完全匹配，跳过
+      }
+    }
+
+    // 时间段相同但 content 有变化 → 更新已有行
+    for (final block in existing) {
+      if (block.startTime == startTime &&
+          block.endTime == endTime &&
+          block.linkedTodoId == linkedTodoId) {
+        await updateBlock(block.copyWith(content: content));
+        return;
+      }
+    }
+
     final order = existing.isEmpty ? 0 : existing.last.sortOrder + 1;
     await _db.into(_db.timeBlocks).insert(
       TimeBlocksCompanion.insert(
@@ -361,6 +382,7 @@ class JournalRepository {
         endTime: endTime,
         content: Value(content),
         source: 'actual',
+        linkedTodoId: Value(linkedTodoId),
         sortOrder: Value(order),
       ),
     );

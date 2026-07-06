@@ -396,6 +396,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
             data: (todos) => TodoPickChips(
               label: AppCopy.focusPickFromTodo,
               todos: todos,
+              selectedId: state.linkedTodoId,
               onPick: (todo) {
                 GentleFeedback.lightTap();
                 _taskController.text = todo.content;

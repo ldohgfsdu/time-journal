@@ -384,17 +384,19 @@ class JournalRepository {
     required String endTime,
     required String content,
     int? linkedTodoId,
+    int? linkedPlanId,
   }) async {
     final existing = await _db.blocksForDate(date, 'actual');
 
-    // 查找同 linkedTodoId 的 planned block（若有），用于回填 linkedPlanId
-    // 使 pomodoro actual 能通过 linkedPlanId 正确挂回 planned，即使时长不完全匹配
-    int? linkedPlanId;
-    if (linkedTodoId != null) {
+    // 优先使用直接传入的 linkedPlanId（来自 planned block 选择），
+    // 否则若有 linkedTodoId 则查询同日同 linkedTodoId 的 planned 进行回填。
+    // 这样支持从 todo 选择（PR#7 路径）和从 planned 直接选择。
+    int? effectivePlanId = linkedPlanId;
+    if (effectivePlanId == null && linkedTodoId != null) {
       final planned = await _db.blocksForDate(date, 'planned');
       for (final p in planned) {
         if (p.linkedTodoId == linkedTodoId) {
-          linkedPlanId = p.id;
+          effectivePlanId = p.id;
           break;
         }
       }
@@ -407,24 +409,24 @@ class JournalRepository {
           block.endTime == endTime &&
           block.linkedTodoId == linkedTodoId &&
           block.content.trim() == content.trim()) {
-        if (linkedPlanId != null && block.linkedPlanId != linkedPlanId) {
-          await updateBlock(block.copyWith(linkedPlanId: Value(linkedPlanId)));
+        if (effectivePlanId != null && block.linkedPlanId != effectivePlanId) {
+          await updateBlock(block.copyWith(linkedPlanId: Value(effectivePlanId)));
         }
         return; // 完全匹配，跳过
       }
     }
 
     // 时间段相同但 content 有变化 → 更新已有行
-    // 只有本次找到 matching planned 时才设置 linkedPlanId，否则使用 absent 保留原值
-    // 避免已有关联的 actual 被意外 detach（linkedPlanId 被 null 清空）
+    // 只有本次有 effectivePlanId 时才设置，否则使用 absent 保留原值
+    // 避免已有关联的 actual 被意外 detach
     for (final block in existing) {
       if (block.startTime == startTime &&
           block.endTime == endTime &&
           block.linkedTodoId == linkedTodoId) {
         await updateBlock(block.copyWith(
           content: content,
-          linkedPlanId: linkedPlanId != null
-              ? Value<int?>(linkedPlanId)
+          linkedPlanId: effectivePlanId != null
+              ? Value<int?>(effectivePlanId)
               : const Value<int?>.absent(),
         ));
         return;
@@ -440,7 +442,7 @@ class JournalRepository {
         content: Value(content),
         source: 'actual',
         linkedTodoId: Value(linkedTodoId),
-        linkedPlanId: Value(linkedPlanId),
+        linkedPlanId: Value(effectivePlanId),
         sortOrder: Value(order),
       ),
     );

@@ -212,7 +212,7 @@ void main() {
       expect(snapshot.todos.singleWhere((todo) => todo.completed).content, 'A');
     });
 
-    test('scoped reorder preserves base sort order offset', () async {
+    test('scoped reorder assigns unique global sortOrder across full list', () async {
       const date = '2026-07-04';
       final a = await repository.createTodo(date, 'A');
       final b = await repository.createTodo(date, 'B');
@@ -233,5 +233,49 @@ void main() {
         ['B', 'C', 'A'],
       );
     });
+
+    test(
+      'scoped reorder keeps excluded todos in place without sortOrder collisions',
+      () async {
+        const date = '2026-07-04';
+        final a = await repository.createTodo(date, 'A');
+        final b = await repository.createTodo(date, 'B');
+        final c = await repository.createTodo(date, 'C');
+        final d = await repository.createTodo(date, 'D');
+        final e = await repository.createTodo(date, 'E');
+
+        await repository.updateTodo(a.copyWith(completed: true, sortOrder: 0));
+        await repository.updateTodo(b.copyWith(sortOrder: 1));
+        await repository.updateTodo(c.copyWith(completed: true, sortOrder: 2));
+        await repository.updateTodo(d.copyWith(sortOrder: 3));
+        await repository.updateTodo(e.copyWith(sortOrder: 4));
+
+        await repository.reorderTodos(
+          date,
+          0,
+          2,
+          scopedTodoIds: [b.id, d.id, e.id],
+        );
+
+        final snapshot = await repository.load(date);
+        final todos = snapshot.todos;
+        expect(todos.map((todo) => todo.content).toList(), [
+          'A',
+          'D',
+          'C',
+          'E',
+          'B',
+        ]);
+        expect(todos.map((todo) => todo.sortOrder).toList(), [0, 1, 2, 3, 4]);
+        expect(
+          todos.where((todo) => todo.completed).map((todo) => todo.content),
+          ['A', 'C'],
+        );
+        expect(
+          todos.where((todo) => !todo.completed).map((todo) => todo.content),
+          ['D', 'E', 'B'],
+        );
+      },
+    );
   });
 }

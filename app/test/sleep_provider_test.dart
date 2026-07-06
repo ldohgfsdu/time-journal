@@ -136,6 +136,27 @@ void main() {
       expect(wakeDayRecord.actualBedtime, isNull);
     });
 
+    test('repeat wake after closed cross-midnight sleep does not create orphan', () async {
+      const bedtimeDate = '2026-07-05';
+      const wakeDate = '2026-07-06';
+      final bedtime = DateTime(2026, 7, 5, 23, 30);
+      final wakeTime = DateTime(2026, 7, 6, 7, 0);
+      final repeatWake = DateTime(2026, 7, 6, 7, 5);
+
+      await checkInBedtime(db, now: bedtime);
+      await checkInWakeTime(db, now: wakeTime);
+      await checkInWakeTime(db, now: repeatWake);
+
+      final bedtimeRecord = await db.sleepForDate(bedtimeDate);
+      expect(bedtimeRecord, isNotNull);
+      expect(bedtimeRecord!.actualWakeTime, repeatWake);
+
+      expect(await db.sleepForDate(wakeDate), isNull);
+
+      final all = await db.select(db.sleepRecords).get();
+      expect(all, hasLength(1));
+    });
+
     test('keeps same-day bedtime and wake on one record', () async {
       const date = '2026-07-06';
       final bedtime = DateTime(2026, 7, 6, 0, 30);
@@ -151,6 +172,31 @@ void main() {
 
       final all = await db.select(db.sleepRecords).get();
       expect(all, hasLength(1));
+    });
+  });
+
+  group('resolveSleepDisplayRecord', () {
+    late AppDatabase db;
+
+    setUp(() {
+      db = AppDatabase.forTesting(NativeDatabase.memory());
+    });
+
+    tearDown(() async {
+      await db.close();
+    });
+
+    test('shows closed cross-midnight record on wake day morning', () async {
+      final bedtime = DateTime(2026, 7, 5, 23, 30);
+      final wakeTime = DateTime(2026, 7, 6, 7, 0);
+
+      await checkInBedtime(db, now: bedtime);
+      await checkInWakeTime(db, now: wakeTime);
+
+      final display = await resolveSleepDisplayRecord(db, now: wakeTime);
+      expect(display.date, '2026-07-05');
+      expect(display.actualBedtime, bedtime);
+      expect(display.actualWakeTime, wakeTime);
     });
   });
 

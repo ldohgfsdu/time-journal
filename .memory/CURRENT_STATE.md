@@ -13,10 +13,14 @@
 
 ## Latest known commit
 
-- 25ad8f7 chore(memory): sync acceptance release state (agent menu 尚未提交)
+- （待 follow-up push 后更新 sha）fix: P0-5/P1-7 review follow-up
 
 ## Completed
 
+- MVP 缺口修补 review follow-up（Grok 2026-07-06）：
+  - `reorderTodos(scoped)`：重排后填回 scoped slots，全列表统一写 sortOrder
+  - `resolveSleepDisplayRecord`：今天无实际记录时展示 24h 内最近 bedtime 记录
+  - `checkInWakeTime`：重复 wake 写回近期 bedtime 记录，避免 wake-only orphan
 - MVP 缺口修补第二轮（Grok 2026-07-06）：
   - 睡眠跨午夜：`checkInWakeTime` 优先补全 24h 内最近未闭合 bedtime 记录
   - 新增 `findRecentOpenBedtimeRecord` + `sleepOpenBedtimeMaxAge` 常量
@@ -71,7 +75,7 @@
 ## Last known validation
 
 - flutter analyze: No issues found
-- flutter test: 124/124 passed
+- flutter test: 127/127 passed
 
 ## Release blockers
 

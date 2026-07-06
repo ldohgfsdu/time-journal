@@ -387,22 +387,42 @@ class JournalRepository {
   }) async {
     final existing = await _db.blocksForDate(date, 'actual');
 
+    // 查找同 linkedTodoId 的 planned block（若有），用于回填 linkedPlanId
+    // 使 pomodoro actual 能通过 linkedPlanId 正确挂回 planned，即使时长不完全匹配
+    int? linkedPlanId;
+    if (linkedTodoId != null) {
+      final planned = await _db.blocksForDate(date, 'planned');
+      for (final p in planned) {
+        if (p.linkedTodoId == linkedTodoId) {
+          linkedPlanId = p.id;
+          break;
+        }
+      }
+    }
+
     // 去重：按时间段 + linkedTodoId + content 匹配已有 actual 块
+    // 即使去重命中，也要 backfill linkedPlanId（避免已有 orphan 残留）
     for (final block in existing) {
       if (block.startTime == startTime &&
           block.endTime == endTime &&
           block.linkedTodoId == linkedTodoId &&
           block.content.trim() == content.trim()) {
+        if (linkedPlanId != null && block.linkedPlanId != linkedPlanId) {
+          await updateBlock(block.copyWith(linkedPlanId: Value(linkedPlanId)));
+        }
         return; // 完全匹配，跳过
       }
     }
 
-    // 时间段相同但 content 有变化 → 更新已有行
+    // 时间段相同但 content 有变化 → 更新已有行（同时 backfill linkedPlanId）
     for (final block in existing) {
       if (block.startTime == startTime &&
           block.endTime == endTime &&
           block.linkedTodoId == linkedTodoId) {
-        await updateBlock(block.copyWith(content: content));
+        await updateBlock(block.copyWith(
+          content: content,
+          linkedPlanId: Value(linkedPlanId),
+        ));
         return;
       }
     }
@@ -416,6 +436,7 @@ class JournalRepository {
         content: Value(content),
         source: 'actual',
         linkedTodoId: Value(linkedTodoId),
+        linkedPlanId: Value(linkedPlanId),
         sortOrder: Value(order),
       ),
     );

@@ -164,6 +164,117 @@ void main() {
     },
   );
 
+  group('addActualFromPomodoro linkedPlanId', () {
+    test('addActualFromPomodoro links actual to planned block with same linkedTodoId', () async {
+      const date = '2026-07-06';
+      final todo = await repository.createTodo(date, '健身');
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '21:20',
+        endTime: '22:20',
+        content: '健身',
+        linkedTodoId: todo.id,
+      );
+
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '21:20',
+        endTime: '21:21',
+        content: '番茄专注',
+        linkedTodoId: todo.id,
+      );
+
+      final snapshot = await repository.load(date);
+      final slots = snapshot.comparisonSlots;
+
+      // planned「健身」应带 actual
+      final fitnessSlot = slots.firstWhere((s) => s.planned?.content.contains('健身') ?? false);
+      expect(fitnessSlot.planned, isNotNull);
+      expect(fitnessSlot.actual, isNotNull);
+      expect(fitnessSlot.actual!.content, '番茄专注');
+      expect(fitnessSlot.actual!.linkedPlanId, planned.id);
+      expect(fitnessSlot.orphanActual, isFalse);
+
+      // 不应产生 orphan actual
+      final orphans = slots.where((s) => s.orphanActual == true).toList();
+      expect(orphans, isEmpty);
+    });
+
+    test('addActualFromPomodoro backfills linkedPlanId when updating existing actual', () async {
+      const date = '2026-07-06';
+      final todo = await repository.createTodo(date, '健身');
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '21:20',
+        endTime: '22:20',
+        content: '健身',
+        linkedTodoId: todo.id,
+      );
+
+      // 先插入一个同时间、linkedTodoId 相同但 linkedPlanId 为 null 的 actual（模拟旧数据）
+      await db.into(db.timeBlocks).insert(
+        TimeBlocksCompanion.insert(
+          journalDate: date,
+          startTime: '21:20',
+          endTime: '21:21',
+          content: const Value('番茄专注'),
+          source: 'actual',
+          linkedTodoId: Value(todo.id),
+          // linkedPlanId 故意不写，保持 null
+          sortOrder: const Value(0),
+        ),
+      );
+
+      // 再次调用 addActualFromPomodoro，应 backfill linkedPlanId（走 update 或 dedup 路径）
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '21:20',
+        endTime: '21:21',
+        content: '番茄专注',
+        linkedTodoId: todo.id,
+      );
+
+      final snapshot = await repository.load(date);
+      final actual = snapshot.actualBlocks.singleWhere((b) => b.linkedTodoId == todo.id);
+      expect(actual.linkedPlanId, planned.id);
+
+      // 应被正确匹配到 planned，不产生 orphan
+      final slot = snapshot.comparisonSlots.firstWhere((s) => s.planned?.id == planned.id);
+      expect(slot.actual, isNotNull);
+      expect(slot.orphanActual, isFalse);
+    });
+
+    test('addActualFromPomodoro without matching planned remains orphan', () async {
+      const date = '2026-07-06';
+
+      // case 1: linkedTodoId == null
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '10:00',
+        endTime: '10:05',
+        content: '手动专注',
+      );
+      // case 2: linkedTodoId 有值，但无对应 planned
+      await repository.addActualFromPomodoro(
+        date: date,
+        startTime: '11:00',
+        endTime: '11:05',
+        content: '无计划专注',
+        linkedTodoId: 999,
+      );
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.actualBlocks, hasLength(2));
+      for (final a in snapshot.actualBlocks) {
+        expect(a.linkedPlanId, isNull);
+      }
+
+      // 都应作为 orphan 出现
+      final orphans = snapshot.comparisonSlots.where((s) => s.orphanActual == true).toList();
+      expect(orphans, hasLength(2));
+    });
+  });
+
   group('reorderTodos', () {
     test('reorders three todos correctly', () async {
       const date = '2026-07-04';

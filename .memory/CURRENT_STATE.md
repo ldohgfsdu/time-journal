@@ -37,6 +37,12 @@
   - P0-5 待办拖拽 scoped + P0-6 linkedPlanId migration（PR #6 合入 p0/journal-compare）
 - P1 系列（全部关闭）
 - UI polish 第一批（全部关闭）
+- P1 UI 收口最小补丁（Grok 2026-07-06）：
+  - TimePicker 风格收口（dial 禁键盘 + 暖白/主色/圆角 theme）
+  - 弹层 barrier 统一调轻（不压黑）
+  - SnackBar 暖色圆角轻阴影（替代黑底）
+  - 卡片/sheet 分割线减淡（仅色）
+  - 验证：analyze clean；test 128/128；8 文件少量样式；无结构/无 migration
 - 真机验收修复批次 1：
   - Pomodoro 休息流程：专注完成后不强制进入 break，用户选择是否休息
   - Weekly 文案矛盾：专注/睡眠卡不再显示矛盾文案
@@ -78,6 +84,7 @@
 - flutter analyze: No issues found (clean)
 - flutter test: 128/128 passed
 - P0-6 linkedPlanId migration 已合入默认分支 (p0/journal-compare)
+- P1 UI 收口 4 项最小补丁：analyze clean + 128/128 pass（Grok）
 
 ## Release blockers
 

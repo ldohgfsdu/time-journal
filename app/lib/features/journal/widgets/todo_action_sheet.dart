@@ -14,6 +14,7 @@ Future<void> showTodoActionSheet(
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: AppTheme.card,
+    barrierColor: AppTheme.barrier,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),

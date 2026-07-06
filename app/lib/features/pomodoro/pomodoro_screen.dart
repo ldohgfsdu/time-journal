@@ -78,6 +78,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
   ) async {
     final minutes = await showDialog<int>(
       context: context,
+      barrierColor: AppTheme.barrier,
       builder: (ctx) {
         final controller_ = TextEditingController();
         return AlertDialog(

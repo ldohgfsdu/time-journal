@@ -20,6 +20,8 @@ class AppTheme {
   static const double pagePadding = 16;
   static const Color rule = Color(0xFFE3D9C8);
   static const Color fold = Color(0xFFD4C8B5);
+  static const Color divider = Color(0xFFEDE6DB);
+  static const Color barrier = Color(0x33000000);
 
   static ThemeData light() {
     const scheme = ColorScheme(
@@ -52,7 +54,26 @@ class AppTheme {
         ),
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
-      dividerTheme: const DividerThemeData(color: rule, thickness: 1, space: 1),
+      dividerTheme: const DividerThemeData(color: divider, thickness: 1, space: 1),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: card,
+        contentTextStyle: const TextStyle(color: ink, fontSize: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        behavior: SnackBarBehavior.floating,
+        elevation: 2,
+      ),
+      timePickerTheme: TimePickerThemeData(
+        backgroundColor: paper,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        dialBackgroundColor: card,
+        dialHandColor: tomato,
+        dialTextColor: ink,
+        hourMinuteTextColor: ink,
+        dayPeriodTextColor: ink,
+        entryModeIconColor: inkMuted,
+        hourMinuteColor: tomatoSoft,
+        dayPeriodColor: tomatoSoft,
+      ),
       textTheme: const TextTheme(
         bodyLarge: TextStyle(color: ink, fontSize: 16, height: 1.5),
         bodyMedium: TextStyle(color: ink, fontSize: 14, height: 1.45),

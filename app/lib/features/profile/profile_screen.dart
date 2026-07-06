@@ -54,6 +54,7 @@ class ProfileScreen extends ConsumerWidget {
     return showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppTheme.card,
+      barrierColor: AppTheme.barrier,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -99,6 +100,7 @@ class ProfileScreen extends ConsumerWidget {
   Future<void> _confirmClearData(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierColor: AppTheme.barrier,
       builder: (dialogContext) => AlertDialog(
         title: const Text(AppCopy.profileClearDataConfirmTitle),
         content: const Text(AppCopy.profileClearDataConfirmBody),
@@ -132,6 +134,7 @@ class ProfileScreen extends ConsumerWidget {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppTheme.card,
+      barrierColor: AppTheme.barrier,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -200,6 +203,7 @@ class ProfileScreen extends ConsumerWidget {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppTheme.card,
+      barrierColor: AppTheme.barrier,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -245,6 +249,7 @@ class ProfileScreen extends ConsumerWidget {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppTheme.card,
+      barrierColor: AppTheme.barrier,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),

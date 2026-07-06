@@ -1,5 +1,17 @@
 # SESSION_LOG
 
+## 2026-07-06 (session 3)
+
+- **P1 UI 收口审查最小补丁**（Grok）：
+  - 仅 P1 UI 4 项：不切分支、不改数据/GA/业务/新功能
+  - 1. TimePicker：禁用 input 键盘模式（dial），theme 化暖白 paper 背景、主色 tomato 按钮/指针、圆角20、ink 文字
+  - 2. 弹层遮罩：统一 bottom sheet / dialog barrierColor 调为 0x33000000（~20%），背景退后不压黑
+  - 3. SnackBar：通过 snackBarTheme 全局改为暖色 card 背景、圆角12、轻阴影 elevation 2；“这一段守住了，已记入今天”等提示不再黑底
+  - 4. 分割线减淡：dividerTheme 改用更淡的 divider 色 (EDE6DB)，仅颜色调整；卡片/sheet 内部 Divider 生效
+  - 仅改样式参数 + 8 个 show 调用 barrier；无结构、无 migration、无业务逻辑
+  - 验证：flutter analyze 无问题；flutter test 128/128 passed
+  - 修改文件 8 个，纯样式收口
+
 ## 2026-07-06 (session 2)
 
 - **白屏修复**（Claude Code）：

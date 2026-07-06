@@ -24,6 +24,7 @@ Future<ScheduleSheetResult?> showScheduleSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: AppTheme.card,
+    barrierColor: AppTheme.barrier,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
@@ -142,6 +143,7 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
     final label = _formatDurationLabel(minutes);
     final ok = await showDialog<bool>(
       context: context,
+      barrierColor: AppTheme.barrier,
       builder: (ctx) => AlertDialog(
         title: const Text('确认时段'),
         content: Text(AppCopy.scheduleLongDurationConfirm(label)),

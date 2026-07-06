@@ -3,7 +3,7 @@ import 'theme.dart';
 
 /// Centralized time picker helper — all showTimePicker calls go through here.
 ///
-/// Uses [TimePickerEntryMode.input] to reduce dial-animation jank on device.
+/// Uses dial mode to avoid system keyboard input.
 Future<TimeOfDay?> safeShowTimePicker(
   BuildContext context, {
   required TimeOfDay initialTime,
@@ -13,15 +13,24 @@ Future<TimeOfDay?> safeShowTimePicker(
     context: context,
     initialTime: initialTime,
     helpText: helpText,
-    initialEntryMode: TimePickerEntryMode.input,
+    initialEntryMode: TimePickerEntryMode.dial,
+    barrierColor: AppTheme.barrier,
     builder: (context, child) => Theme(
       data: AppTheme.light().copyWith(
-        colorScheme: AppTheme.light().colorScheme.copyWith(
-              secondary: AppTheme.tomato,
-            ),
-        dialogTheme: const DialogThemeData(
-          barrierColor: Colors.black54,
+        timePickerTheme: AppTheme.light().timePickerTheme.copyWith(
           backgroundColor: AppTheme.paper,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          dialBackgroundColor: AppTheme.card,
+          dialHandColor: AppTheme.tomato,
+          dialTextColor: AppTheme.ink,
+          hourMinuteTextColor: AppTheme.ink,
+          dayPeriodTextColor: AppTheme.ink,
+          entryModeIconColor: AppTheme.inkMuted,
+          hourMinuteColor: AppTheme.tomatoSoft,
+          dayPeriodColor: AppTheme.tomatoSoft,
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(foregroundColor: AppTheme.tomato),
         ),
       ),
       child: child!,

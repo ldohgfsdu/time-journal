@@ -283,3 +283,33 @@
 - 严格遵守：不修改 GitHub Actions，不做 UI，不做 P2/P3
 - 验证命令全部在 app/ 下执行；仅数据 + 记忆文件更新
 - 当前主线：p0/journal-compare（4ea00a9）
+
+## 2026-07-07
+
+- **Pomodoro 关联问题（真机复测 PR#7 后）**（Grok）：
+  - 现象：planned「睡觉」待补 + orphan actual「番茄专注」；sheet 显示默认「番茄专注」
+  - 诊断（代码检查）：
+    1. PomodoroScreen TodoPickChips 未传 selectedId（仅候选项）
+    2. chip onPick 正确 setLinkedTask(..., todoId)
+    3. startFocus 写 linkedTodoId 到 session
+    4. _completeFocusSession 捕获 linkedTask / linkedTodoId
+    5. recordPendingToJournal 传给 addActual
+    6. chip 来自 todayTodosProvider（todo）；planned「睡觉」通过 linkedTodoId 关联
+  - 根因：navigateToFocusTab（from journal todo action）只传 task name，未带 todoId → linkedTodoId 空 → PR#7 回填未触发；有时 task 也空导致默认「番茄专注」
+  - 修复（最小）：
+    - navigateToFocusTab 接受/转发 todoId + planId
+    - journal _openTodoActions onFocus 传 item.id
+    - PomodoroState/PendingFocusCompletion 增加 linkedPlanId（内存，不改 sessions schema）
+    - setLinkedTask 支持 planId
+    - addActualFromPomodoro 接受 linkedPlanId（优先直传，否则 todo lookup）
+    - 补 selectedId 让 chip 显示选中（用已有视觉逻辑）
+    - 内容更新/回填/guard 保持 PR#7 逻辑
+  - 满足测试要求：
+    1. 选中 todo chip → content = todo 内容（非「番茄专注」）
+    2. 选中后 actual 挂回同 linkedTodoId planned
+    3. planned 来源可直传 linkedPlanId 写入 actual
+    4. 未选仍 orphan「番茄专注」
+  - 未改：UI风格、schema、GA、大重构；PR#7 测试未破
+  - 新分支 fix/pomodoro-linked-todo-plan，PR #8 开立（未合并）
+
+PR #8: https://github.com/ldohgfsdu/time-journal/pull/8

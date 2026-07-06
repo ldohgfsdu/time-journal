@@ -77,7 +77,7 @@ P0-5 / P1-7 已 squash 合入 master。P0-6 `linkedPlanId` 完成（最小 migra
 ## Last known validation
 
 - flutter analyze: No issues found
-- flutter test: 35/35 + 5 P0-6 新增测试 passed（P0-6 后）
+- flutter test: 42/42 passed（P0-6 follow-up after review comments）
 
 ## Release blockers
 

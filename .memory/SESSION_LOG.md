@@ -1,5 +1,18 @@
 # SESSION_LOG
 
+## 2026-07-06 (P0-6 follow-up)
+
+- P0-6 review fixes (no merge):
+  - completePlannedAsActual: on existing, also reset startTime/endTime to planned (so changed -> match after "按计划")
+  - ensureActualSlot: on legacy time-match, backfill linkedPlanId if missing/wrong, then return
+  - Added 2 new tests:
+    - completePlannedAsActual resets changed actual time back to planned time
+    - legacy actual edited through ensureActualSlot gets linked before time change
+  - flutter analyze: No issues
+  - flutter test: 42/42 passed
+  - Updated .memory + PR body (draft only)
+  - No schema, no UI, no unrelated, no server/release
+
 ## 2026-07-06 (P0-6 session)
 
 - **P0-6 linkedPlanId 稳定匹配**（从最新 master 单独开 branch）：

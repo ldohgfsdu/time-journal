@@ -307,5 +307,78 @@ void main() {
       expect(slot.status, SlotStatus.changed);
       expect(slot.actual!.content.trim(), 'same content');
     });
+
+    test('completePlannedAsActual resets changed actual time back to planned time', () async {
+      const date = '2026-07-06';
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '09:00',
+        endTime: '10:00',
+        content: '学习',
+      );
+      await repository.completePlannedAsActual(date, planned);
+
+      // simulate change: edit time and content
+      var actual = (await repository.load(date)).actualBlocks.single;
+      await repository.updateBlock(actual.copyWith(
+        startTime: '09:15',
+        endTime: '10:15',
+        content: '学习（有变）',
+      ));
+
+      // now "标为按计划"
+      await repository.completePlannedAsActual(date, planned);
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.comparisonSlots, hasLength(1));
+      final slot = snapshot.comparisonSlots.single;
+      expect(slot.actual, isNotNull);
+      expect(slot.actual!.startTime, planned.startTime);
+      expect(slot.actual!.endTime, planned.endTime);
+      expect(slot.actual!.content.trim(), '学习');
+      expect(slot.status, SlotStatus.match);
+      expect(slot.actual!.linkedPlanId, planned.id);
+    });
+
+    test('legacy actual edited through ensureActualSlot gets linked before time change', () async {
+      const date = '2026-07-06';
+      final planned = await repository.createPlannedBlock(
+        date: date,
+        startTime: '11:00',
+        endTime: '12:00',
+        content: '复习',
+      );
+
+      // insert legacy actual (no linkedPlanId, exact time)
+      await db.into(db.timeBlocks).insert(
+        TimeBlocksCompanion.insert(
+          journalDate: date,
+          startTime: '11:00',
+          endTime: '12:00',
+          content: const Value('复习'),
+          source: 'actual',
+          sortOrder: const Value(0),
+        ),
+      );
+
+      // call ensureActualSlot -> should backfill link (even though time not yet changed here)
+      final ensured = await repository.ensureActualSlot(date, planned);
+      expect(ensured.linkedPlanId, planned.id);
+
+      // now change time on the (now linked) actual
+      await repository.updateBlock(ensured.copyWith(
+        startTime: '11:10',
+        endTime: '12:10',
+      ));
+
+      final snapshot = await repository.load(date);
+      expect(snapshot.comparisonSlots, hasLength(1));
+      final slot = snapshot.comparisonSlots.single;
+      expect(slot.planned, isNotNull);
+      expect(slot.actual, isNotNull);
+      expect(slot.actual!.linkedPlanId, planned.id);
+      expect(slot.actual!.startTime, '11:10');
+      expect(slot.status, SlotStatus.changed);
+    });
   });
 }

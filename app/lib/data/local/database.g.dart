@@ -891,6 +891,17 @@ class $TimeBlocksTable extends TimeBlocks
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _linkedPlanIdMeta = const VerificationMeta(
+    'linkedPlanId',
+  );
+  @override
+  late final GeneratedColumn<int> linkedPlanId = GeneratedColumn<int>(
+    'linked_plan_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _sortOrderMeta = const VerificationMeta(
     'sortOrder',
   );
@@ -912,6 +923,7 @@ class $TimeBlocksTable extends TimeBlocks
     content,
     source,
     linkedTodoId,
+    linkedPlanId,
     sortOrder,
   ];
   @override
@@ -979,6 +991,15 @@ class $TimeBlocksTable extends TimeBlocks
         ),
       );
     }
+    if (data.containsKey('linked_plan_id')) {
+      context.handle(
+        _linkedPlanIdMeta,
+        linkedPlanId.isAcceptableOrUnknown(
+          data['linked_plan_id']!,
+          _linkedPlanIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('sort_order')) {
       context.handle(
         _sortOrderMeta,
@@ -1022,6 +1043,10 @@ class $TimeBlocksTable extends TimeBlocks
         DriftSqlType.int,
         data['${effectivePrefix}linked_todo_id'],
       ),
+      linkedPlanId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}linked_plan_id'],
+      ),
       sortOrder: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}sort_order'],
@@ -1043,6 +1068,7 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
   final String content;
   final String source;
   final int? linkedTodoId;
+  final int? linkedPlanId;
   final int sortOrder;
   const TimeBlock({
     required this.id,
@@ -1052,6 +1078,7 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
     required this.content,
     required this.source,
     this.linkedTodoId,
+    this.linkedPlanId,
     required this.sortOrder,
   });
   @override
@@ -1065,6 +1092,9 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
     map['source'] = Variable<String>(source);
     if (!nullToAbsent || linkedTodoId != null) {
       map['linked_todo_id'] = Variable<int>(linkedTodoId);
+    }
+    if (!nullToAbsent || linkedPlanId != null) {
+      map['linked_plan_id'] = Variable<int>(linkedPlanId);
     }
     map['sort_order'] = Variable<int>(sortOrder);
     return map;
@@ -1081,6 +1111,9 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
       linkedTodoId: linkedTodoId == null && nullToAbsent
           ? const Value.absent()
           : Value(linkedTodoId),
+      linkedPlanId: linkedPlanId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedPlanId),
       sortOrder: Value(sortOrder),
     );
   }
@@ -1098,6 +1131,7 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
       content: serializer.fromJson<String>(json['content']),
       source: serializer.fromJson<String>(json['source']),
       linkedTodoId: serializer.fromJson<int?>(json['linkedTodoId']),
+      linkedPlanId: serializer.fromJson<int?>(json['linkedPlanId']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
     );
   }
@@ -1112,6 +1146,7 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
       'content': serializer.toJson<String>(content),
       'source': serializer.toJson<String>(source),
       'linkedTodoId': serializer.toJson<int?>(linkedTodoId),
+      'linkedPlanId': serializer.toJson<int?>(linkedPlanId),
       'sortOrder': serializer.toJson<int>(sortOrder),
     };
   }
@@ -1124,6 +1159,7 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
     String? content,
     String? source,
     Value<int?> linkedTodoId = const Value.absent(),
+    Value<int?> linkedPlanId = const Value.absent(),
     int? sortOrder,
   }) => TimeBlock(
     id: id ?? this.id,
@@ -1133,6 +1169,7 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
     content: content ?? this.content,
     source: source ?? this.source,
     linkedTodoId: linkedTodoId.present ? linkedTodoId.value : this.linkedTodoId,
+    linkedPlanId: linkedPlanId.present ? linkedPlanId.value : this.linkedPlanId,
     sortOrder: sortOrder ?? this.sortOrder,
   );
   TimeBlock copyWithCompanion(TimeBlocksCompanion data) {
@@ -1148,6 +1185,9 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
       linkedTodoId: data.linkedTodoId.present
           ? data.linkedTodoId.value
           : this.linkedTodoId,
+      linkedPlanId: data.linkedPlanId.present
+          ? data.linkedPlanId.value
+          : this.linkedPlanId,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
     );
   }
@@ -1162,6 +1202,7 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
           ..write('content: $content, ')
           ..write('source: $source, ')
           ..write('linkedTodoId: $linkedTodoId, ')
+          ..write('linkedPlanId: $linkedPlanId, ')
           ..write('sortOrder: $sortOrder')
           ..write(')'))
         .toString();
@@ -1176,6 +1217,7 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
     content,
     source,
     linkedTodoId,
+    linkedPlanId,
     sortOrder,
   );
   @override
@@ -1189,6 +1231,7 @@ class TimeBlock extends DataClass implements Insertable<TimeBlock> {
           other.content == this.content &&
           other.source == this.source &&
           other.linkedTodoId == this.linkedTodoId &&
+          other.linkedPlanId == this.linkedPlanId &&
           other.sortOrder == this.sortOrder);
 }
 
@@ -1200,6 +1243,7 @@ class TimeBlocksCompanion extends UpdateCompanion<TimeBlock> {
   final Value<String> content;
   final Value<String> source;
   final Value<int?> linkedTodoId;
+  final Value<int?> linkedPlanId;
   final Value<int> sortOrder;
   const TimeBlocksCompanion({
     this.id = const Value.absent(),
@@ -1209,6 +1253,7 @@ class TimeBlocksCompanion extends UpdateCompanion<TimeBlock> {
     this.content = const Value.absent(),
     this.source = const Value.absent(),
     this.linkedTodoId = const Value.absent(),
+    this.linkedPlanId = const Value.absent(),
     this.sortOrder = const Value.absent(),
   });
   TimeBlocksCompanion.insert({
@@ -1219,6 +1264,7 @@ class TimeBlocksCompanion extends UpdateCompanion<TimeBlock> {
     this.content = const Value.absent(),
     required String source,
     this.linkedTodoId = const Value.absent(),
+    this.linkedPlanId = const Value.absent(),
     this.sortOrder = const Value.absent(),
   }) : journalDate = Value(journalDate),
        startTime = Value(startTime),
@@ -1232,6 +1278,7 @@ class TimeBlocksCompanion extends UpdateCompanion<TimeBlock> {
     Expression<String>? content,
     Expression<String>? source,
     Expression<int>? linkedTodoId,
+    Expression<int>? linkedPlanId,
     Expression<int>? sortOrder,
   }) {
     return RawValuesInsertable({
@@ -1242,6 +1289,7 @@ class TimeBlocksCompanion extends UpdateCompanion<TimeBlock> {
       if (content != null) 'content': content,
       if (source != null) 'source': source,
       if (linkedTodoId != null) 'linked_todo_id': linkedTodoId,
+      if (linkedPlanId != null) 'linked_plan_id': linkedPlanId,
       if (sortOrder != null) 'sort_order': sortOrder,
     });
   }
@@ -1254,6 +1302,7 @@ class TimeBlocksCompanion extends UpdateCompanion<TimeBlock> {
     Value<String>? content,
     Value<String>? source,
     Value<int?>? linkedTodoId,
+    Value<int?>? linkedPlanId,
     Value<int>? sortOrder,
   }) {
     return TimeBlocksCompanion(
@@ -1264,6 +1313,7 @@ class TimeBlocksCompanion extends UpdateCompanion<TimeBlock> {
       content: content ?? this.content,
       source: source ?? this.source,
       linkedTodoId: linkedTodoId ?? this.linkedTodoId,
+      linkedPlanId: linkedPlanId ?? this.linkedPlanId,
       sortOrder: sortOrder ?? this.sortOrder,
     );
   }
@@ -1292,6 +1342,9 @@ class TimeBlocksCompanion extends UpdateCompanion<TimeBlock> {
     if (linkedTodoId.present) {
       map['linked_todo_id'] = Variable<int>(linkedTodoId.value);
     }
+    if (linkedPlanId.present) {
+      map['linked_plan_id'] = Variable<int>(linkedPlanId.value);
+    }
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
     }
@@ -1308,6 +1361,7 @@ class TimeBlocksCompanion extends UpdateCompanion<TimeBlock> {
           ..write('content: $content, ')
           ..write('source: $source, ')
           ..write('linkedTodoId: $linkedTodoId, ')
+          ..write('linkedPlanId: $linkedPlanId, ')
           ..write('sortOrder: $sortOrder')
           ..write(')'))
         .toString();
@@ -3213,6 +3267,7 @@ typedef $$TimeBlocksTableCreateCompanionBuilder =
       Value<String> content,
       required String source,
       Value<int?> linkedTodoId,
+      Value<int?> linkedPlanId,
       Value<int> sortOrder,
     });
 typedef $$TimeBlocksTableUpdateCompanionBuilder =
@@ -3224,6 +3279,7 @@ typedef $$TimeBlocksTableUpdateCompanionBuilder =
       Value<String> content,
       Value<String> source,
       Value<int?> linkedTodoId,
+      Value<int?> linkedPlanId,
       Value<int> sortOrder,
     });
 
@@ -3268,6 +3324,11 @@ class $$TimeBlocksTableFilterComposer
 
   ColumnFilters<int> get linkedTodoId => $composableBuilder(
     column: $table.linkedTodoId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get linkedPlanId => $composableBuilder(
+    column: $table.linkedPlanId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3321,6 +3382,11 @@ class $$TimeBlocksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get linkedPlanId => $composableBuilder(
+    column: $table.linkedPlanId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get sortOrder => $composableBuilder(
     column: $table.sortOrder,
     builder: (column) => ColumnOrderings(column),
@@ -3358,6 +3424,11 @@ class $$TimeBlocksTableAnnotationComposer
 
   GeneratedColumn<int> get linkedTodoId => $composableBuilder(
     column: $table.linkedTodoId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get linkedPlanId => $composableBuilder(
+    column: $table.linkedPlanId,
     builder: (column) => column,
   );
 
@@ -3403,6 +3474,7 @@ class $$TimeBlocksTableTableManager
                 Value<String> content = const Value.absent(),
                 Value<String> source = const Value.absent(),
                 Value<int?> linkedTodoId = const Value.absent(),
+                Value<int?> linkedPlanId = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
               }) => TimeBlocksCompanion(
                 id: id,
@@ -3412,6 +3484,7 @@ class $$TimeBlocksTableTableManager
                 content: content,
                 source: source,
                 linkedTodoId: linkedTodoId,
+                linkedPlanId: linkedPlanId,
                 sortOrder: sortOrder,
               ),
           createCompanionCallback:
@@ -3423,6 +3496,7 @@ class $$TimeBlocksTableTableManager
                 Value<String> content = const Value.absent(),
                 required String source,
                 Value<int?> linkedTodoId = const Value.absent(),
+                Value<int?> linkedPlanId = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
               }) => TimeBlocksCompanion.insert(
                 id: id,
@@ -3432,6 +3506,7 @@ class $$TimeBlocksTableTableManager
                 content: content,
                 source: source,
                 linkedTodoId: linkedTodoId,
+                linkedPlanId: linkedPlanId,
                 sortOrder: sortOrder,
               ),
           withReferenceMapper: (p0) => p0

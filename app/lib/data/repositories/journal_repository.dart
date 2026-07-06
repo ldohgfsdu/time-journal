@@ -57,7 +57,16 @@ class JournalSnapshot {
   }
 
   static TimeBlock? _matchActual(TimeBlock planned, List<TimeBlock> actualBlocks) {
+    // 1. explicit link (P0-6)
     for (final a in actualBlocks) {
+      if (a.linkedPlanId == planned.id) {
+        return a;
+      }
+    }
+    // 2. legacy exact-time fallback ONLY for unlinked actuals (linkedPlanId == null)
+    //    explicit link > unlinked legacy; already-linked actuals must not be reused by time match
+    for (final a in actualBlocks) {
+      if (a.linkedPlanId != null) continue;
       if (a.startTime == planned.startTime && a.endTime == planned.endTime) {
         return a;
       }
@@ -219,6 +228,7 @@ class JournalRepository {
       content: Value(block.content),
       source: Value(block.source),
       linkedTodoId: Value(block.linkedTodoId),
+      linkedPlanId: Value(block.linkedPlanId),
       sortOrder: Value(block.sortOrder),
     ));
   }
@@ -230,8 +240,11 @@ class JournalRepository {
     final existing = JournalSnapshot._matchActual(planned, actualBlocks);
     if (existing != null) {
       await updateBlock(existing.copyWith(
+        startTime: planned.startTime,
+        endTime: planned.endTime,
         content: planned.content,
         linkedTodoId: Value(planned.linkedTodoId),
+        linkedPlanId: Value<int?>(planned.id),
       ));
       return;
     }
@@ -244,6 +257,7 @@ class JournalRepository {
         content: Value(planned.content),
         source: 'actual',
         linkedTodoId: Value(planned.linkedTodoId),
+        linkedPlanId: Value<int?>(planned.id),
         sortOrder: Value(order),
       ),
     );
@@ -252,7 +266,17 @@ class JournalRepository {
   Future<TimeBlock> ensureActualSlot(String date, TimeBlock planned) async {
     final actualBlocks = await _db.blocksForDate(date, 'actual');
     final existing = JournalSnapshot._matchActual(planned, actualBlocks);
-    if (existing != null) return existing;
+    if (existing != null) {
+      // backfill link for legacy exact-time match (or mismatched link)
+      if (existing.linkedPlanId == null || existing.linkedPlanId != planned.id) {
+        final updated = existing.copyWith(
+          linkedPlanId: Value<int?>(planned.id),
+        );
+        await updateBlock(updated);
+        return updated;
+      }
+      return existing;
+    }
     final order = actualBlocks.isEmpty ? 0 : actualBlocks.last.sortOrder + 1;
     final id = await _db.into(_db.timeBlocks).insert(
       TimeBlocksCompanion.insert(
@@ -260,6 +284,7 @@ class JournalRepository {
         startTime: planned.startTime,
         endTime: planned.endTime,
         source: 'actual',
+        linkedPlanId: Value<int?>(planned.id),
         sortOrder: Value(order),
       ),
     );
@@ -319,7 +344,15 @@ class JournalRepository {
 
   Future<void> clearActualForPlan(String date, TimeBlock planned) async {
     final actualBlocks = await _db.blocksForDate(date, 'actual');
-    final existing = JournalSnapshot._matchActual(planned, actualBlocks);
+    // prefer linkedPlanId for clear (P0-6), fallback to match
+    TimeBlock? existing;
+    for (final a in actualBlocks) {
+      if (a.linkedPlanId == planned.id) {
+        existing = a;
+        break;
+      }
+    }
+    existing ??= JournalSnapshot._matchActual(planned, actualBlocks);
     if (existing != null) {
       await removeBlock(existing.id);
     }

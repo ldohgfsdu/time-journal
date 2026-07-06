@@ -35,6 +35,20 @@
   - 修改文件：仅 journal_repository.dart + journal_repository_test.dart
   - migration：否
 
+- **PR #7 follow-up 修复 detach 风险**（Grok）：
+  - 问题：在 content update 路径中，无条件 `linkedPlanId: Value(linkedPlanId)`，当本次 linkedPlanId==null 时会清空已有 actual 的 linkedPlanId（detach 风险）
+  - 最小修复：仅在 update content 路径中，如果 linkedPlanId != null 才设置，否则使用 Value.absent() 保留原值
+  - dedup 路径已有 guard，insert 保持原样
+  - 新增测试：'addActualFromPomodoro content update does not clear existing linkedPlanId when no matching planned'
+    - 先创建 planned + 带 linkedPlanId 的 actual
+    - 删除 planned 模拟本次无匹配
+    - 调用 addActual（命中 update 路径，content 变化）→ content 更新，但 linkedPlanId 保留
+  - 只改 journal_repository.dart + journal_repository_test.dart + memory
+  - 不改 UI/schema/match 逻辑等
+  - 验证：flutter analyze: No issues found；flutter test: 132/132 passed
+  - migration: no ; UI: no
+  - 已 push 到 fix/pomodoro-actual-linked-plan (PR #7)
+
 ## 2026-07-06 (session 2)
 
 - **白屏修复**（Claude Code）：

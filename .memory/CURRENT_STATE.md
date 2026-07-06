@@ -90,6 +90,7 @@
 - P0-6 linkedPlanId migration 已合入默认分支 (p0/journal-compare)
 - P1 UI 收口 4 项最小补丁：analyze clean + 128/128 pass（Grok）
 - Pomodoro actual linkedPlanId 修复：analyze clean + 131/131 pass（Grok）
+- PR #7 follow-up: 修复 content-update 清空 linkedPlanId 风险，analyze clean + 132/132 pass（Grok）
 
 ## Release blockers
 

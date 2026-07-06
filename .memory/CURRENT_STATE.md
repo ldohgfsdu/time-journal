@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- 4ea00a9 Merge pull request #6 from ldohgfsdu/chore/converge-p0-master (P0-6 linkedPlanId)
+- af20857 fix(main): guard notification init from blocking app launch
 
 ## Completed
 

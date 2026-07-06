@@ -1,5 +1,15 @@
 # SESSION_LOG
 
+## 2026-07-06 (session 2)
+
+- **白屏修复**（Claude Code）：
+  - 用户反馈 Android 覆盖升级后启动白屏
+  - 排查：flutter analyze clean、128/128 test pass、web build 成功
+  - 根因分析：`main()` 中 `LocalNotificationService.instance.initialize()` 若抛异常，会阻止 `runApp()` 执行，Android splash screen 显示白色导致"白屏"
+  - 修复：`main.dart` 中通知初始化包裹 try-catch，失败时仅 `dev.log` 记录，不阻断 app 启动
+  - 验证：analyze clean、128/128 test pass
+  - 未做：无法获取 logcat 确认根因；建议用户重新构建 APK 测试
+
 ## 2026-07-06 (session 1)
 
 - **Claude 风格 UI 设计落地**（Grok）：

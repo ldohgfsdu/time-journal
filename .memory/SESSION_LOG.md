@@ -1,5 +1,49 @@
 # SESSION_LOG
 
+## 2026-07-06 (P0-6 final boundary fix)
+
+- P0-6 matching semantics blocker fix (draft PR #3, no merge):
+  - `_matchActual` legacy fallback now skips any a.linkedPlanId != null
+  - explicit link > unlinked (linkedPlanId==null) exact-time only
+  - Prevents cross-plan reuse when times coincide (e.g. Plan A linked actual not stolen by Plan B)
+  - clearActualForPlan (which falls back to match) also protected
+  - Added 2 tests:
+    * linked actual is not reused by another plan through legacy fallback
+    * clearActualForPlan does not delete actual linked to another plan with same time
+  - flutter analyze: No issues
+  - flutter test: 44/44 passed
+  - Updated .memory (44/44); PR body update prepared in .memory/PR3_FINAL_BODY.md (API token expired, manual copy-paste needed on GitHub)
+  - No schema/UI/unrelated changes
+
+## 2026-07-06 (P0-6 follow-up)
+
+- P0-6 review fixes (no merge):
+  - completePlannedAsActual: on existing, also reset startTime/endTime to planned (so changed -> match after "按计划")
+  - ensureActualSlot: on legacy time-match, backfill linkedPlanId if missing/wrong, then return
+  - Added 2 new tests:
+    - completePlannedAsActual resets changed actual time back to planned time
+    - legacy actual edited through ensureActualSlot gets linked before time change
+  - flutter analyze: No issues
+  - flutter test: 42/42 passed
+  - Updated .memory + PR body (draft only)
+  - No schema, no UI, no unrelated, no server/release
+
+## 2026-07-06 (P0-6 session)
+
+- **P0-6 linkedPlanId 稳定匹配**（从最新 master 单独开 branch）：
+  - 读 AGENTS / PRD / 开发计划 / .memory / 代码
+  - TimeBlocks 新增 nullable linkedPlanId（actual -> planned.id），命名与 linkedTodoId 一致
+  - schemaVersion 2 -> 3，最小 addColumn migration
+  - build_runner  regen
+  - JournalSnapshot._matchActual：优先 linkedPlanId，回退 exact start+end（无 content/time-near 猜测）
+  - repository 路径更新：completePlannedAsActual、ensureActualSlot、updateBlock、clearActualForPlan 均写/保留 linkedPlanId
+  - ComparisonSlot.status：仅 content+time 完全相同为 match，否则 changed（时间变也算 changed）
+  - 新增 5 条测试覆盖指定场景（edited time 仍配对、写 link、clear 优先 link、legacy fallback、time-only=changed）
+  - 仅改 data/ 相关；无 UI、无其他 feature、无 P0-5/P1-7 diff 带入
+  - flutter analyze + flutter test 全部通过
+  - 更新 开发计划.txt + .memory/CURRENT_STATE.md + SESSION_LOG.md
+  - branch: p0/p0-6-linked-plan-id from master；仅 draft PR
+
 ## 2026-07-06 (session 1)
 
 - **Claude 风格 UI 设计落地**（Grok）：

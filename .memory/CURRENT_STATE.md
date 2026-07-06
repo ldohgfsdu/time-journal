@@ -9,7 +9,7 @@
 
 ## Current stage
 
-P0-5 / P1-7 已 squash 合入 master。P0-6 `linkedPlanId` migration 仍 blocked。
+P0-5 / P1-7 已 squash 合入 master。P0-6 `linkedPlanId` 完成（最小 migration + 稳定匹配）。
 
 ## Latest known commit
 
@@ -35,6 +35,7 @@ P0-5 / P1-7 已 squash 合入 master。P0-6 `linkedPlanId` migration 仍 blocked
   - P0-1/P0-2 今日对照与按钮防重复
   - P0-3 专注完成写入实际记录，linkedTodoId 贯通
   - P0-4 `addActualFromPomodoro` 幂等性修复
+  - P0-6 linkedPlanId 最小 Drift migration + 匹配逻辑 + 边界修复（explicit link > unlinked legacy time only；44/44；未复用已链接 actual）
 - P1 系列（全部关闭）
 - UI polish 第一批（全部关闭）
 - 真机验收修复批次 1：
@@ -76,11 +77,12 @@ P0-5 / P1-7 已 squash 合入 master。P0-6 `linkedPlanId` migration 仍 blocked
 ## Last known validation
 
 - flutter analyze: No issues found
-- flutter test: 35/35 passed (master baseline after PR #2 merge)
+- flutter test: 44/44 passed（P0-6 final: legacy fallback boundary fix）
+- PR #3 body 仍为旧版（35/35），已准备好 .memory/PR3_FINAL_BODY.md 供手动复制更新（API token 失效无法自动 PATCH）
 
 ## Release blockers
 
-- **P0-6 今日对照匹配**：`actual` 改时间后无法稳定匹配 `planned`；需 `linkedPlanId` Drift migration（等待解除 schema 禁令）
+- （无，P0-6 linkedPlanId 已解决）
 
 ## UI (Claude 暖色主题)
 

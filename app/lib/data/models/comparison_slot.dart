@@ -32,7 +32,9 @@ class ComparisonSlot {
   SlotStatus get status {
     if (orphanActual || planned == null) return SlotStatus.unplanned;
     if (actual == null || actual!.content.trim().isEmpty) return SlotStatus.pending;
-    if (actual!.content.trim() == planned!.content.trim()) return SlotStatus.match;
+    final sameContent = actual!.content.trim() == planned!.content.trim();
+    final sameTime = actual!.startTime == planned!.startTime && actual!.endTime == planned!.endTime;
+    if (sameContent && sameTime) return SlotStatus.match;
     return SlotStatus.changed;
   }
 

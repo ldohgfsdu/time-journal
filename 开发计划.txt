@@ -70,7 +70,7 @@ flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8080
 | P0-3 | 专注结束后写入实际记录 | done | `features/pomodoro/` + journal repository | `flutter analyze` / 相关测试 |
 | P0-4 | 首页减负：待办 + 今日对照 + 今日统计 + 今天一句话 | done | `features/journal/` | 视觉检查 / `flutter analyze` |
 | P0-5 | 待办拖拽：draft 不参与排序，走 repository 排序入口 | done | `features/journal/` + repository | `flutter analyze` / `flutter test` |
-| P0-6 | 今日对照匹配：`linkedPlanId` migration（release blocker） | blocked | `data/` + `features/journal/` | 需解除 schema 禁令后实施 |
+| P0-6 | 今日对照匹配：`linkedPlanId` migration（release blocker） | done | `data/` | flutter analyze / flutter test |
 | P1-1 | 统一卡片、标题、颜色、字号 | done | `app/theme.dart` + 各 features | 视觉检查 |
 | P1-2 | 待办区简化与底部弹窗 | done | `features/journal/` | `flutter analyze` |
 | P1-3 | 专注页强化任务感 | done | `features/pomodoro/` | `flutter analyze` |

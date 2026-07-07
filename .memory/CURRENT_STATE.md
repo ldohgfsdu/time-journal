@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- 747a59e Merge pull request #7 from ldohgfsdu/fix/pomodoro-actual-linked-plan (pomodoro linkedPlanId fix + follow-up)
+- ce016aa Merge pull request #8 from ldohgfsdu/fix/pomodoro-linked-todo-plan (pomodoro linked todo/plan fix + real tests)
 
 ## Completed
 
@@ -86,12 +86,13 @@
 ## Last known validation
 
 - flutter analyze: No issues found (clean)
-- flutter test: 128/128 passed
+- flutter test: 136/136 passed
 - P0-6 linkedPlanId migration 已合入默认分支 (p0/journal-compare)
 - P1 UI 收口 4 项最小补丁：analyze clean + 128/128 pass（Grok）
 - Pomodoro actual linkedPlanId 修复：analyze clean + 131/131 pass（Grok）
 - PR #7 follow-up: 修复 content-update 清空 linkedPlanId 风险，analyze clean + 132/132 pass（Grok）
 - 合并 PR #7 到 p0/journal-compare：analyze clean + 132/132 pass（Grok）
+- PR #8 合并到 p0/journal-compare：navigate/setLinkedTask 修复 + 真实测试 + 真机复测场景通过，analyze clean + 136/136 pass（Grok）
 
 ## Release blockers
 

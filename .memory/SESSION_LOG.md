@@ -313,3 +313,24 @@
   - 新分支 fix/pomodoro-linked-todo-plan，PR #8 开立（未合并）
 
 PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
+
+- **合并 PR #8 到 p0/journal-compare**（Grok 2026-07-07）：
+  - git checkout p0/journal-compare && git pull
+  - git merge --no-ff fix/pomodoro-linked-todo-plan
+  - merge commit: ce016aa
+  - 包含 PR #8 全部修复 + 4 个真实测试
+  - 验证：
+    - cd app && flutter analyze → No issues found
+    - cd app && flutter test → 136/136 passed
+  - 真机复测模拟（运行 linked task and plan 组测试，覆盖“睡觉” todo/计划 → focus → complete → record → 今日对照）：
+    - journal todo focus action 保留 task + linkedTodoId
+    - record 后 content 非默认“番茄专注”
+    - actual 挂回 planned
+    - direct planId 优先
+    - 无选仍 orphan（符合预期）
+  - 符合预期：不再 orphan，planned 下显示 actual，sheet 用正确内容
+  - 未改 UI/schema/GA
+  - 未切 master
+  - memory 更新，当前主线 p0/journal-compare
+
+当前 HEAD: ce016aa + memory 更新

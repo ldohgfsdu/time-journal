@@ -470,31 +470,49 @@ void main() {
       expect(slot.orphanActual, isFalse);
     });
 
-    test('direct linkedPlanId is written to actual (prioritized)', () async {
+    test('manual planned block without linkedTodoId links via planId (today comparison focus)', () async {
       final planned = await db.into(db.timeBlocks).insertReturning(
         TimeBlocksCompanion.insert(
           journalDate: '2026-07-04',
-          startTime: '10:00',
-          endTime: '11:00',
-          content: const Value('直接计划'),
+          startTime: '01:45',
+          endTime: '08:30',
+          content: const Value('睡觉'),
           source: 'planned',
           sortOrder: const Value(0),
         ),
       );
 
-      // Direct plan (no todo)
-      controller.setLinkedTask('直接计划', planId: planned.id);
-      controller.selectMinutes(2);
+      // Simulate navigateToFocusTab from today comparison planned card menu
+      controller.setLinkedTask(
+        planned.content,
+        planId: planned.id,
+        todoId: planned.linkedTodoId,
+      );
+      controller.selectMinutes(1);
       await controller.startFocus();
       await controller.onPhaseComplete();
+
+      final pending = controller.state.pendingCompletion;
+      expect(pending, isNotNull);
+      expect(pending!.task, '睡觉');
+      expect(pending.linkedPlanId, planned.id);
+      expect(pending.linkedTodoId, isNull);
+
       await controller.recordPendingToJournal();
 
       final repo = JournalRepository(db);
       final snapshot = await repo.load('2026-07-04');
       final actuals = snapshot.actualBlocks;
       expect(actuals, hasLength(1));
+      expect(actuals.first.content, '睡觉');
       expect(actuals.first.linkedPlanId, planned.id);
       expect(actuals.first.linkedTodoId, isNull);
+
+      final slot = snapshot.comparisonSlots.firstWhere((s) => s.planned?.id == planned.id);
+      expect(slot.actual, isNotNull);
+      expect(slot.actual!.content, '睡觉');
+      expect(slot.orphanActual, isFalse);
+      expect(snapshot.comparisonSlots.where((s) => s.orphanActual), isEmpty);
     });
 
     test('no task selected still generates orphan "番茄专注"', () async {

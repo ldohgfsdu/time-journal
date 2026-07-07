@@ -424,7 +424,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       onSchedule: () => _scheduleTodo(dateKey, item),
       onFocus: () {
         GentleFeedback.lightTap();
-        navigateToFocusTab(ref, task: item.content);
+        navigateToFocusTab(ref, task: item.content, todoId: item.id);
       },
       onComplete: () => _toggleTodo(item),
       onDelete: () => _deleteTodo(item),

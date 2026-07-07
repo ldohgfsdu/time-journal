@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/copy.dart';
 import '../../../app/gentle_feedback.dart';
+import '../../../app/shell_navigation.dart';
 import '../../../app/theme.dart';
 import '../../../data/local/database.dart';
 import '../../../data/models/comparison_slot.dart';
@@ -128,6 +129,18 @@ class TodayComparisonSection extends ConsumerWidget {
                     ref.invalidate(journalSnapshotProvider);
                   }
                 },
+                onFocus: isToday && slot.planned != null
+                    ? () {
+                        final planned = slot.planned!;
+                        GentleFeedback.lightTap();
+                        navigateToFocusTab(
+                          ref,
+                          task: planned.content,
+                          planId: planned.id,
+                          todoId: planned.linkedTodoId,
+                        );
+                      }
+                    : null,
               ),
           if (isToday)
             Padding(
@@ -229,6 +242,7 @@ class _SlotCard extends StatefulWidget {
     required this.onPlanChanged,
     required this.onDeletePlan,
     required this.onDeleteOrphan,
+    this.onFocus,
   });
 
   final ComparisonSlot slot;
@@ -243,6 +257,7 @@ class _SlotCard extends StatefulWidget {
   final ValueChanged<TimeBlock> onPlanChanged;
   final VoidCallback onDeletePlan;
   final VoidCallback onDeleteOrphan;
+  final VoidCallback? onFocus;
 
   @override
   State<_SlotCard> createState() => _SlotCardState();
@@ -349,6 +364,7 @@ class _SlotCardState extends State<_SlotCard> {
                   onEditPlan: plan != null
                       ? () => setState(() => _editingPlan = true)
                       : null,
+                  onFocus: widget.onFocus,
                   onDelete: plan != null
                       ? widget.onDeletePlan
                       : widget.onDeleteOrphan,
@@ -497,10 +513,12 @@ class _SlotMenu extends StatelessWidget {
     required this.hasPlan,
     required this.onEditPlan,
     required this.onDelete,
+    this.onFocus,
   });
 
   final bool hasPlan;
   final VoidCallback? onEditPlan;
+  final VoidCallback? onFocus;
   final VoidCallback onDelete;
 
   @override
@@ -511,6 +529,8 @@ class _SlotMenu extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
       onSelected: (value) {
         switch (value) {
+          case 'focus':
+            onFocus?.call();
           case 'edit':
             onEditPlan?.call();
           case 'delete':
@@ -518,6 +538,11 @@ class _SlotMenu extends StatelessWidget {
         }
       },
       itemBuilder: (ctx) => [
+        if (hasPlan && onFocus != null)
+          const PopupMenuItem(
+            value: 'focus',
+            child: Text(AppCopy.todoActionFocus),
+          ),
         if (hasPlan && onEditPlan != null)
           const PopupMenuItem(
             value: 'edit',

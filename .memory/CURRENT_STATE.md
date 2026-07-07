@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- ce016aa Merge pull request #8 from ldohgfsdu/fix/pomodoro-linked-todo-plan (pomodoro linked todo/plan fix + real tests)
+- c6c59e7 fix(journal): pass planId when starting focus from planned block (PR #9 open, not merged)
 
 ## Completed
 
@@ -93,6 +93,11 @@
 - PR #7 follow-up: 修复 content-update 清空 linkedPlanId 风险，analyze clean + 132/132 pass（Grok）
 - 合并 PR #7 到 p0/journal-compare：analyze clean + 132/132 pass（Grok）
 - PR #8 合并到 p0/journal-compare：navigate/setLinkedTask 修复 + 真实测试 + 真机复测场景通过，analyze clean + 136/136 pass（Grok）
+- 真机复测纠正诊断 + PR #9（Grok 2026-07-07）：
+  - 根因：手动 planned block（无 linkedTodoId）从今日对照开始专注时未传 planId → orphan「番茄专注」
+  - 修复：planned 卡片更多菜单新增「开始专注」→ navigateToFocusTab(task, planId, linkedTodoId)
+  - 分支 fix/planned-block-focus-planid；PR #9 OPEN（未合并）
+  - 验证：analyze clean；test 136/136 pass
 
 ## Release blockers
 

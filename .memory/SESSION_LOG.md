@@ -334,3 +334,19 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
   - memory 更新，当前主线 p0/journal-compare
 
 当前 HEAD: ce016aa + memory 更新
+
+## 2026-07-07 (session 1)
+
+- **真机复测纠正诊断 + PR #9**（Grok）：
+  - 纠正：「睡觉」planned 是手账/今日对照手动安排，非睡眠页、非 todo；0 项待办 + 2 时段场景
+  - 根因：PR #8 修了 todoId 链路，但手动 planned block 无 todoId，且今日对照 planned 卡片无「开始专注」入口 → Pomodoro 无 planId → orphan「番茄专注」
+  - 修复（最小 UI）：
+    - `today_comparison_section.dart`：planned 卡片 ⋯ 菜单新增「开始专注」（仅 isToday）
+    - 调用 `navigateToFocusTab(ref, task: planned.content, planId: planned.id, todoId: planned.linkedTodoId)`
+  - 测试：`pomodoro_provider_test.dart` 新增/强化手动 planned 无 linkedTodoId 场景（pending/actual/comparisonSlots/无 orphan）
+  - 验证：flutter analyze clean；flutter test 136/136 passed
+  - 分支：fix/planned-block-focus-planid
+  - PR #9 OPEN：https://github.com/ldohgfsdu/time-journal/pull/9（base p0/journal-compare，未合并）
+  - 未改 schema/GA/master；未自动化冒充真机复测
+
+当前 HEAD: c6c59e7 on fix/planned-block-focus-planid

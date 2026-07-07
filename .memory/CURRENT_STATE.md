@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- c6c59e7 fix(journal): pass planId when starting focus from planned block (PR #9 open, not merged)
+- e07e674 Merge pull request #9 from ldohgfsdu/fix/planned-block-focus-planid
 
 ## Completed
 
@@ -96,8 +96,8 @@
 - 真机复测纠正诊断 + PR #9（Grok 2026-07-07）：
   - 根因：手动 planned block（无 linkedTodoId）从今日对照开始专注时未传 planId → orphan「番茄专注」
   - 修复：planned 卡片更多菜单新增「开始专注」→ navigateToFocusTab(task, planId, linkedTodoId)
-  - 分支 fix/planned-block-focus-planid；PR #9 OPEN（未合并）
-  - 验证：analyze clean；test 136/136 pass
+  - PR #9 已合并到 p0/journal-compare（e07e674，2026-07-07）
+  - 合并后验证：analyze clean；test 136/136 pass
 
 ## Release blockers
 

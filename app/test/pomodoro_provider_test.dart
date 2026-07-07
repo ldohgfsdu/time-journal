@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:time_journal/app/notification_service.dart';
 import 'package:time_journal/data/local/database.dart';
 import 'package:time_journal/data/local/database_provider.dart';
+import 'package:time_journal/data/repositories/journal_repository.dart';
 import 'package:time_journal/features/pomodoro/providers/pomodoro_provider.dart';
 
 class _StubNotificationScheduler implements FocusNotificationScheduler {
@@ -381,6 +382,135 @@ void main() {
       }
       final sessions = await db.recentSessions(limit: 3);
       expect(sessions.length, 3);
+    });
+  });
+
+  // ── linked task / plan flow (for PR #8) ───────────────────────
+
+  group('linked task and plan', () {
+    test('journal todo focus action retains task + linkedTodoId in pending, records non-default content', () async {
+      // Simulate creating todo and planned (as from journal schedule)
+      final todo = await db.into(db.todoItems).insertReturning(
+        TodoItemsCompanion.insert(
+          journalDate: '2026-07-04',
+          content: const Value('睡觉'),
+          sortOrder: const Value(0),
+        ),
+      );
+      final planned = await db.into(db.timeBlocks).insertReturning(
+        TimeBlocksCompanion.insert(
+          journalDate: '2026-07-04',
+          startTime: '01:45',
+          endTime: '08:30',
+          content: const Value('睡觉'),
+          source: 'planned',
+          linkedTodoId: Value(todo.id),
+          sortOrder: const Value(0),
+        ),
+      );
+
+      // Simulate from journal todo focus action: set with task + todoId (no planId)
+      controller.setLinkedTask('睡觉', todoId: todo.id);
+
+      controller.selectMinutes(1);
+      await controller.startFocus();
+
+      // Force complete (simulates timer end)
+      await controller.onPhaseComplete();
+
+      final pending = controller.state.pendingCompletion;
+      expect(pending, isNotNull);
+      expect(pending!.task, '睡觉');
+      expect(pending.linkedTodoId, todo.id);
+      expect(pending.linkedPlanId, isNull); // not passed directly
+
+      // Record
+      await controller.recordPendingToJournal();
+
+      // Verify actual
+      final repo = JournalRepository(db);
+      final snapshot = await repo.load('2026-07-04');
+      final actuals = snapshot.actualBlocks.where((a) => a.linkedTodoId == todo.id).toList();
+      expect(actuals, hasLength(1));
+      expect(actuals.first.content, '睡觉'); // not default "番茄专注"
+      expect(actuals.first.linkedPlanId, planned.id); // backfilled
+    });
+
+    test('pomodoro actual with linkedTodoId links back to planned with same linkedTodoId', () async {
+      final todo = await db.into(db.todoItems).insertReturning(
+        TodoItemsCompanion.insert(
+          journalDate: '2026-07-04',
+          content: const Value('健身'),
+          sortOrder: const Value(0),
+        ),
+      );
+      final planned = await db.into(db.timeBlocks).insertReturning(
+        TimeBlocksCompanion.insert(
+          journalDate: '2026-07-04',
+          startTime: '21:20',
+          endTime: '22:20',
+          content: const Value('健身'),
+          source: 'planned',
+          linkedTodoId: Value(todo.id),
+          sortOrder: const Value(0),
+        ),
+      );
+
+      controller.setLinkedTask('健身', todoId: todo.id);
+      controller.selectMinutes(1);
+      await controller.startFocus();
+      await controller.onPhaseComplete();
+      await controller.recordPendingToJournal();
+
+      final repo = JournalRepository(db);
+      final snapshot = await repo.load('2026-07-04');
+      final slot = snapshot.comparisonSlots.firstWhere((s) => s.planned?.id == planned.id);
+      expect(slot.actual, isNotNull);
+      expect(slot.actual!.content, '健身');
+      expect(slot.orphanActual, isFalse);
+    });
+
+    test('direct linkedPlanId is written to actual (prioritized)', () async {
+      final planned = await db.into(db.timeBlocks).insertReturning(
+        TimeBlocksCompanion.insert(
+          journalDate: '2026-07-04',
+          startTime: '10:00',
+          endTime: '11:00',
+          content: const Value('直接计划'),
+          source: 'planned',
+          sortOrder: const Value(0),
+        ),
+      );
+
+      // Direct plan (no todo)
+      controller.setLinkedTask('直接计划', planId: planned.id);
+      controller.selectMinutes(2);
+      await controller.startFocus();
+      await controller.onPhaseComplete();
+      await controller.recordPendingToJournal();
+
+      final repo = JournalRepository(db);
+      final snapshot = await repo.load('2026-07-04');
+      final actuals = snapshot.actualBlocks;
+      expect(actuals, hasLength(1));
+      expect(actuals.first.linkedPlanId, planned.id);
+      expect(actuals.first.linkedTodoId, isNull);
+    });
+
+    test('no task selected still generates orphan "番茄专注"', () async {
+      controller.selectMinutes(1);
+      await controller.startFocus();
+      await controller.onPhaseComplete();
+      await controller.recordPendingToJournal();
+
+      final repo = JournalRepository(db);
+      final snapshot = await repo.load('2026-07-04');
+      final actuals = snapshot.actualBlocks;
+      expect(actuals, hasLength(1));
+      expect(actuals.first.content, '番茄专注');
+      expect(actuals.first.linkedTodoId, isNull);
+      expect(actuals.first.linkedPlanId, isNull);
+      expect(snapshot.comparisonSlots.any((s) => s.orphanActual), isTrue);
     });
   });
 }

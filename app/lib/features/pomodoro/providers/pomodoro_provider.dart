@@ -74,6 +74,7 @@ class PomodoroState {
     int? linkedTodoId,
     bool clearLinkedTodo = false,
     int? linkedPlanId,
+    bool clearLinkedPlan = false,
     PendingFocusCompletion? pendingCompletion,
     bool clearPending = false,
     bool? isPaused,
@@ -88,7 +89,8 @@ class PomodoroState {
       linkedTask: linkedTask ?? this.linkedTask,
       linkedTodoId:
           clearLinkedTodo ? null : (linkedTodoId ?? this.linkedTodoId),
-      linkedPlanId: linkedPlanId ?? this.linkedPlanId,
+      linkedPlanId:
+          clearLinkedPlan ? null : (linkedPlanId ?? this.linkedPlanId),
       pendingCompletion: clearPending
           ? null
           : (pendingCompletion ?? this.pendingCompletion),
@@ -114,7 +116,16 @@ class PomodoroController extends StateNotifier<PomodoroState>
 
   void setLinkedTask(String task, {int? todoId, int? planId}) {
     if (state.phase != PomodoroPhase.idle) return;
-    state = state.copyWith(linkedTask: task, linkedTodoId: todoId, linkedPlanId: planId);
+    // Always replace bindings: if not provided (default null), clear old id to avoid stale.
+    // Manual input (no id) clears previous todo/plan binding.
+    // Selecting todo or plan replaces with the new binding.
+    state = state.copyWith(
+      linkedTask: task,
+      linkedTodoId: todoId,
+      clearLinkedTodo: todoId == null,
+      linkedPlanId: planId,
+      clearLinkedPlan: planId == null,
+    );
   }
 
   void selectMinutes(int minutes) {

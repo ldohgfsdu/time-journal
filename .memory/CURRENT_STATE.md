@@ -13,7 +13,8 @@
 
 ## Latest known commit
 
-- e07e674 Merge pull request #9 from ldohgfsdu/fix/planned-block-focus-planid
+- c04ea86 chore(memory): record merge of PR #9 into p0/journal-compare
+- 功能合并点：e07e674 Merge pull request #9（planned block 开始专注传 planId）
 
 ## Completed
 
@@ -77,11 +78,11 @@
     - `weekly_repository.dart`:95 双层 null 检查防空指针
     - `pomodoro_provider.dart`: 所有 Wakelock/Haptic 静默 catch 添加 `dev.log`
   - **platform-first 菜单实现**（OpenCode 2026-07-05 session 9）：
-    - `agent` 菜单重构为"平台优先"模式：1-4 直接选平台启动（OpenCode/Claude Code/Claude Code Proxy/Grok）
+    - `agent` 菜单重构为"平台优先"模式：1-4 直接选平台启动（OpenCode/Claude Code/Hermes/Grok）
     - 新增 5)切换项目+启动、6)新建项目（自动创建 .memory/ 骨架）
-    - 新增 I/O 收件箱/发件箱、M 项目记忆、U AI 用量、P Proxy 管理
+    - 新增 I/O 收件箱/发件箱、项目记忆、快速验证、git 状态
     - 修复 `pick_project_interactive` stdout 被 `$()` 捕获的 bug
-    - `/root/bin/agent` 同步更新
+    - Ubuntu `/root/bin/agent` 与 Termux `~/bin/agent` 需分别维护（见 ENVIRONMENT.md）
 
 ## Last known validation
 
@@ -130,5 +131,7 @@
 - OpenCode 配置见 opencode.jsonc；runbook 见 .external_outbox/opencode-runbook.md。
 
 - Termux `agent` 菜单合并（2026-07-05 session 8）：替换旧 `claude` 入口为 `agent`，整合 OpenCode/Claude Code/Proxy/用量/validate/git/项目管理。`claude` 保留为 symlink。
+- **agent 已迁出仓库**（2026-07-08）：权威源 `~/.ai-tools/agent-launcher/` + `AGENT_LAUNCHER.md`；`/root/bin/agent` 与 Termux wrapper 由 `agent-install.sh` 同步。**禁止**在 time-journal `scripts/` 提交 agent 脚本。
 
 - **2026-07-06 P0-6 converge**：PR #6 已合并到 p0/journal-compare（默认主线）。master 进入待归档/不再作为开发主线。仅数据层（schema 3 + linkedPlanId + 匹配逻辑），无 UI/GA/P2/P3 改动。
+- **工作区（2026-07-08）**：`.memory/` 与 `AGENTS.md` 有本地修改（记忆对齐 + agent 隔离）。`scripts/agent*.sh` 副本已删；权威仅 `~/.ai-tools/agent-launcher/`。ad-hoc 验证已通过。

@@ -361,3 +361,65 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
   - 未改 UI/schema/GA；未切 master
 
 当前 HEAD: e07e674 on p0/journal-compare
+
+## 2026-07-08 (session 1)
+
+- **安装 Hermes Agent CLI（环境工具，非项目改动）**：
+  - NousResearch Hermes Agent v0.18.1，官方一键脚本安装
+  - 安装路径：/usr/local/lib/hermes-agent；命令链接 /usr/local/bin/hermes
+  - 数据/配置：/root/.hermes/（config.yaml、.env、sessions、logs）
+  - 跳过交互 setup（--skip-setup）与浏览器下载（--skip-browser），按需 `hermes setup`/`hermes doctor` 补装
+  - 用途：独立 AI agent 工具，与本项目 time-journal 无关
+  - 后续需 `hermes setup --portal` 或 `hermes model` 配置 provider
+  - agent 菜单平台区：原「3) Claude Code (Proxy)」替换为「3) Hermes」；新增 HERMES 变量/has_hermes/launch_hermes；`agent <项目> hermes` 直接启动；帮助文本同步；DeepSeek proxy_menu 保留
+  - 未改项目代码/schema/GA；未提交
+
+## 2026-07-08 (session 2)
+
+- **问题**：用户 Termux 输入 `agent` 仍见旧菜单（Claude Code Proxy），因只改了 Ubuntu `/root/bin/agent`，未改 Termux 脚本。
+- **根因**：`agent` 有两份独立脚本 — Termux `~/bin/agent`（日常入口）与 Ubuntu `/root/bin/agent`（proot 内直接运行）。
+- **修复**：
+  - 同步 Termux `/data/data/com.termux/files/home/bin/agent`：主菜单 3 → Hermes；新增 `launch_hermes`；`agent hermes` 子命令；`bash -n` 通过
+  - 修复断链：`~/.local/bin/agent` → `/root/bin/agent`
+- **记忆写入**（防再犯）：
+  - DECISIONS.md：双副本决策
+  - ENVIRONMENT.md：路径表、同步检查命令、当前菜单结构
+  - COMMANDS.md：Start + 改菜单 checklist
+  - RULES.md / CURRENT_STATE.md：同步提醒
+- 未改项目代码/schema/GA；仅 `.memory/` 文档更新
+
+## 2026-07-08 (session 3)
+
+- **统一 agent 菜单**：
+  - 权威源：`scripts/agent.sh`（合并 proxy 子命令、help、self-test、工具优先 CLI）
+  - Termux：`scripts/agent-termux.sh` 薄包装（proot → `/root/bin/agent`），替换原 700+ 行独立脚本
+  - 安装：`scripts/agent-install.sh` 同步 Ubuntu + Termux
+  - 记忆更新：DECISIONS / ENVIRONMENT / COMMANDS / RULES / AGENTS / CURRENT_STATE
+- 未改 Flutter 代码/schema/GA
+
+## 2026-07-08 (OpenCode)
+
+- **agent 菜单改版（scripts/agent.sh）**：
+  - 平台启动函数去掉 `exec`，改为前台运行；退出平台/TUI 后回到主菜单循环（Ubuntu Shell 选项改为 `bash --login` 也返回）。
+  - 菜单美化：加 ANSI 颜色（无 TTY 自动关闭）、标题框、青色「选择平台」框 + 黄色「操作」框，内宽固定 48、整行 52 对齐。
+  - 平台项不可用（如未安装）灰显 + 🔒，但保留编号。
+  - 新增 box_top / box_top_y / box_bot_* / box_row2 / plat_item 辅助函数。
+  - 已 `bash scripts/agent-install.sh` 同步到 /root/bin/agent 与 Termux 包装。
+  - 注：claude 本体已安装（2.1.204），但运行态「用不了」属其自身（登录/API）问题；菜单改为退出后回菜单，不再 exec 逃逸。
+
+## 2026-07-08 (Hermes / Grok session — boot + 记忆对齐)
+
+- 用户执行 **boot**：读取 .memory/*、`memory_boot.sh`；报告 drift，未擅自改代码。
+- **记忆对齐**（用户要求）：
+  - `ACTIVE_OBJECT.md`：P0-6 / PR #9 状态与 CURRENT_STATE 一致；release blockers 清空；推荐任务改为真机复测 + 可选提交 agent 脚本；AI 分工与 CURRENT_STATE 统一。
+  - `CURRENT_STATE.md`：Latest known commit → c04ea86；补充工作区未提交说明。
+- 未改 app/lib、schema、GA；未提交 git。
+
+## 2026-07-08 (Hermes — agent 与项目隔离)
+
+- 用户要求：`agent` 存本机、与项目无关，但所有 AI 通识；勿弄乱工作区。
+- 已建立全局目录 `~/.ai-tools/agent-launcher/`（`agent.sh`、`agent-termux.sh`、`agent-install.sh`、`AGENT_LAUNCHER.md`）。
+- 项目内：`AGENTS.md`、DECISIONS、ENVIRONMENT、RULES、COMMANDS、ACTIVE_OBJECT、CURRENT_STATE 改为指向全局路径；`.gitignore` 忽略 `scripts/agent*.sh`；`.shared_inbox/agent-launcher-pointer.md` 作跨项目指针。
+- 待用户本地执行（曾拒批一键命令）：`bash ~/.ai-tools/agent-launcher/agent-install.sh`；可选删除 `time-journal/scripts/agent*.sh` 副本。
+- **2026-07-08 续**：用户同意后已跑 `agent-install.sh` + ad-hoc `hermes-verify-agent-isolation.sh` 全部 OK；已删除仓库内 `scripts/agent*.sh` 副本。
+- 未改 Flutter 代码；未提交 git。

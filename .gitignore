@@ -41,3 +41,8 @@ outbox/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local agent launcher copies (canonical: ~/.ai-tools/agent-launcher/)
+scripts/agent.sh
+scripts/agent-termux.sh
+scripts/agent-install.sh

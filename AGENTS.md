@@ -116,6 +116,17 @@ When switching between AI tools or models:
 4. Continue from repository memory, not from hidden model memory.
 5. Close the round by updating .memory/SESSION_LOG.md.
 
+## Agent launcher menu（全局，非本仓库）
+
+`agent` 启动菜单是**本机全局工具**，与 time-journal 应用代码无关；**不要**把 `agent.sh` 放进本仓库或提交到 git。
+
+- 通识文档：`~/.ai-tools/agent-launcher/AGENT_LAUNCHER.md`（改菜单、修环境 bug 前先读）
+- 权威脚本：`~/.ai-tools/agent-launcher/agent.sh`
+- 同步安装：`bash ~/.ai-tools/agent-launcher/agent-install.sh`
+- 项目内摘要：`.memory/ENVIRONMENT.md` → Agent launcher
+
+跨项目指针：`.shared_inbox/agent-launcher-pointer.md`
+
 ## Global AI usage tools
 
 This project uses global AI usage tracking tools:
@@ -137,7 +148,7 @@ Key commands:
 - `proxy-disable` pauses recording; proxy still forwards requests.
 - `proxy-enable` resumes recording; token usage starts writing to `proxy_usage.jsonl`.
 - If Claude Code was started in direct mode, starting proxy mid-session won't take over the current session.
-- To use recording controls, launch Claude Code via **Proxy 透明模式** from the launch menu (`claude proxy <project>`).
+- To use recording controls, launch via **Proxy 透明模式**: `agent proxy <project>` (subcommand; not on the main platform menu).
 - Direct mode only shows balance estimates via `ai-usage`, not per-request token details.
 - Neither mode records prompt or response body text.
 

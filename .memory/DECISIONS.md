@@ -5,6 +5,12 @@
 - 使用手机 Termux + Ubuntu/proot 开发。
 - Termux 原生环境只做入口。
 - Ubuntu/proot 的 root@localhost 是主开发环境。
+- **`agent` 菜单已迁出仓库**（2026-07-08）：
+  - 权威源：`~/.ai-tools/agent-launcher/`（与 deepseek-usage 同级，全局本地）
+  - 通识：`AGENT_LAUNCHER.md`；各项目 AI 通过 AGENTS.md / ENVIRONMENT 引用，**勿**在 `~/code/*` 仓库内放 agent 脚本
+  - Ubuntu `/root/bin/agent`；Termux `~/bin/agent` 薄包装；`bash ~/.ai-tools/agent-launcher/agent-install.sh` 同步
+  - Termux：`~/bin/agent` 仅为薄包装（`~/.ai-tools/agent-launcher/agent-termux.sh` 安装副本），经 `proot-distro` 调用 Ubuntu 同一份逻辑
+  - **改菜单只改 `~/.ai-tools/agent-launcher/agent.sh`，然后 `bash ~/.ai-tools/agent-launcher/agent-install.sh` 同步**
 - Claude Code 接 DeepSeek API。
 - 不依赖 Claude 官方 /login。
 - 不保存完整历史对话，只保存结构化摘要。

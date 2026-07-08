@@ -6,7 +6,7 @@
 
 ## Current objective
 
-MVP 缺口修补：第一、二轮已完成；release blocker 仅剩 P0-6 `linkedPlanId` migration（待解除 schema 禁令）。
+MVP 缺口修补第一、二轮已完成；P0-6 `linkedPlanId` migration 已合入 `p0/journal-compare`；PR #7/#8/#9 已收口番茄专注与今日对照关联。当前聚焦真机验收与发布准备。
 
 ## Active object name
 
@@ -14,20 +14,24 @@ MVP 缺口修补：第一、二轮已完成；release blocker 仅剩 P0-6 `linke
 
 ## Recommended next task
 
-用户确认后解除 schema 禁令 → `linkedPlanId` migration（P0-6 release blocker）
+1. 真机复测关键路径（手动 planned「开始专注」、todo 专注、Pomodoro 记入实际与今日对照）。
+2. 可选：用户确认后仅提交本仓库 **项目相关** 的 `.memory/` / `AGENTS.md` 记忆更新（不含 agent 脚本；agent 在 `~/.ai-tools/agent-launcher/`）。
 
 ## AI agent 分工
 
-- Claude Code：主线开发 / 提交 / 修复
-- OpenCode：只读审计 / 第二意见 / 小范围 patch
+- OpenCode（主力）：免费，主线开发 / 审计 / 修复 / 提交
+- Claude Code（付费备用）：DeepSeek 余额充足时使用
+- Grok：图片审查 / 第二意见
+- Hermes：经 `agent` 菜单平台 3 启动
+- 终端输入 `agent` 打开启动菜单
 
 ## Release blockers
 
-- P0-6：今日对照 `planned`/`actual` 需 `linkedPlanId` 稳定关联（当前仅按 start/end 完全相等匹配）
+（无）
 
 ## Explicitly forbidden now
 
-- 不修改 Drift schema（P0-6 除外，需用户明确解除禁令后实施）
+- 不修改 Drift schema，除非用户明确授权
 - 不修改 GitHub Actions
 - 不启动 web-server
 - 不大范围重构

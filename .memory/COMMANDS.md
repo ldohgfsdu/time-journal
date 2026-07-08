@@ -2,18 +2,41 @@
 
 ## Start
 
-Termux native:
+Termux native（主入口）:
 
 ```
-claude
+agent
+# 或 claude（symlink → agent）
 ```
 
-Ubuntu/proot manual:
+Ubuntu/proot:
 
 ```
-cd ~/code/time-journal
-claude --permission-mode acceptEdits
+agent
+# 或
+cd ~/code/time-journal && claude --permission-mode acceptEdits
 ```
+
+直接启动（跳过菜单）:
+
+```
+agent time-journal opencode
+agent time-journal claude
+agent time-journal hermes
+agent time-journal grok
+agent time-journal proxy    # Proxy 透明模式，子命令保留
+```
+
+### 修改 `agent` 菜单（全局，非本仓库）
+
+权威源：`~/.ai-tools/agent-launcher/agent.sh`。改完后：
+
+```bash
+bash ~/.ai-tools/agent-launcher/agent-install.sh
+agent --self-test
+```
+
+通识：`~/.ai-tools/agent-launcher/AGENT_LAUNCHER.md`。详见 `.memory/ENVIRONMENT.md` → Agent launcher。
 
 ## Check
 

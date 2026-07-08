@@ -74,7 +74,8 @@ If unsure whether a message is casual or a development task, ask one short clari
   - 暂停记录不影响 proxy 转发，Claude Code 照常使用。
 - 要用记录开关功能，必须通过 proxy 透明模式启动 Claude Code。
 - 直连模式中途启动 proxy 不会接管当前会话。
-- 推荐从 Termux 菜单选择"Claude Code + DeepSeek Proxy 透明模式"。
+- 改 `agent` 菜单时**只改 `~/.ai-tools/agent-launcher/agent.sh`，再跑 `bash ~/.ai-tools/agent-launcher/agent-install.sh`**（见 `AGENT_LAUNCHER.md` / `.memory/ENVIRONMENT.md`）。**勿**在 time-journal 仓库 `scripts/` 下放 agent 脚本。
+- Proxy 透明模式：`agent proxy <项目>` 或 `agent proxy-start` 等子命令；主菜单平台 3 为 Hermes，不是 Proxy。
 
 ## 验证命令
 

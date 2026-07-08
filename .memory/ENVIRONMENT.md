@@ -77,7 +77,7 @@ Do not print or commit the API key.
 - Flutter（本机）：`/root/dev/flutter/bin/flutter`（proot 内优先加入 PATH）
 - **本地 APK → outbox**：`bash scripts/build_arm64_to_outbox.sh`（需 **Android SDK**）
 - 首次安装 SDK：`bash scripts/setup_android_sdk_termux.sh`（proot Ubuntu + apt）；续装包：`bash scripts/install_android_sdk_packages.sh`
-- arm64 proot：SDK 自带 cmake 为 x86_64，打包前自动 `fix_android_sdk_cmake_arm64.sh`（apt cmake + wrapper）
+- arm64 proot：SDK 自带 cmake/ninja 常为 x86_64；`fix_android_sdk_cmake_arm64.sh` 用 apt `cmake` + `ninja-build` 包装
 - SDK 路径默认：`/data/data/com.termux/files/home/Android/Sdk`；生成 `scripts/android_sdk.env`（已 gitignore）
 
 Web Drift depends on:

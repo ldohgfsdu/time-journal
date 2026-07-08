@@ -21,7 +21,7 @@ install_apt_deps() {
   export DEBIAN_FRONTEND=noninteractive
   apt-get update -qq
   apt-get install -y --no-install-recommends \
-    openjdk-17-jdk-headless unzip wget ca-certificates cmake
+    openjdk-17-jdk-headless unzip wget ca-certificates cmake ninja-build
 }
 
 install_cmdline_tools() {

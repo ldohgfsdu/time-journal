@@ -113,3 +113,9 @@ cd app && timeout 180 flutter test
 - .memory/CURRENT_STATE.md
 - .memory/SESSION_LOG.md
 - 必要时更新 .memory/ACTIVE_OBJECT.md
+
+向用户汇报（三条缺一不可）：
+
+1. **改了什么**（文件、行为、CI 策略等）
+2. **发现了什么问题 / 用户诉求**
+3. **怎么解决的**

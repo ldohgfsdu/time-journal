@@ -422,4 +422,17 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
 - 项目内：`AGENTS.md`、DECISIONS、ENVIRONMENT、RULES、COMMANDS、ACTIVE_OBJECT、CURRENT_STATE 改为指向全局路径；`.gitignore` 忽略 `scripts/agent*.sh`；`.shared_inbox/agent-launcher-pointer.md` 作跨项目指针。
 - 待用户本地执行（曾拒批一键命令）：`bash ~/.ai-tools/agent-launcher/agent-install.sh`；可选删除 `time-journal/scripts/agent*.sh` 副本。
 - **2026-07-08 续**：用户同意后已跑 `agent-install.sh` + ad-hoc `hermes-verify-agent-isolation.sh` 全部 OK；已删除仓库内 `scripts/agent*.sh` 副本。
-- 未改 Flutter 代码；未提交 git。
+- **提交 GitHub**：b1437f9 `chore(memory): align release state and document global agent launcher` → push `origin/p0/journal-compare`。
+- 未改 Flutter 代码。
+
+## 2026-07-08 — 清理 Git 分支
+
+- 用户确认删除非主线分支；保留 `p0/journal-compare`（b1437f9）。
+- 已删本地 + `origin`：`chore/converge-p0-master`，`fix/*`（pomodoro/planned/p0-5），`ui/claude-warm-polish`，`release/android-arm64-action`，`master`。
+- 远程现仅 `origin/p0/journal-compare`（`origin/HEAD` 仍指向该分支）。CI 工作流已在主线上（`android-arm64-release.yml` 等）。
+
+## 2026-07-08 — CI 自动打包 + 默认 push
+
+- 用户要求：以后默认 push；`app/` 改动自动构建 APK。
+- `android-arm64-release.yml` / `android-debug-apk.yml`：增加 `push` → `p0/journal-compare`，`paths: app/**`（及对应 workflow 文件）。
+- RULES / COMMANDS / AGENTS：提交后默认 `git push`；说明仅 app 改动触发 CI。

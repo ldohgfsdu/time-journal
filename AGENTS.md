@@ -32,6 +32,7 @@ Read in this order (only when boot is triggered):
 - Before changing code, state the scope.
 - After code changes, run the validation commands required by .memory/RULES.md.
 - At the end of each work round, update .memory/CURRENT_STATE.md and .memory/SESSION_LOG.md.
+- After commit, **default push** to `origin` on the current branch unless the user opts out (see `.memory/RULES.md`).
 
 ## Tool-specific adapters
 

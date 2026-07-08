@@ -49,10 +49,19 @@ bash scripts/memory_snapshot.sh
 
 ## Flutter validate
 
-```
+```bash
 cd app && timeout 180 flutter analyze
 cd app && timeout 180 flutter test
 ```
+
+## Commit / push / CI APK
+
+默认流程（见 `.memory/RULES.md`）：
+
+1. 验证通过后 commit
+2. `git push origin p0/journal-compare`（除非用户说不要 push）
+3. 若 push 含 **`app/`** 改动 → GitHub Actions 自动 analyze、test、上传 debug + arm64 release APK 产物
+4. 在 GitHub 仓库 **Actions** 页下载 artifact；或手动 `workflow_dispatch` 重跑
 
 ## Web preview
 

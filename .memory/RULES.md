@@ -98,6 +98,12 @@ cd app && timeout 180 flutter test
 提交后：
 1. git log --oneline --decorate -10
 2. git status --short
+3. **默认** `git push origin $(git branch --show-current)`，把提交推到 GitHub（用户明确说「先不 push」「只本地提交」时除外）。
+
+### 推送后的 CI（GitHub Actions）
+
+- 仅当本次 push 包含 **`app/`** 内改动时，Actions 会自动跑 analyze + test + 打 APK（debug 与 arm64 release 两条 workflow）。
+- 只改 `.memory/`、`AGENTS.md`、文档等 **不会** 触发 APK 构建，避免无意义耗时。
 
 ## 收口规则
 

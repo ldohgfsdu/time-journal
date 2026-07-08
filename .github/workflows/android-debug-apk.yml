@@ -2,6 +2,12 @@ name: Android Debug APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - p0/journal-compare
+    paths:
+      - "app/**"
+      - ".github/workflows/android-debug-apk.yml"
 
 defaults:
   run:

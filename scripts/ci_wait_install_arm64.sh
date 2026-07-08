@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# 等待指定 commit 的 arm64 Release CI 成功，下载 artifact 并尝试安装到本机。
-# 需要：gh 已登录（gh auth login）或环境变量 GH_TOKEN / GITHUB_TOKEN（repo + actions:read）。
+# 可选：等 CI 绿后 gh 下载并安装。日常装包请用 build_arm64_to_outbox.sh。
 set -euo pipefail
 
 REPO="${REPO:-ldohgfsdu/time-journal}"

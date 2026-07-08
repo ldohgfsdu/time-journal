@@ -459,7 +459,9 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
 - `weeklySleepEarly(0)` 温和文案；`time_wheel_test.dart`。
 - `开发计划.txt`：P2-3、P2-4 → done。
 
-## 2026-07-08 — 自动安装脚本
+## 2026-07-08 — 本地 outbox 打包（主装包路径）
+
+- `build_arm64_to_outbox.sh`；`post_push_app` / `round_close_app` 收口调用；CI 仅备份。
 
 - `ci_wait_install_arm64.sh` + `post_push_app.sh`；RULES/COMMANDS 约定 push app 后执行。
 

@@ -67,8 +67,17 @@ cd app && timeout 180 flutter test
 1. 验证通过后 commit
 2. `git push origin p0/journal-compare`（除非用户说不要 push）
 3. 若 push 含 **`app/`** 改动 → GitHub Actions 自动 analyze、test、上传 **arm64 release** APK（日常只装这个）
-4. **push 后**（含 `app/`）：执行 `bash scripts/post_push_app.sh`，后台等 CI 绿并尝试安装（需 `gh auth login`）
-5. 在 GitHub 仓库 **Actions** 页下载 artifact；或手动 `workflow_dispatch` 重跑
+4. **push 后**（含 `app/`）：`bash scripts/post_push_app.sh` → 本机打包到 **outbox**
+5. 收口也可：`bash scripts/round_close_app.sh`（未提交 app 改动也会打）
+
+```bash
+bash scripts/build_arm64_to_outbox.sh   # 直接打包（含 analyze/test）
+SKIP_CHECK=1 bash scripts/build_arm64_to_outbox.sh   # 跳过检查，仅 build
+```
+
+Outbox：`/storage/emulated/0/outbox/time-journal` / `.external_outbox/` → 最新 `time-journal-arm64-release.apk`
+
+6. 可选：GitHub Actions  artifact 作备份
 
 ## Web preview
 

@@ -61,8 +61,16 @@ fi
 echo "== flutter build apk (arm64 release) =="
 flutter build apk --release --target-platform android-arm64
 
-SRC="$APP/build/app/outputs/flutter-apk/app-release.apk"
-[[ -f "$SRC" ]] || { echo "未找到 $SRC" >&2; exit 1; }
+SRC=""
+for candidate in \
+  "$APP/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk" \
+  "$APP/build/app/outputs/flutter-apk/app-release.apk"; do
+  if [[ -f "$candidate" ]]; then
+    SRC="$candidate"
+    break
+  fi
+done
+[[ -n "$SRC" ]] || { echo "未找到 arm64 release apk under build/app/outputs/flutter-apk/" >&2; exit 1; }
 
 for dir in "${OUT_DIRS[@]}"; do
   cp -f "$SRC" "$dir/$APK_NAME"

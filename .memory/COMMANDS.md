@@ -73,6 +73,7 @@ cd app && timeout 180 flutter test
 ```bash
 bash scripts/setup_android_sdk_termux.sh      # 首次（proot）
 bash scripts/build_arm64_to_outbox.sh
+bash scripts/watch_outbox_build.sh          # 每 5min 盯到 outbox 有 APK
 ```
 
 Outbox：`/storage/emulated/0/outbox/time-journal` / `.external_outbox/` → 最新 `time-journal-arm64-release.apk`

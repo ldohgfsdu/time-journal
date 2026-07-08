@@ -459,6 +459,11 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
 - `weeklySleepEarly(0)` 温和文案；`time_wheel_test.dart`。
 - `开发计划.txt`：P2-3、P2-4 → done。
 
+## 2026-07-08 — CI Analyze 修复（422d629）
+
+- 失败：`picker_helper.dart` `unnecessary_import`（cupertino），`flutter analyze` exit 1。
+- 修复：删掉多余 import；本地 analyze + time_wheel_test 通过。
+
 ## 2026-07-08 — CI 只自动 arm64 Release
 
 - 用户：日常只要 arm64，debug 太大。

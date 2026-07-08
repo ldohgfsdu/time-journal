@@ -73,13 +73,7 @@ for candidate in \
   fi
 done
 [[ -n "$SRC" ]] || { echo "未找到 arm64 release apk under build/app/outputs/flutter-apk/" >&2; exit 1; }
-
-for dir in "${OUT_DIRS[@]}"; do
-  cp -f "$SRC" "$dir/$APK_NAME"
-  cp -f "$SRC" "$dir/time-journal-arm64-${SHORT}-${STAMP}.apk"
-  echo "OK: $dir/$APK_NAME"
-  echo "OK: $dir/time-journal-arm64-${SHORT}-${STAMP}.apk"
-done
+bash "$ROOT/scripts/copy_apk_to_outbox.sh" "$SRC"
 
 if command -v termux-open >/dev/null 2>&1; then
   echo "提示: termux-open ${OUT_DIRS[0]}/$APK_NAME 可打开安装界面"

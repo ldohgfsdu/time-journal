@@ -136,4 +136,4 @@
 
 - **2026-07-06 P0-6 converge**：PR #6 已合并到 p0/journal-compare（默认主线）。master 进入待归档/不再作为开发主线。仅数据层（schema 3 + linkedPlanId + 匹配逻辑），无 UI/GA/P2/P3 改动。
 - **工作区（2026-07-08）**：记忆与 agent 隔离文档已提交 b1437f9 并 push；agent 权威仅 `~/.ai-tools/agent-launcher/`。
-- **CI 加速（2026-07-08）**：arm64 workflow 增加 Gradle cache、`concurrency` 取消过时 run；`scripts/pre_push_app_check.sh` 本地先验。
+- 本地打包主路径：outbox；CI 备份归档。

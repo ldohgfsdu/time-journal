@@ -10,12 +10,14 @@ if [[ -x /root/dev/flutter/bin/flutter ]]; then
   export PATH="/root/dev/flutter/bin:$PATH"
 fi
 if [[ -z "${ANDROID_HOME:-}" ]]; then
-  for d in /root/Android/Sdk "$HOME/Android/Sdk" /data/data/com.termux/files/home/Android/Sdk; do
-    if [[ -d "$d" ]]; then
-      export ANDROID_HOME="$d"
-      break
-    fi
-  done
+  if sdk_out="$(bash "$ROOT/scripts/ensure_android_sdk.sh" 2>/dev/null)"; then
+    export ANDROID_HOME="${sdk_out#ANDROID_HOME=}"
+  fi
+fi
+if [[ -z "${ANDROID_HOME:-}" ]]; then
+  bash "$ROOT/scripts/ensure_android_sdk.sh" >&2 || true
+  echo "错误: 未配置 Android SDK" >&2
+  exit 1
 fi
 if [[ -n "${ANDROID_HOME:-}" ]]; then
   export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"

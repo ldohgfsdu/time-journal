@@ -50,6 +50,12 @@ bash scripts/memory_snapshot.sh
 ## Flutter validate
 
 ```bash
+bash scripts/pre_push_app_check.sh
+```
+
+或：
+
+```bash
 cd app && timeout 180 flutter analyze
 cd app && timeout 180 flutter test
 ```

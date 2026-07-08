@@ -13,7 +13,7 @@
 
 ## Latest known commit
 
-- c04ea86 chore(memory): record merge of PR #9 into p0/journal-compare
+- b6ffab4 ci(android): build APK on push when app/ changes
 - 功能合并点：e07e674 Merge pull request #9（planned block 开始专注传 planId）
 
 ## Completed
@@ -134,4 +134,5 @@
 - **agent 已迁出仓库**（2026-07-08）：权威源 `~/.ai-tools/agent-launcher/` + `AGENT_LAUNCHER.md`；`/root/bin/agent` 与 Termux wrapper 由 `agent-install.sh` 同步。**禁止**在 time-journal `scripts/` 提交 agent 脚本。
 
 - **2026-07-06 P0-6 converge**：PR #6 已合并到 p0/journal-compare（默认主线）。master 进入待归档/不再作为开发主线。仅数据层（schema 3 + linkedPlanId + 匹配逻辑），无 UI/GA/P2/P3 改动。
-- **工作区（2026-07-08）**：`.memory/` 与 `AGENTS.md` 有本地修改（记忆对齐 + agent 隔离）。`scripts/agent*.sh` 副本已删；权威仅 `~/.ai-tools/agent-launcher/`。ad-hoc 验证已通过。
+- **工作区（2026-07-08）**：记忆与 agent 隔离文档已提交 b1437f9 并 push；agent 权威仅 `~/.ai-tools/agent-launcher/`。
+- **CI（2026-07-08）**：push `p0/journal-compare` 且含 `app/**` 改动 → Actions 自动打 debug + arm64 release APK；仅 memory/文档 push 不触发。提交后 AI 默认 `git push`（RULES）。

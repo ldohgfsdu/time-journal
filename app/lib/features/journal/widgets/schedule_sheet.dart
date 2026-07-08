@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../app/copy.dart';
-import '../../../app/picker_helper.dart';
+import '../../../app/widgets/time_wheel_row.dart';
 import '../../../app/theme.dart';
 
 class ScheduleSheetResult {
@@ -125,38 +125,6 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
     });
   }
 
-  Future<void> _pickStart() async {
-    final picked = await safeShowTimePicker(
-      context,
-      initialTime: _start,
-      helpText: widget.catchUp
-          ? AppCopy.scheduleCatchUpPickStart
-          : AppCopy.schedulePickStart,
-    );
-    if (!mounted || picked == null) return;
-    setState(() {
-      _start = picked;
-      if (_durationMinutes != null) {
-        _end = _addMinutes(_start, _durationMinutes!);
-      }
-    });
-  }
-
-  Future<void> _pickEnd() async {
-    final picked = await safeShowTimePicker(
-      context,
-      initialTime: _end,
-      helpText: widget.catchUp
-          ? AppCopy.scheduleCatchUpPickEnd
-          : AppCopy.schedulePickEnd,
-    );
-    if (!mounted || picked == null) return;
-    setState(() {
-      _end = picked;
-      _durationMinutes = null;
-    });
-  }
-
   Future<bool> _confirmLongDurationIfNeeded() async {
     final minutes = _durationBetween(_start, _end);
     if (minutes <= _maxMinutesWithoutConfirm) return true;
@@ -238,21 +206,45 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.inkMuted),
           ),
           const SizedBox(height: 8),
+          TimeWheelRow(
+            key: ValueKey('start-${_start.hour}-${_start.minute}'),
+            value: _start,
+            onChanged: (t) {
+              setState(() {
+                _start = t;
+                if (_durationMinutes != null) {
+                  _end = _addMinutes(_start, _durationMinutes!);
+                }
+              });
+            },
+          ),
+          const SizedBox(height: 8),
           Row(
             children: [
               _ChoiceChip(
-                label: '${AppCopy.scheduleStartNow} ${_format(_start)}',
-                selected: true,
-                onTap: _setStartNow,
-              ),
-              const SizedBox(width: 8),
-              _ChoiceChip(
-                label: AppCopy.scheduleChangeTime,
+                label: AppCopy.scheduleStartNow,
                 selected: false,
-                onTap: _pickStart,
+                onTap: _setStartNow,
               ),
             ],
           ),
+          if (_durationMinutes == null) ...[
+            const SizedBox(height: 16),
+            const Text(
+              AppCopy.schedulePickEnd,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.inkMuted,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TimeWheelRow(
+              key: ValueKey('end-${_end.hour}-${_end.minute}'),
+              value: _end,
+              onChanged: (t) => setState(() => _end = t),
+            ),
+          ],
           const SizedBox(height: 16),
           const Text(
             AppCopy.scheduleDurationLabel,
@@ -286,7 +278,12 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
               _ChoiceChip(
                 label: AppCopy.scheduleCustomDuration,
                 selected: _durationMinutes == null,
-                onTap: _pickEnd,
+                onTap: () => setState(() {
+                  _durationMinutes = null;
+                  if (_durationBetween(_start, _end) <= 0) {
+                    _end = _addMinutes(_start, 30);
+                  }
+                }),
               ),
             ],
           ),

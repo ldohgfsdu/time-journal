@@ -453,6 +453,12 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
 - 测试：`comparison_time_test.dart`（本机无 flutter CLI，待 CI 跑全量）。
 - `开发计划.txt`：P2-1、P2-2 → done。
 
+## 2026-07-08 — P2-3 滚轮选时 + P2-4 文案
+
+- `TimeWheelRow` + `picker_helper` 底部滚轮；`schedule_sheet` 内嵌开始/自定义结束滚轮。
+- `weeklySleepEarly(0)` 温和文案；`time_wheel_test.dart`。
+- `开发计划.txt`：P2-3、P2-4 → done。
+
 ## 2026-07-08 — CI 只自动 arm64 Release
 
 - 用户：日常只要 arm64，debug 太大。

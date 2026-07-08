@@ -243,7 +243,7 @@ class AppCopy {
     return '这周记录了 $nights 晚睡眠';
   }
   static String weeklySleepEarly(int days) =>
-      days > 0 ? '早睡 $days 天' : '暂无早睡记录';
+      days > 0 ? '早睡 $days 天' : '这周还没有早睡打卡，今晚试试也不晚';
   static String weeklySleepBedtime(String time) => '平均就寝 $time';
   static String weeklySleepProgress(int days) => '本周早睡 $days 天';
   static String weeklySleepStars(int stars) => '本周点亮 $stars 晚';

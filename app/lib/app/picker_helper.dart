@@ -1,39 +1,66 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'theme.dart';
 
-/// Centralized time picker helper — all showTimePicker calls go through here.
-///
-/// Uses dial mode to avoid system keyboard input.
+import 'theme.dart';
+import 'widgets/time_wheel_row.dart';
+
+/// Centralized time picker — wheel sheet (no system keyboard).
 Future<TimeOfDay?> safeShowTimePicker(
   BuildContext context, {
   required TimeOfDay initialTime,
   required String helpText,
 }) {
-  return showTimePicker(
+  var selected = TimeOfDay(
+    hour: initialTime.hour,
+    minute: roundMinuteToStep(initialTime.minute),
+  );
+
+  return showModalBottomSheet<TimeOfDay>(
     context: context,
-    initialTime: initialTime,
-    helpText: helpText,
-    initialEntryMode: TimePickerEntryMode.dial,
+    backgroundColor: AppTheme.card,
     barrierColor: AppTheme.barrier,
-    builder: (context, child) => Theme(
-      data: AppTheme.light().copyWith(
-        timePickerTheme: AppTheme.light().timePickerTheme.copyWith(
-          backgroundColor: AppTheme.paper,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          dialBackgroundColor: AppTheme.card,
-          dialHandColor: AppTheme.tomato,
-          dialTextColor: AppTheme.ink,
-          hourMinuteTextColor: AppTheme.ink,
-          dayPeriodTextColor: AppTheme.ink,
-          entryModeIconColor: AppTheme.inkMuted,
-          hourMinuteColor: AppTheme.tomatoSoft,
-          dayPeriodColor: AppTheme.tomatoSoft,
-        ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(foregroundColor: AppTheme.tomato),
-        ),
-      ),
-      child: child!,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
+    builder: (ctx) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                helpText,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.ink,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TimeWheelRow(
+                value: selected,
+                onChanged: (t) => selected = t,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: const Text('取消'),
+                  ),
+                  const Spacer(),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(ctx, selected),
+                    child: const Text('确定'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
   );
 }

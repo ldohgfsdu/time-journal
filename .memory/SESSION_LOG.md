@@ -459,7 +459,9 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
 - `weeklySleepEarly(0)` 温和文案；`time_wheel_test.dart`。
 - `开发计划.txt`：P2-3、P2-4 → done。
 
-## 2026-07-08 — CI 加速
+## 2026-07-08 — 自动安装脚本
+
+- `ci_wait_install_arm64.sh` + `post_push_app.sh`；RULES/COMMANDS 约定 push app 后执行。
 
 - Gradle cache + concurrency cancel-in-progress；`pre_push_app_check.sh`。
 

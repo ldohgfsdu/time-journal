@@ -130,14 +130,14 @@ When switching between AI tools or models:
 
 ### 截图 / 识图（Hermes ↔ Grok CLI）
 
-Hermes 若当前模型不支持 vision，改用 Grok 无头识图：
+用户把文件放在手机 **`/storage/emulated/0/inbox`**（项目子目录 `time-journal` 或 inbox 根目录）。Hermes 无 vision 时：
 
 ```bash
-agent vision /storage/emulated/0/DCIM/Screenshots/xxx.jpg "用中文说明内容"
-# 或 grok-vision <路径> [提示词]
+bash scripts/ensure_inbox_links.sh   # 链 .external_inbox/（仓库内未提交）
+agent vision inbox "用中文说明内容"
 ```
 
-用户说「看 DCIM / inbox 截图」时，Hermes 应在终端执行上述命令并把 stdout 当作识图结果。
+「我上传了文件 / 看新文件 / 看 inbox 截图」→ 先 `bash scripts/inbox_list.sh` 或 `agent vision inbox`，勿默认去 DCIM。
 
 ## Global AI usage tools
 

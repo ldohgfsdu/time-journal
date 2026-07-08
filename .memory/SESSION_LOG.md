@@ -442,4 +442,5 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
 - 用户：Hermes 无 vision，希望联动 grokcli 识图。
 - 全局（非仓库）：`~/.ai-tools/agent-launcher/grok-vision.sh`；`agent vision` / `grok-vision`；`agent-install` 已同步；`AGENT_LAUNCHER.md` 说明。
 - 项目文档：`AGENTS.md`（Hermes 应跑 `agent vision`）、`.memory/ENVIRONMENT.md`。
-- 冒烟：`agent vision` + DCIM Actions 截图 OK；`agent --self-test` [6] Grok 识图 OK。
+- 全局（非仓库）：`grok-vision.sh` 支持 `inbox`；`agent vision inbox`。
+- 项目：`scripts/ensure_inbox_links.sh`、`.external_inbox` → `/storage/emulated/0/inbox/time-journal`；识图扫描 inbox 根目录 + 项目子目录（用户现把图放在 inbox 根也可）。

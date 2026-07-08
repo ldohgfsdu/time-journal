@@ -108,10 +108,18 @@ bash scripts/inbox_list.sh
 
 Inbox:
 
+```text
+/storage/emulated/0/inbox/time-journal   # 手机侧项目收件箱（推荐放截图）
+.external_inbox/  -> 同上（bash scripts/ensure_inbox_links.sh）
 ```
-.external_inbox/  -> /storage/emulated/0/inbox/time-journal
+
+识图最新 inbox 截图：
+
+```bash
+agent vision inbox "提示词"
+```
+
 .shared_inbox/    -> /storage/emulated/0/inbox/_shared
-```
 
 Outbox:
 

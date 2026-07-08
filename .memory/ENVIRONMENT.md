@@ -42,7 +42,7 @@ agent --self-test
 
 - Proxy 透明模式：保留 `agent proxy` 子命令与 `proxy_menu()`，**不在主菜单显示**。
 - 直接启动：`agent <项目> opencode|claude|hermes|grok`。
-- **识图**：`agent vision <图片路径> [提示词]` 或 `grok-vision`（Grok CLI 无头 ACP；Hermes 无 vision 时用）。见 `AGENT_LAUNCHER.md`。
+- **识图**：`agent vision inbox [提示词]`（扫描 `/storage/emulated/0/inbox` 与 `.external_inbox/` 最新图）；项目内 `bash scripts/ensure_inbox_links.sh` 建链。
 
 ## Claude Code
 

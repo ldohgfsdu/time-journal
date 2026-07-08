@@ -25,6 +25,10 @@ while (( round < MAX_ROUNDS )); do
     du_b=$(du -sm "$ROOT/app/build" 2>/dev/null | cut -f1)
     log "round $round/$MAX_ROUNDS: Gradle running etime=${etime:-?} app/build=${du_b:-?}MB"
   else
+    if ! bash "$ROOT/scripts/ensure_ndk_host_runnable.sh" 2>>"$LOG"; then
+      log "STOP: NDK 主机不可跑，不再重试 build（见 ENVIRONMENT.md）"
+      exit 2
+    fi
     du_b=$(du -sm "$ROOT/app/build" 2>/dev/null | cut -f1)
     log "round $round: no Gradle; build=${du_b:-?}MB — trying build_arm64_to_outbox"
     if ! SKIP_CHECK=1 bash "$ROOT/scripts/build_arm64_to_outbox.sh" >>"$LOG" 2>&1; then

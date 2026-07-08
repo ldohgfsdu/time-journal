@@ -59,6 +59,7 @@ if [[ "${SKIP_CHECK:-0}" != "1" ]]; then
   echo "== flutter test =="
   flutter test
 fi
+bash "$ROOT/scripts/ensure_ndk_host_runnable.sh"
 echo "== flutter build apk (arm64 release) =="
 flutter build apk --release --target-platform android-arm64
 

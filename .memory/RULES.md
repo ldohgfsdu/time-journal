@@ -105,6 +105,7 @@ cd app && timeout 180 flutter test
 - 仅当本次 push 包含 **`app/`** 内改动时，Actions 会自动跑 analyze + test + 上传 **arm64 Release APK**（`android-arm64-release.yml`）。
 - **Debug APK** 不随 push 构建（`android-debug-apk.yml` 仅 `workflow_dispatch`），避免大包浪费。
 - 只改 `.memory/`、`AGENTS.md`、文档等 **不会** 触发 APK 构建，避免无意义耗时。
+- push 含 **`app/`** 后执行：`bash scripts/post_push_app.sh`（后台等 CI 成功 → `gh` 下载 artifact → `pm`/`termux-open` 安装）。一次性配置：`gh auth login`。
 
 ## 收口规则
 

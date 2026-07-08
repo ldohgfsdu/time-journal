@@ -13,6 +13,7 @@
 
 ## Latest known commit
 
+- 6c3c4ea docs(memory): Hermes 截图走 Grok CLI agent vision
 - b6ffab4 ci(android): build APK on push when app/ changes
 - 功能合并点：e07e674 Merge pull request #9（planned block 开始专注传 planId）
 

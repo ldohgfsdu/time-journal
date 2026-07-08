@@ -27,6 +27,7 @@ fi
 if [[ -n "${ANDROID_HOME:-}" ]]; then
   export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 fi
+bash "$ROOT/scripts/fix_android_sdk_cmake_arm64.sh" 2>/dev/null || true
 if ! command -v flutter >/dev/null 2>&1; then
   echo "错误: 未找到 flutter（期望 /root/dev/flutter/bin 或在 PATH）" >&2
   exit 1

@@ -11,8 +11,9 @@ log licenses
 ( yes || true ) | "$SDKMAN" --sdk_root="$SDK_ROOT" --licenses 2>&1 | tail -5
 log install
 stdbuf -oL -eL "$SDKMAN" --sdk_root="$SDK_ROOT" \
-  "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;28.2.13676358"
+  "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;28.2.13676358" "cmake;3.22.1"
 ROOT=/root/code/time-journal
+bash "$ROOT/scripts/fix_android_sdk_cmake_arm64.sh"
 cat >"$ROOT/scripts/android_sdk.env" <<EOF
 export ANDROID_HOME="$SDK_ROOT"
 export PATH="\$ANDROID_HOME/cmdline-tools/latest/bin:\$ANDROID_HOME/platform-tools:\$PATH"

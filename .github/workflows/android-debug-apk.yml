@@ -1,13 +1,8 @@
 name: Android Debug APK
 
+# 轻量 app：日常只装 arm64 Release。Debug 体积大，仅手动触发排查用。
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - p0/journal-compare
-    paths:
-      - "app/**"
-      - ".github/workflows/android-debug-apk.yml"
 
 defaults:
   run:

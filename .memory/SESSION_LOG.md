@@ -452,3 +452,9 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
 - `schedule_sheet`：catchUp 可传入起止时间。
 - 测试：`comparison_time_test.dart`（本机无 flutter CLI，待 CI 跑全量）。
 - `开发计划.txt`：P2-1、P2-2 → done。
+
+## 2026-07-08 — CI 只自动 arm64 Release
+
+- 用户：日常只要 arm64，debug 太大。
+- `android-debug-apk.yml`：去掉 `push`，仅 `workflow_dispatch`。
+- README / RULES / COMMANDS / CURRENT_STATE 同步说明。

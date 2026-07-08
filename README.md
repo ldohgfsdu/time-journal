@@ -132,13 +132,15 @@ F:\flutter\bin\flutter.bat run
 
 ## 构建说明
 
-### Android Debug / Release
+### Android（日常只装 arm64 Release）
 
-本地打包需要 Android SDK、Gradle toolchain、签名配置等完整环境。
+`app/android` 已限制 **arm64-v8a**。推送 `app/**` 到 `p0/journal-compare` 时，GitHub Actions 只自动打 **Release APK**（artifact：`time-journal-arm64-v8a-release`）。
+
+Debug APK workflow **仅手动**（Actions → Android Debug APK → Run workflow），体积大，平时不必下。
 
 ```bash
 cd app
-flutter build apk --release
+flutter build apk --release --target-platform android-arm64
 ```
 
 手机 Termux 侧默认不要求本地 release 构建。若 `flutter doctor` 显示 Android toolchain 不完整，优先用电脑、GitHub Actions、Codemagic 或其他云构建完成 APK/AAB。

@@ -78,6 +78,7 @@ Do not print or commit the API key.
 - **本地 APK → outbox**：`bash scripts/build_arm64_to_outbox.sh`（需 **Android SDK**）
 - 首次安装 SDK：`bash scripts/setup_android_sdk_termux.sh`（proot Ubuntu + apt）；续装包：`bash scripts/install_android_sdk_packages.sh`
 - arm64 proot：SDK 自带 cmake/ninja 常为 x86_64；`fix_android_sdk_cmake_arm64.sh` 用 apt `cmake` + `ninja-build` 包装
+- **本机 arm64 打包硬限制**：sdkmanager 的 NDK 仅带 `linux-x86_64` 主机 clang，在 aarch64 proot 上 **无法跑通** `configureCMake`（除非多架构 libc + qemu，或换 x86_64 构建机）。**日常装包**：GitHub Actions `android-arm64-release` artifact → 拷到 outbox；脚本改动仍可 `flutter test` + CI 打 APK。
 - SDK 路径默认：`/data/data/com.termux/files/home/Android/Sdk`；生成 `scripts/android_sdk.env`（已 gitignore）
 
 Web Drift depends on:

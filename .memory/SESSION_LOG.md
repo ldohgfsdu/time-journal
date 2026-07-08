@@ -436,3 +436,10 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
 - 用户要求：以后默认 push；`app/` 改动自动构建 APK。
 - `android-arm64-release.yml` / `android-debug-apk.yml`：增加 `push` → `p0/journal-compare`，`paths: app/**`（及对应 workflow 文件）。
 - RULES / COMMANDS / AGENTS：提交后默认 `git push`；说明仅 app 改动触发 CI。
+
+## 2026-07-08 — Grok CLI 识图 ↔ Hermes
+
+- 用户：Hermes 无 vision，希望联动 grokcli 识图。
+- 全局（非仓库）：`~/.ai-tools/agent-launcher/grok-vision.sh`；`agent vision` / `grok-vision`；`agent-install` 已同步；`AGENT_LAUNCHER.md` 说明。
+- 项目文档：`AGENTS.md`（Hermes 应跑 `agent vision`）、`.memory/ENVIRONMENT.md`。
+- 冒烟：`agent vision` + DCIM Actions 截图 OK；`agent --self-test` [6] Grok 识图 OK。

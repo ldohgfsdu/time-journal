@@ -116,7 +116,7 @@
 
 - OpenCode（主力）：免费，主线开发 / 审计 / 修复 / 提交
 - Claude Code（付费备用）：仅 DeepSeek 余额充足时使用
-- Grok：图片审查 / 第二意见
+- Grok：图片审查 / 第二意见；无头识图 `agent vision` / `grok-vision`（全局 `~/.ai-tools/agent-launcher/grok-vision.sh`，Hermes 无 vision 时用）
 - 终端输入 `agent` 打开启动菜单
 
 ## Known notes

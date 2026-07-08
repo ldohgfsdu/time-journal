@@ -128,6 +128,17 @@ When switching between AI tools or models:
 
 跨项目指针：`.shared_inbox/agent-launcher-pointer.md`
 
+### 截图 / 识图（Hermes ↔ Grok CLI）
+
+Hermes 若当前模型不支持 vision，改用 Grok 无头识图：
+
+```bash
+agent vision /storage/emulated/0/DCIM/Screenshots/xxx.jpg "用中文说明内容"
+# 或 grok-vision <路径> [提示词]
+```
+
+用户说「看 DCIM / inbox 截图」时，Hermes 应在终端执行上述命令并把 stdout 当作识图结果。
+
 ## Global AI usage tools
 
 This project uses global AI usage tracking tools:

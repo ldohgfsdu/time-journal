@@ -48,6 +48,8 @@ class AppCopy {
   ) => '原计划：$task · $start - $end';
   static const journalCompareNow = '现在';
   static const journalCompareNoPlanNow = '当前没有计划';
+  static const journalCompareNoPlanNowHint = '要不要补记刚刚这一段？';
+  static const journalCompareCatchUpSegment = '补记刚刚这一段';
   static const journalBlockPickTodo = '从待办带入';
   static const journalTodoChipScheduled = '已在其他时段安排';
   static const scheduleStartLabel = '开始时间';

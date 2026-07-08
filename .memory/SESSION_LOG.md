@@ -444,3 +444,11 @@ PR #8: https://github.com/ldohgfsdu/time-journal/pull/8
 - 项目文档：`AGENTS.md`（Hermes 应跑 `agent vision`）、`.memory/ENVIRONMENT.md`。
 - 全局（非仓库）：`grok-vision.sh` 支持 `inbox`；`agent vision inbox`。
 - 项目：`scripts/ensure_inbox_links.sh`、`.external_inbox` → `/storage/emulated/0/inbox/time-journal`；识图扫描 inbox 根目录 + 项目子目录（用户现把图放在 inbox 根也可）。
+
+## 2026-07-08 — P2-1 / P2-2 今日对照交互
+
+- `comparison_time.dart`：当前时段判定、列表置顶、补记时间窗建议。
+- `today_comparison_section`：无计划空档「当前没有计划」卡；补记默认上一段结束→现在。
+- `schedule_sheet`：catchUp 可传入起止时间。
+- 测试：`comparison_time_test.dart`（本机无 flutter CLI，待 CI 跑全量）。
+- `开发计划.txt`：P2-1、P2-2 → done。

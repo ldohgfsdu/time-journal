@@ -19,6 +19,8 @@ Future<ScheduleSheetResult?> showScheduleSheet(
   BuildContext context, {
   required String taskName,
   bool catchUp = false,
+  TimeOfDay? catchUpStart,
+  TimeOfDay? catchUpEnd,
 }) {
   return showModalBottomSheet<ScheduleSheetResult>(
     context: context,
@@ -31,6 +33,8 @@ Future<ScheduleSheetResult?> showScheduleSheet(
     builder: (ctx) => _ScheduleSheetBody(
       taskName: taskName,
       catchUp: catchUp,
+      catchUpStart: catchUpStart,
+      catchUpEnd: catchUpEnd,
     ),
   );
 }
@@ -39,10 +43,14 @@ class _ScheduleSheetBody extends StatefulWidget {
   const _ScheduleSheetBody({
     required this.taskName,
     required this.catchUp,
+    this.catchUpStart,
+    this.catchUpEnd,
   });
 
   final String taskName;
   final bool catchUp;
+  final TimeOfDay? catchUpStart;
+  final TimeOfDay? catchUpEnd;
 
   @override
   State<_ScheduleSheetBody> createState() => _ScheduleSheetBodyState();
@@ -60,9 +68,21 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
   void initState() {
     super.initState();
     final now = TimeOfDay.now();
-    _start = now;
-    _end = _addMinutes(now, 60);
-    _durationMinutes = 60;
+    if (widget.catchUp &&
+        widget.catchUpStart != null &&
+        widget.catchUpEnd != null) {
+      _start = widget.catchUpStart!;
+      _end = widget.catchUpEnd!;
+      _durationMinutes = _durationBetween(_start, _end);
+      if (_durationMinutes! <= 0) {
+        _durationMinutes = 30;
+        _end = _addMinutes(_start, 30);
+      }
+    } else {
+      _start = now;
+      _end = _addMinutes(now, 60);
+      _durationMinutes = 60;
+    }
     _contentController = TextEditingController(text: widget.taskName.trim());
   }
 

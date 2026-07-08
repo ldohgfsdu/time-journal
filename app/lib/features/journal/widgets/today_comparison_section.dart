@@ -5,6 +5,7 @@ import '../../../app/copy.dart';
 import '../../../app/gentle_feedback.dart';
 import '../../../app/shell_navigation.dart';
 import '../../../app/theme.dart';
+import '../../../core/utils/comparison_time.dart';
 import '../../../data/local/database.dart';
 import '../../../data/models/comparison_slot.dart';
 import '../providers/journal_providers.dart';
@@ -34,7 +35,10 @@ class TodayComparisonSection extends ConsumerWidget {
     final repo = ref.read(journalRepositoryProvider);
     final now = DateTime.now();
     final nowMin = now.hour * 60 + now.minute;
-    final visibleSlots = slots.where((s) => s.hasPlan || s.orphanActual).toList();
+    final visibleSlots = orderComparisonSlotsForToday(slots, nowMin);
+    final showNoPlanNow = isToday &&
+        visibleSlots.isNotEmpty &&
+        !hasCurrentPlannedSlot(slots, nowMin);
 
     return SectionCard(
       title: AppCopy.journalCompareTitle,
@@ -48,11 +52,17 @@ class TodayComparisonSection extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: Row(
                 children: [
-                  const Text(
-                    AppCopy.journalCompareCatchUpLead,
-                    style: TextStyle(fontSize: 13, color: AppTheme.inkMuted),
+                  Expanded(
+                    child: Text(
+                      showNoPlanNow
+                          ? AppCopy.journalCompareNoPlanNowHint
+                          : AppCopy.journalCompareCatchUpLead,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppTheme.inkMuted,
+                      ),
+                    ),
                   ),
-                  const Spacer(),
                   TextButton(
                     style: TextButton.styleFrom(
                       foregroundColor: AppTheme.tomato,
@@ -64,10 +74,51 @@ class TodayComparisonSection extends ConsumerWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    onPressed: () => _openCatchUp(context, ref),
-                    child: const Text(AppCopy.journalCompareCatchUpAction),
+                    onPressed: () => _openCatchUp(context, ref, slots, nowMin),
+                    child: Text(
+                      showNoPlanNow
+                          ? AppCopy.journalCompareCatchUpSegment
+                          : AppCopy.journalCompareCatchUpAction,
+                    ),
                   ),
                 ],
+              ),
+            ),
+          if (showNoPlanNow)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppTheme.tomatoSoft.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.tomato.withValues(alpha: 0.25),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      AppCopy.journalCompareNoPlanNow,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.ink,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} · ${AppCopy.journalCompareNoPlanNowHint}',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppTheme.inkMuted,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           if (visibleSlots.isEmpty)
@@ -94,9 +145,10 @@ class TodayComparisonSection extends ConsumerWidget {
                 slot: slot,
                 isCurrent: isToday &&
                     slot.planned != null &&
-                    _isCurrentSlot(slot.planned!, nowMin),
+                    slotTimePhaseForBlock(slot.planned!, nowMin) ==
+                        SlotTimePhase.current,
                 timePhase: isToday && slot.planned != null
-                    ? _slotTimePhase(slot.planned!, nowMin)
+                    ? slotTimePhaseForBlock(slot.planned!, nowMin)
                     : SlotTimePhase.past,
                 isToday: isToday,
                 todos: todos,
@@ -146,8 +198,8 @@ class TodayComparisonSection extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: EmptyAddSlot(
-                hint: '补记一段实际记录',
-                onTap: () => _openCatchUp(context, ref),
+                hint: AppCopy.journalCompareCatchUpSegment,
+                onTap: () => _openCatchUp(context, ref, slots, nowMin),
               ),
             ),
         ],
@@ -155,11 +207,19 @@ class TodayComparisonSection extends ConsumerWidget {
     );
   }
 
-  Future<void> _openCatchUp(BuildContext context, WidgetRef ref) async {
+  Future<void> _openCatchUp(
+    BuildContext context,
+    WidgetRef ref,
+    List<ComparisonSlot> slots,
+    int nowMin,
+  ) async {
+    final window = suggestCatchUpWindow(slots: slots, nowMinutes: nowMin);
     final result = await showScheduleSheet(
       context,
       taskName: '',
       catchUp: true,
+      catchUpStart: window.start,
+      catchUpEnd: window.end,
     );
     if (result == null) return;
     final repo = ref.read(journalRepositoryProvider);
@@ -171,23 +231,6 @@ class TodayComparisonSection extends ConsumerWidget {
     );
     ref.invalidate(journalSnapshotProvider);
     GentleFeedback.lightTap();
-  }
-
-  bool _isCurrentSlot(TimeBlock plan, int nowMin) {
-    return _slotTimePhase(plan, nowMin) == SlotTimePhase.current;
-  }
-
-  SlotTimePhase _slotTimePhase(TimeBlock plan, int nowMin) {
-    final start = _parse(plan.startTime);
-    final end = _parse(plan.endTime);
-    if (nowMin < start) return SlotTimePhase.future;
-    if (nowMin >= end) return SlotTimePhase.past;
-    return SlotTimePhase.current;
-  }
-
-  int _parse(String value) {
-    final parts = value.split(':');
-    return (int.tryParse(parts[0]) ?? 0) * 60 + (int.tryParse(parts[1]) ?? 0);
   }
 
   Future<void> _editActual(
@@ -225,8 +268,6 @@ class TodayComparisonSection extends ConsumerWidget {
     GentleFeedback.lightTap();
   }
 }
-
-enum SlotTimePhase { future, current, past }
 
 class _SlotCard extends StatefulWidget {
   const _SlotCard({

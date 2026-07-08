@@ -78,8 +78,8 @@ flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8080
 | P1-5 | 我的页改成设置列表 | done | `features/profile/` | `flutter analyze` |
 | P1-6 | 周报改成节奏热力图 | done | `features/weekly/` | `flutter analyze` |
 | P1-7 | 睡眠跨午夜记录补全 | done | `features/sleep/` | `flutter test`（含跨夜用例） |
-| P2-1 | 当前时间段高亮 | later | `features/journal/` | `flutter analyze` |
-| P2-2 | 自动补记入口 | later | `features/journal/` | `flutter analyze` |
+| P2-1 | 当前时间段高亮 | done | `features/journal/` + `core/utils/comparison_time.dart` | `flutter test` |
+| P2-2 | 自动补记入口 | done | `features/journal/` + `schedule_sheet.dart` | `flutter test` |
 | P2-3 | 时间选择器改滚轮 | later | shared widgets / journal | 手动测试（已统一 input 模式 TimePicker） |
 | P3 | 动效、拖拽、导出、更多白噪音 | later | 多模块 | 待定 |
 

@@ -71,8 +71,8 @@ cd app && timeout 180 flutter test
 5. 收口也可：`bash scripts/round_close_app.sh`（未提交 app 改动也会打）
 
 ```bash
-bash scripts/build_arm64_to_outbox.sh   # 直接打包（含 analyze/test）
-SKIP_CHECK=1 bash scripts/build_arm64_to_outbox.sh   # 跳过检查，仅 build
+bash scripts/setup_android_sdk_termux.sh      # 首次（proot）
+bash scripts/build_arm64_to_outbox.sh
 ```
 
 Outbox：`/storage/emulated/0/outbox/time-journal` / `.external_outbox/` → 最新 `time-journal-arm64-release.apk`

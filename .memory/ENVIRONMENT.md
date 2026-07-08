@@ -75,8 +75,9 @@ Do not print or commit the API key.
 ## Flutter / Web
 
 - Flutter（本机）：`/root/dev/flutter/bin/flutter`（proot 内优先加入 PATH）
-- **本地 APK → outbox**：`bash scripts/build_arm64_to_outbox.sh`（需 **Android SDK**，`ANDROID_HOME` 指向 SDK 根目录；Termux 常见 `~/Android/Sdk`）
-- 未装 SDK 时脚本会失败；可用 GitHub Actions artifact 作备份，或 `pkg install` / `sdkmanager` 装 commandline-tools + platforms
+- **本地 APK → outbox**：`bash scripts/build_arm64_to_outbox.sh`（需 **Android SDK**）
+- 首次安装 SDK：`bash scripts/setup_android_sdk_termux.sh`（proot Ubuntu + apt）；续装包：`bash scripts/install_android_sdk_packages.sh`
+- SDK 路径默认：`/data/data/com.termux/files/home/Android/Sdk`；生成 `scripts/android_sdk.env`（已 gitignore）
 
 Web Drift depends on:
 

@@ -6,6 +6,11 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APP="$ROOT/app"
 APK_NAME="${APK_NAME:-time-journal-arm64-release.apk}"
 
+if [[ -f "$ROOT/scripts/android_sdk.env" ]]; then
+  # shellcheck source=/dev/null
+  source "$ROOT/scripts/android_sdk.env"
+fi
+
 if [[ -x /root/dev/flutter/bin/flutter ]]; then
   export PATH="/root/dev/flutter/bin:$PATH"
 fi

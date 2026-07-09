@@ -4,7 +4,6 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APP="$ROOT/app"
-APK_NAME="${APK_NAME:-time-journal-arm64-release.apk}"
 
 if [[ -f "$ROOT/scripts/android_sdk.env" ]]; then
   # shellcheck source=/dev/null
@@ -73,8 +72,8 @@ for candidate in \
   fi
 done
 [[ -n "$SRC" ]] || { echo "未找到 arm64 release apk under build/app/outputs/flutter-apk/" >&2; exit 1; }
-bash "$ROOT/scripts/copy_apk_to_outbox.sh" "$SRC"
-
-if command -v termux-open >/dev/null 2>&1; then
-  echo "提示: termux-open ${OUT_DIRS[0]}/$APK_NAME 可打开安装界面"
+NAME="$(bash "$ROOT/scripts/copy_apk_to_outbox.sh" "$SRC" | tail -1)"
+PHONE_OUT="/storage/emulated/0/outbox/time-journal/$NAME"
+if command -v termux-open >/dev/null 2>&1 && [[ -f "$PHONE_OUT" ]]; then
+  echo "提示: termux-open $PHONE_OUT 可打开安装界面"
 fi

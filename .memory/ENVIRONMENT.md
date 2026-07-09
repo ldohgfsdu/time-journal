@@ -90,7 +90,7 @@ push 含 app/** → GitHub CI arm64 release
 - 说明：`release_apk_to_outbox.sh` 实现上若本机 NDK 可跑会先尝试本地 build，否则走 CI 拉包；**政策上仍以 CI→outbox 为主**，不扩展本机路径
 - 需一次：`gh auth login`
 - Outbox：`/storage/emulated/0/outbox/time-journal`（仓库内 `.external_outbox/time-journal`）
-- 产物名通常：`time-journal-arm64-release.apk`
+- 产物名：`time-journal-arm64-{commit短哈希}-{YYYYMMDD-HHMM}.apk`（仅带版本戳）
 - Debug APK：仅 `workflow_dispatch`，不随 push
 
 **Fallback（不扩展）：**

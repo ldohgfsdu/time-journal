@@ -5,7 +5,6 @@ set -euo pipefail
 REPO="${REPO:-ldohgfsdu/time-journal}"
 WORKFLOW_NAME="${WORKFLOW_NAME:-Android arm64 Release APK}"
 ARTIFACT_NAME="${ARTIFACT_NAME:-time-journal-arm64-v8a-release}"
-APK_BASENAME="${APK_BASENAME:-time-journal-arm64-release.apk}"
 POLL_SEC="${POLL_SEC:-45}"
 TIMEOUT_SEC="${TIMEOUT_SEC:-2700}"
 
@@ -79,21 +78,18 @@ download_apk() {
   local apk
   apk="$(find "$work" -name '*.apk' | head -1)"
   [[ -n "$apk" && -f "$apk" ]] || { log "artifact 里未找到 apk"; return 1; }
-  local dest_dir
-  for dest_dir in \
-    "/storage/emulated/0/Download" \
-    "$ROOT/.external_outbox" \
-    "/storage/emulated/0/outbox/time-journal"; do
-    if [[ -d "$dest_dir" ]]; then
-      cp -f "$apk" "$dest_dir/$APK_BASENAME"
-      log "已复制 → $dest_dir/$APK_BASENAME"
-      echo "$dest_dir/$APK_BASENAME"
-      return 0
-    fi
-  done
-  cp -f "$apk" "/tmp/$APK_BASENAME"
-  log "已复制 → /tmp/$APK_BASENAME"
-  echo "/tmp/$APK_BASENAME"
+  # 只写带 commit 戳的文件名
+  local name
+  name="$(bash "$ROOT/scripts/copy_apk_to_outbox.sh" "$apk" | tail -1)"
+  local dest="/storage/emulated/0/outbox/time-journal/$name"
+  if [[ -f "$dest" ]]; then
+    log "已复制 → $dest"
+    echo "$dest"
+    return 0
+  fi
+  dest="$ROOT/.external_outbox/$name"
+  log "已复制 → $dest"
+  echo "$dest"
 }
 
 install_apk() {

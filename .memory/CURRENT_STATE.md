@@ -17,7 +17,7 @@ MVP / P0–P2 功能基本完成。当前主瓶颈不是功能缺口，而是记
 ## Latest known commit
 
 - `40fac38` fix(app): acceptance blockers — time wheel, focus journal match, noise, drop todo drag
-- CI APK：run `29000752231` → outbox `time-journal-arm64-release.apk`（arm64，对应 40fac38）
+- CI APK：outbox 仅保留带戳文件 `time-journal-arm64-{sha}-{时间}.apk`（最新见目录 mtime）
 - 上一文档同步：`62cb170` docs(memory): sync MVP signoff state and release gates
 - P0-6 合入：`linkedPlanId` migration 已在 `p0/journal-compare`（非 blocker）
 

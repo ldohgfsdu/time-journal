@@ -9,10 +9,10 @@
 
 ## Current stage
 
-**功能收口完成 → 交付管道建设中 → 待真机签收 → 再决定 v0.1 发布。**
+**功能收口完成 → 核心路径 1–6 签收通过 → v0.1 逻辑门禁满足（可发）。**
 
 产品定位：低压力时间手账；核心是「计划 vs 实际」的温和对照。  
-MVP / P0–P2 功能基本完成。当前主瓶颈不是功能缺口，而是记忆对齐、真机签收与 v0.1 边界定义。
+MVP / P0–P2 功能基本完成。v0.1 结论见 `.memory/V0_1_RELEASE.md`。
 
 ### UI 工作流（硬规则）
 
@@ -22,61 +22,66 @@ MVP / P0–P2 功能基本完成。当前主瓶颈不是功能缺口，而是记
 
 ## Latest known commit
 
-- `40fac38` fix(app): acceptance blockers — time wheel, focus journal match, noise, drop todo drag
-- CI APK：outbox 仅保留带戳文件 `time-journal-arm64-{sha}-{时间}.apk`（最新见目录 mtime）
-- 上一文档同步：`62cb170` docs(memory): sync MVP signoff state and release gates
-- P0-6 合入：`linkedPlanId` migration 已在 `p0/journal-compare`（非 blocker）
+- `e404c61` docs(memory): v0.1 acceptance sign-off for core paths 1-6
+- 签收依据代码 HEAD：`835e6bf`（无 app 业务 diff；签收仅 memory）
+- 分支：`p0/journal-compare`
+- 签收轮（2026-07-09）：**无 app 代码变更**；4 个未提交 UI 审美文件已 revert；工作区干净
+- 历史验收 blocker 修复：`40fac38`（时间轮 / 专注记入 / 白噪音 / 去拖拽）等已合入
 
 ## Completed（摘要）
 
 ### 产品功能（P0–P2）
 
-- P0 全部 done：今日对照、按计划完成/实际有变、专注写 actual、首页减负、待办拖拽 scoped、`linkedPlanId`（P0-6）
+- P0 全部 done：今日对照、按计划完成/实际有变、专注写 actual、首页减负、`linkedPlanId`（P0-6）
 - P1 全部 done：视觉统一、各页收口、睡眠跨午夜（P1-7）
 - P2 全部 done：当前时段高亮、补记入口、滚轮选时、空态文案
 - 番茄 ↔ 今日对照：PR #7/#8/#9（linkedPlanId 回填、navigate planId、防 detach）
+- **待办 UI 拖拽：有意移除**（长按=菜单；repo reorder 保留）
+
+### 签收（2026-07-09）
+
+- 核心路径 **1–6 全绿**（代码路径 + 自动化测试）
+- #9 睡眠跨午夜：全量测试旁证通过
+- 清单：`.memory/ACCEPTANCE_CHECKLIST.md`
+- 发布结论：`.memory/V0_1_RELEASE.md` → **v0.1 可发（逻辑门禁）**
 
 ### 交付与工程
 
-- CI：`app/**` push → arm64 Release APK（`android-arm64-release.yml`）；debug 仅 workflow_dispatch
+- CI：`app/**` push → arm64 Release APK；debug 仅 workflow_dispatch
 - Outbox 装包：`fetch_arm64_apk_from_ci` / `post_push_app` / `release_apk_to_outbox`
-- 本机 `build_arm64_to_outbox` 为 **fallback**（arm64 proot NDK 常不可用）
+- 本机 `build_arm64_to_outbox` 为 **fallback**
 - agent launcher 已迁出仓库：`~/.ai-tools/agent-launcher/`
-
-### 历史批次（不删细节，见 SESSION_LOG）
-
-- MVP 缺口修补、P1 UI 收口、白屏通知 try-catch、Claude 暖色主题等见 SESSION_LOG 2026-07-05～07
 
 ## Last known validation
 
-- 记忆峰值：flutter analyze clean；flutter test 约 136/136（PR #8/#9 合并后）
-- 2026-07-08 P2 / picker 修复后 CI analyze 曾修 unnecessary_import
-- **真机签收：未正式完成**（见 `.memory/ACCEPTANCE_CHECKLIST.md`）
+- 2026-07-09 签收轮：`flutter analyze` **No issues found**；`flutter test` **150/150 passed**
+- 路径：`/root/dev/flutter/bin/flutter`
 
 ## Release blockers
 
-- **无代码侧 P0-6 blocker**（linkedPlanId 已合入）
-- **发布前门禁：** 真机验收清单核心路径 1–6、9 必须全绿（见 ACCEPTANCE_CHECKLIST）
-- v0.1 边界尚未签收前，不称「可发」
+- **无代码 blocker**
+- v0.1 逻辑门禁：**已满足**（核心 1–6 + #9 测试旁证）
+- 残余非 blocker：实体机覆盖安装冷启动、真实跨夜睡眠人肉（见清单已知限制）
 
-## Feature freeze（签收前）
+## Feature freeze（相对 P3 / 大改）
 
 - 不做 P3（动效、更多白噪音、大拖拽等）
 - 不做大 UI 重构 / 无限视觉微调
 - 不改 Drift schema（除非用户明确授权）
 - 不新增第三条 APK 构建路径
-- 只修验收 blocker
+- 签收通过后：可写 release 边界 / 出 APK；仍避免无关扩 scope
 
 ## APK 交付路径（政策）
 
 **主路径：** `push app/**` → GitHub CI arm64 release → `fetch_arm64_apk_from_ci` → outbox  
-**Fallback：** `build_arm64_to_outbox.sh`（CI 不可用或本机 NDK 明确可用时）  
+**Fallback：** `build_arm64_to_outbox.sh`  
 Outbox：`/storage/emulated/0/outbox/time-journal`（`.external_outbox/time-journal`）
 
 ## UI (Claude 暖色主题)
 
 - theme.dart：Claude 色板（#FAF9F5 / #D97757）、圆角 20、卡片阴影
 - paper_background：暖色渐变；main_shell 悬浮圆角底栏
+- 2026-07-09：曾有未提交审美微调 → **已 revert**，不纳入 v0.1
 
 ## AI agent 分工
 
@@ -90,5 +95,4 @@ Outbox：`/storage/emulated/0/outbox/time-journal`（`.external_outbox/time-jour
 
 - 主开发目录：`~/code/time-journal`（Ubuntu/proot）
 - 不默认启动 web-server；不 /login；密钥不进仓库
-- 评估全文（2026-07-09）：`.external_outbox/time-journal/project-assessment-2026-07-09.md`（不提交）
-- 控制面同步轮（2026-07-09）：对齐 memory / 开发计划 P0-6 / 验收清单 / 交付主路径政策
+- Flutter：`/root/dev/flutter/bin/flutter`

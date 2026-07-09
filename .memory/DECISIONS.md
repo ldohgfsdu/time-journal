@@ -24,30 +24,39 @@
 - Future OpenCode / Hermes / Grok workflows should read AGENTS.md and .memory/ before working.
 - Do not rely on any single model's hidden conversation memory.
 
+## 2026-07-09 — v0.1 签收结论（代码 + 自动化测试）
+
+- 用户 scope：只做 v0.1 签收，核心路径 **1–6**；不扩 P3 / 不改 schema / 不改 UI 审美。
+- 验证：`flutter analyze` clean；`flutter test` **150/150**；commit **`835e6bf`**。
+- 结论：**v0.1 逻辑门禁通过（可发）** — 详见 `.memory/V0_1_RELEASE.md`、`.memory/ACCEPTANCE_CHECKLIST.md`。
+- 待办 UI **拖拽有意移除**；清单 #2 对齐为「新建待办 + draft 不进持久排序」。
+- 未提交的 4 个 UI 审美文件（theme / paper / section_card / main_shell）**revert**，不纳入 v0.1。
+- 残余非 blocker：实体机覆盖安装冷启动、真实跨夜睡眠人肉。
+- #9 以 sleep 自动化测试旁证通过（全量 suite 内）。
+
 ## 2026-07-09 — 阶段、冻结与交付主路径
 
 ### 产品与阶段
 
 - 产品方向：**低压力时间手账**；核心是「计划 vs 实际」温和对照。
-- 阶段表述统一为：  
-  **功能收口完成 → 交付管道建设中 → 待真机签收 → 再决定 v0.1 发布。**
+- 阶段表述（签收后）：  
+  **功能收口完成 → 核心路径签收通过 → v0.1 可发（逻辑门禁）→ 打包/装机确认。**
 - MVP / P0–P2 功能基本完成；**P0-6 `linkedPlanId` 已 done**，不再是 release blocker。
-- 主瓶颈：控制面与 git 一致、真机签收、v0.1 边界——**不是功能缺口**。
 
-### 功能面冻结（真机签收前）
+### 功能面冻结（相对 P3 / 大改）
 
 - 不做 P3（动效、更多白噪音、复杂拖拽安排等）
 - 不做大 UI 重构 / 无限视觉微调
 - 不改 Drift schema（除非用户明确授权）
 - 不新增第三条 APK 构建路径
-- **只修验收 blocker**
+- 签收期曾：**只修验收 blocker**（本轮无 blocker）
 
-### v0.1 门禁（发布边界未最终定稿前的硬规则）
+### v0.1 门禁
 
-- 真机清单见 `.memory/ACCEPTANCE_CHECKLIST.md`
+- 清单见 `.memory/ACCEPTANCE_CHECKLIST.md`
 - **核心路径 1–6、9 全绿** 才允许称为 **v0.1 可发**
-- 非核心失败 → 已知限制或升级为 blocker
-- v0.1 具体版本号、商店/仅自用、变更摘要：在签收通过后另开一轮写入（本决策只定门禁）
+- **2026-07-09 已满足**（1–6 正式签收；#9 测试旁证）
+- 发布结论与变更摘要：`.memory/V0_1_RELEASE.md`
 
 ### APK 交付路径（政策，唯一主路径）
 

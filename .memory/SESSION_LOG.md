@@ -1,5 +1,26 @@
 # SESSION_LOG
 
+## 2026-07-09 — v0.1 签收（核心路径 1–6）
+
+- **范围：** 只做 v0.1 签收；不扩 scope / 不改 UI 审美 / 不改 schema / 不开 P3。
+- **HEAD：** `835e6bf` on `p0/journal-compare`。
+- **未提交 UI 4 文件：** `theme.dart` / `paper_background.dart` / `section_card.dart` / `main_shell.dart`  
+  → 判定为**已完成视觉微调残留**（按钮高度、卡片阴影、底栏悬浮等），**非验收 blocker** → **revert**。
+- **记忆漂移：** `CURRENT_STATE` latest 仍写 `40fac38` → 已同步为 **`835e6bf`** 与签收状态。
+- **验收方式：** 代码路径审查 + `flutter analyze` + `flutter test`（无实体机本轮）。
+- **结果：**
+  1 冷启动/白屏防护：通过（通知 try-catch + smoke）；残余真机覆盖安装
+  2 待办：通过（UI 无拖拽为产品决策；draft 不进持久排序；reorder 测绿）
+  3 todo→专注→写回：通过
+  4 手动 planned→专注→linkedPlanId：通过
+  5 按计划完成/实际有变：通过
+  6 时段高亮+空档：通过
+  9 睡眠跨午夜：全量测试旁证通过
+- **验证：** analyze clean；test **150/150**。
+- **app 代码：** 无变更（无 blocker 可修）。
+- **产出：** 更新 `ACCEPTANCE_CHECKLIST` / `CURRENT_STATE` / `ACTIVE_OBJECT` / `DECISIONS`；新建 `V0_1_RELEASE.md`。
+- **结论：v0.1 逻辑门禁满足（可发）。**
+
 ## 2026-07-09 — UI 预览政策：Web 优先，满意后再 APK
 
 - 用户要求：UI 设计不要每轮打包（等 CI 久、效果差时浪费）；**先 web 预览，改到满意再打包**。

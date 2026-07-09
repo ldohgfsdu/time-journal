@@ -208,8 +208,9 @@ class _WeeklyScreenState extends ConsumerState<WeeklyScreen> {
                       ],
                       const SizedBox(height: 8),
                       WeeklyDelta(
-                        delta: summary.focusMinutesDelta,
+                        delta: summary.focusSecondsDelta,
                         hasActivity: summary.focusSessions > 0,
+                        formatAbs: AppCopy.fmtFocusDuration,
                       ),
                     ],
                   ),

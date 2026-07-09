@@ -69,13 +69,14 @@ class WeeklyRepository {
         planned: planned,
         actual: actual,
       );
-      final dayFocusMinutes = sessions
+      final dayFocusSeconds = sessions
           .where((s) => s.completed)
-          .fold<int>(0, (sum, s) => sum + (s.actualSeconds ~/ 60));
+          .fold<int>(0, (sum, s) => sum + s.actualSeconds.clamp(0, 24 * 3600));
+      final dayFocusMinutes = (dayFocusSeconds + 59) ~/ 60;
       final earlySleep = (sleep?.sleepScore ?? 0) >= 5;
 
       if (hasJournal) journalDays++;
-      if (hasJournal || dayFocusMinutes > 0 || sleep?.actualBedtime != null) {
+      if (hasJournal || dayFocusSeconds > 0 || sleep?.actualBedtime != null) {
         attendance++;
       }
       if (earlySleep) earlySleepDays++;
@@ -88,7 +89,7 @@ class WeeklyRepository {
         presetCounts[s.durationMinutes] =
             (presetCounts[s.durationMinutes] ?? 0) + 1;
       }
-      focusMinutes += dayFocusMinutes;
+      focusMinutes += dayFocusSeconds; // 字段名历史遗留，存秒
 
       if (sleep?.actualBedtime != null) {
         final bt = sleep!.actualBedtime!;
@@ -119,7 +120,7 @@ class WeeklyRepository {
       plannedStudyMinutes: plannedTotal,
       actualStudyMinutes: actualTotal,
       focusSessions: focusSessions,
-      focusMinutes: focusMinutes,
+      focusMinutes: focusMinutes, // 实际为秒，见 WeeklySummary 注释
       earlySleepDays: earlySleepDays,
       sleepNights: sleepNights,
       starsLit: earlySleepDays,
@@ -146,9 +147,10 @@ class WeeklyRepository {
       final sleep = await _db.sleepForDate(dateKey);
       if ((sleep?.sleepScore ?? 0) >= 5) earlySleepDays++;
       final sessions = await _db.sessionsForDate(dateKey);
+      // 与 loadWeek 一致：累计秒数（字段名 focusMinutes 为历史遗留）
       focusMinutes += sessions
           .where((s) => s.completed)
-          .fold<int>(0, (sum, s) => sum + (s.actualSeconds ~/ 60));
+          .fold<int>(0, (sum, s) => sum + s.actualSeconds.clamp(0, 24 * 3600));
     }
     return (earlySleepDays: earlySleepDays, focusMinutes: focusMinutes);
   }

@@ -58,7 +58,7 @@ class GentleFeedback {
               ),
               const SizedBox(height: 8),
               Text(
-                AppCopy.focusCompleteDetail(pending.minutes, pending.task),
+                AppCopy.focusCompleteDetail(pending.seconds, pending.task),
                 style: const TextStyle(fontSize: 15, color: AppTheme.inkMuted),
               ),
               const SizedBox(height: 16),

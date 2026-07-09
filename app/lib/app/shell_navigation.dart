@@ -6,7 +6,12 @@ final shellTabIndexProvider = StateProvider<int>((ref) => 0);
 void navigateToFocusTab(WidgetRef ref, {String? task, int? todoId, int? planId}) {
   final trimmed = task?.trim() ?? '';
   if (trimmed.isNotEmpty) {
-    ref.read(pomodoroControllerProvider.notifier).setLinkedTask(trimmed, todoId: todoId, planId: planId);
+    ref.read(pomodoroControllerProvider.notifier).setLinkedTask(
+          trimmed,
+          todoId: todoId,
+          planId: planId,
+          updateLinks: true,
+        );
   }
   ref.read(shellTabIndexProvider.notifier).state = 1;
 }

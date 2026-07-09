@@ -263,13 +263,14 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
                         ),
                       ),
                     ],
-                    if (noise.selected != null && noise.playing) ...[
+                    if (noise.selected != null) ...[
                       const SizedBox(height: 12),
                       Row(
                         children: [
                           Expanded(
                             child: Text(
-                              '${sleepNoiseOptions.firstWhere((o) => o.id == noise.selected).label}  ${AppCopy.sleepNoisePlaying}',
+                              '${sleepNoiseOptions.firstWhere((o) => o.id == noise.selected).label}  '
+                              '${noise.playing ? AppCopy.sleepNoisePlaying : AppCopy.sleepNoisePaused}',
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: AppTheme.sleepBlue,
@@ -277,6 +278,22 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
                               ),
                             ),
                           ),
+                          if (noise.playing)
+                            TextButton(
+                              onPressed: () async {
+                                GentleFeedback.lightTap();
+                                await noiseController.pause();
+                              },
+                              child: const Text(AppCopy.sleepNoisePause),
+                            )
+                          else
+                            TextButton(
+                              onPressed: () async {
+                                GentleFeedback.lightTap();
+                                await noiseController.resume();
+                              },
+                              child: const Text(AppCopy.sleepNoiseResume),
+                            ),
                           TextButton(
                             onPressed: () async {
                               GentleFeedback.lightTap();

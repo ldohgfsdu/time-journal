@@ -116,9 +116,9 @@ class AppCopy {
   }
 
   static const focusCompleteTitle = '完成一段专注';
-  static String focusCompleteDetail(int minutes, String task) {
+  static String focusCompleteDetail(int seconds, String task) {
     final label = task.trim().isEmpty ? '番茄专注' : task.trim();
-    return '$minutes 分钟 · $label';
+    return '${fmtFocusDuration(seconds)} · $label';
   }
 
   static const focusCompleteRecord = '记入今天';
@@ -127,8 +127,8 @@ class AppCopy {
   static const focusEndBreakButton = '结束休息';
   static const focusCompleteHint = '备注一句…';
   static const focusCompleteRecorded = '已记入今天；有计划的会直接标成一致';
-  static String focusCompleteFeedback(int minutes) =>
-      '专注了 $minutes 分钟，这一段完成了，歇一歇吧';
+  static String focusCompleteFeedback(int seconds) =>
+      '专注了 ${fmtFocusDuration(seconds)}，这一段完成了，歇一歇吧';
 
   static const focusBreak = '歇一歇，喝口水';
   static const focusBreakFooter = '休息结束后，继续下一轮';
@@ -192,6 +192,9 @@ class AppCopy {
   static const sleepNoiseTitle = '助眠声音';
   static const sleepNoiseSubtitle = '轻一点的环境声，可选，不勉强';
   static const sleepNoisePlaying = '正在播放';
+  static const sleepNoisePaused = '已暂停';
+  static const sleepNoisePause = '暂停';
+  static const sleepNoiseResume = '继续';
   static const sleepNoiseStop = '停止';
 
   static String sleepCheckInFeedback(int score, int streak) {
@@ -230,14 +233,13 @@ class AppCopy {
       '计划 ${_fmtMinutes(planned)} → 实际 ${_fmtMinutes(actual)}';
 
   static const weeklyFocusTitle = '专注';
-  static String weeklyFocusSummary(int sessions, int minutes) {
+  static String weeklyFocusSummary(int sessions, int seconds) {
     if (sessions == 0) {
       return '本周还没有专注记录，挑一个安静的时间开始就好';
     }
-    final duration = minutes > 0 ? _fmtMinutes(minutes) : '不足 1 分钟';
-    return '完成 $sessions 段专注，共 $duration';
+    return '完成 $sessions 段专注，共 ${fmtFocusDuration(seconds)}';
   }
-  static String weeklyFocusPreset(int minutes) => '最常专注：$minutes 分钟段';
+  static String weeklyFocusPreset(int minutes) => '最常预设：$minutes 分钟段';
 
   static const weeklySleepTitle = '睡眠';
   static String weeklySleepNights(int nights) {
@@ -256,10 +258,28 @@ class AppCopy {
   static const weeklyReflectionTitle = '本周小结';
   static const weeklyReflectionSubtitle = '看完数据，留一句给下周的自己';
   static const weeklyReflectionHint = '这一周，有什么想记住的？';
-  static String weeklyDeltaCompare(bool up, int delta) =>
-      '比上周 ${up ? '↑' : '↓'} $delta';
+  static String weeklyDeltaCompare(bool up, String amount) =>
+      '比上周 ${up ? '↑' : '↓'} $amount';
 
   static String fmtDuration(int minutes) => _fmtMinutes(minutes);
+
+  /// 专注时长按秒展示，避免「不足 1 分钟 / 0 分钟」含糊。
+  static String fmtFocusDuration(int seconds) {
+    var s = seconds;
+    if (s < 0) s = 0;
+    if (s < 60) return '$s 秒';
+    final m = s ~/ 60;
+    final rem = s % 60;
+    if (m < 60) {
+      if (rem == 0) return '$m 分钟';
+      return '$m 分 $rem 秒';
+    }
+    final h = m ~/ 60;
+    final rm = m % 60;
+    if (rm == 0 && rem == 0) return '$h 小时';
+    if (rem == 0) return '$h 小时 $rm 分钟';
+    return '$h 小时 $rm 分 $rem 秒';
+  }
 
   static String _fmtMinutes(int minutes) {
     final h = minutes ~/ 60;

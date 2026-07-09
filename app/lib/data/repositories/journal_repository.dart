@@ -10,17 +10,20 @@ class JournalSnapshot {
     required this.todos,
     required this.plannedBlocks,
     required this.actualBlocks,
-    this.focusMinutes = 0,
+    this.focusSeconds = 0,
     this.focusSessions = 0,
-  });
+  }) : focusMinutes = (focusSeconds + 59) ~/ 60;
 
   final String date;
   final DailyJournal journal;
   final List<TodoItem> todos;
   final List<TimeBlock> plannedBlocks;
   final List<TimeBlock> actualBlocks;
-  final int focusMinutes;
+  /// 完成专注的总秒数（展示用 [AppCopy.fmtFocusDuration]）。
+  final int focusSeconds;
   final int focusSessions;
+  /// 兼容旧字段：由秒向上取整到分钟。
+  final int focusMinutes;
 
   int get plannedMinutes => _sumMinutes(plannedBlocks);
   int get actualMinutes => _sumMinutes(actualBlocks);
@@ -88,19 +91,17 @@ class JournalRepository {
     final actual = await _db.blocksForDate(date, 'actual');
     final sessions = await _db.sessionsForDate(date);
     final completed = sessions.where((s) => s.completed).toList();
-    // 与番茄记入一致：不足 1 分钟也按 1 分钟计，避免 59 秒显示 0
-    final focusMinutes = completed.fold<int>(0, (sum, s) {
-      final m = (s.actualSeconds / 60).round();
-      if (s.actualSeconds > 0 && m < 1) return sum + 1;
-      return sum + m.clamp(0, 999);
-    });
+    final focusSeconds = completed.fold<int>(
+      0,
+      (sum, s) => sum + s.actualSeconds.clamp(0, 24 * 3600),
+    );
     return JournalSnapshot(
       date: date,
       journal: journal,
       todos: todos,
       plannedBlocks: planned,
       actualBlocks: actual,
-      focusMinutes: focusMinutes,
+      focusSeconds: focusSeconds,
       focusSessions: completed.length,
     );
   }

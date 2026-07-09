@@ -403,7 +403,11 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
               onPick: (todo) {
                 GentleFeedback.lightTap();
                 _taskController.text = todo.content;
-                controller.setLinkedTask(todo.content, todoId: todo.id);
+                controller.setLinkedTask(
+                  todo.content,
+                  todoId: todo.id,
+                  updateLinks: true,
+                );
               },
             ),
           ),
@@ -533,7 +537,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
     final endedAt = session.endedAt;
     final started = DateFormat('HH:mm').format(startedAt);
     final ended = endedAt != null ? DateFormat('HH:mm').format(endedAt) : '—';
-    final actualMin = (session.actualSeconds / 60).round();
+    final actualLabel = AppCopy.fmtFocusDuration(session.actualSeconds as int);
     final label = session.completed
         ? AppCopy.focusSessionCompleteDetail(started, ended)
         : AppCopy.focusSessionAbandonedDetail(started);
@@ -567,9 +571,8 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
                 ),
                 Text(
                   session.completed
-                      ? AppCopy.focusSessionCompleteActual(
-                          session.durationMinutes, actualMin)
-                      : '${session.durationMinutes} ${AppCopy.focusSessionFormatMin}',
+                      ? '预设 ${session.durationMinutes} 分钟 · 实际 $actualLabel'
+                      : '预设 ${session.durationMinutes} ${AppCopy.focusSessionFormatMin}',
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppTheme.inkMuted,

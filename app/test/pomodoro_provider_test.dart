@@ -411,7 +411,7 @@ void main() {
       );
 
       // Simulate from journal todo focus action: set with task + todoId (no planId)
-      controller.setLinkedTask('睡觉', todoId: todo.id);
+      controller.setLinkedTask('睡觉', todoId: todo.id, updateLinks: true);
 
       controller.selectMinutes(1);
       await controller.startFocus();
@@ -457,7 +457,7 @@ void main() {
         ),
       );
 
-      controller.setLinkedTask('健身', todoId: todo.id);
+      controller.setLinkedTask('健身', todoId: todo.id, updateLinks: true);
       controller.selectMinutes(1);
       await controller.startFocus();
       await controller.onPhaseComplete();
@@ -491,6 +491,7 @@ void main() {
         planned.content,
         planId: planned.id,
         todoId: planned.linkedTodoId,
+        updateLinks: true,
       );
       controller.selectMinutes(1);
       await controller.startFocus();

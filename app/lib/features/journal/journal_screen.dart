@@ -330,7 +330,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                   TodayStatsCard(
                     plannedMinutes: snapshot.plannedMinutes,
                     actualMinutes: snapshot.actualMinutes,
-                    focusMinutes: snapshot.focusMinutes,
+                    focusSeconds: snapshot.focusSeconds,
                     plannedSegments: snapshot.plannedSegmentCount,
                     actualSegments: snapshot.actualSegmentCount,
                   ),

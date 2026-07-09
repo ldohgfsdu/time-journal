@@ -247,7 +247,9 @@ void main() {
     test('focus sessions and minutes aggregate correctly', () async {
       final summary = await repo.loadWeek(_testMonday);
       expect(summary.focusSessions, 2);
-      expect(summary.focusMinutes, 70); // 25 + 45
+      // focusMinutes 字段现为总秒数：25min + 45min = 4200s
+      expect(summary.focusMinutes, 4200);
+      expect(summary.focusSeconds, 4200);
     });
 
     test('attendance counts days with any meaningful activity', () async {
@@ -329,11 +331,11 @@ void main() {
       final summary = await repo.loadWeek(_testMonday);
 
       expect(summary.earlySleepDays, 2);
-      expect(summary.focusMinutes, 90);
+      expect(summary.focusMinutes, 5400); // 90min in seconds
       expect(summary.prevEarlySleepDays, 1);
-      expect(summary.prevFocusMinutes, 50);
+      expect(summary.prevFocusMinutes, 3000); // 50min in seconds
       expect(summary.earlySleepDelta, 1); // 2 - 1
-      expect(summary.focusMinutesDelta, 40); // 90 - 50
+      expect(summary.focusSecondsDelta, 2400); // 40min in seconds
     });
   });
 

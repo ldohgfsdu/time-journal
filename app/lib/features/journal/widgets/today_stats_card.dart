@@ -7,14 +7,14 @@ class TodayStatsCard extends StatelessWidget {
     super.key,
     required this.plannedMinutes,
     required this.actualMinutes,
-    required this.focusMinutes,
+    required this.focusSeconds,
     required this.plannedSegments,
     required this.actualSegments,
   });
 
   final int plannedMinutes;
   final int actualMinutes;
-  final int focusMinutes;
+  final int focusSeconds;
   final int plannedSegments;
   final int actualSegments;
 
@@ -56,7 +56,7 @@ class TodayStatsCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            AppCopy.journalStatsFocus(AppCopy.fmtDuration(focusMinutes)),
+            AppCopy.journalStatsFocus(AppCopy.fmtFocusDuration(focusSeconds)),
             style: const TextStyle(fontSize: 14, color: AppTheme.inkMuted),
           ),
         ],

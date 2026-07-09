@@ -8,10 +8,13 @@ class WeeklyDelta extends StatelessWidget {
     super.key,
     required this.delta,
     required this.hasActivity,
+    this.formatAbs,
   });
 
   final int? delta;
   final bool hasActivity;
+  /// 格式化绝对差值；默认直接 toString（适合「天数」）。
+  final String Function(int absValue)? formatAbs;
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +25,9 @@ class WeeklyDelta extends StatelessWidget {
       );
     }
     final up = delta! > 0;
+    final amount = formatAbs?.call(delta!.abs()) ?? '${delta!.abs()}';
     return Text(
-      AppCopy.weeklyDeltaCompare(up, delta!.abs()),
+      AppCopy.weeklyDeltaCompare(up, amount),
       style: const TextStyle(
         fontSize: 12,
         color: AppTheme.inkMuted,

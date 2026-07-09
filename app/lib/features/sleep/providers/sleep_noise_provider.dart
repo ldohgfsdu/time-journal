@@ -54,6 +54,9 @@ class SleepNoiseState {
   final bool loading;
   final String? error;
 
+  /// Selected track is loaded but not playing (paused).
+  bool get paused => selected != null && !playing && !loading;
+
   SleepNoiseState copyWith({
     SleepNoiseId? selected,
     bool? playing,
@@ -84,9 +87,14 @@ class SleepNoiseController extends StateNotifier<SleepNoiseState> {
   final AudioPlayer _player;
   int _requestId = 0;
 
+  /// Chip tap: play / pause toggle for same sound; switch track if different.
   Future<void> select(SleepNoiseId id) async {
     if (state.selected == id && state.playing) {
-      await stop();
+      await pause();
+      return;
+    }
+    if (state.selected == id && state.paused) {
+      await resume();
       return;
     }
     final requestId = ++_requestId;
@@ -117,9 +125,30 @@ class SleepNoiseController extends StateNotifier<SleepNoiseState> {
     }
   }
 
+  Future<void> pause() async {
+    if (!state.playing) return;
+    await _player.pause();
+    state = state.copyWith(playing: false, loading: false, clearError: true);
+  }
+
+  Future<void> resume() async {
+    if (state.selected == null || state.playing) return;
+    try {
+      await _player.play();
+      state = state.copyWith(playing: true, loading: false, clearError: true);
+    } catch (_) {
+      state = state.copyWith(
+        playing: false,
+        loading: false,
+        error: '声音加载失败，请稍后再试',
+      );
+    }
+  }
+
   Future<void> stop() async {
     _requestId++;
     await _player.stop();
+    // 保持 selected，便于「继续」从当前曲目重新播放；与 pause 的区别是进度回到开头。
     state = state.copyWith(playing: false, loading: false, clearError: true);
   }
 

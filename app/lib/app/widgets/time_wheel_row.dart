@@ -25,7 +25,7 @@ TimeOfDay? tryParseTimeOfDay(String raw) {
 String formatTimeOfDay(TimeOfDay time) =>
     '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 
-/// Hand-journal style hour : minute wheels (24h) + optional keyboard entry.
+/// Hand-journal style hour : minute wheels (24h, infinite loop) + keyboard entry.
 class TimeWheelRow extends StatefulWidget {
   const TimeWheelRow({
     super.key,
@@ -75,17 +75,7 @@ class _TimeWheelRowState extends State<TimeWheelRow> {
       _minuteSlots = _buildMinuteSlots(widget.minuteStep);
     }
     final rounded = _roundedValue(widget.value);
-    final current = TimeOfDay(
-      hour: _hourController.hasClients
-          ? _hourController.selectedItem % 24
-          : rounded.hour,
-      minute: _minuteController.hasClients
-          ? _minuteSlots[_minuteController.selectedItem.clamp(
-              0,
-              _minuteSlots.length - 1,
-            )]
-          : rounded.minute,
-    );
+    final current = _currentValue();
     if (current.hour != rounded.hour || current.minute != rounded.minute) {
       _jumpTo(rounded);
     }
@@ -127,13 +117,35 @@ class _TimeWheelRowState extends State<TimeWheelRow> {
     return idx < 0 ? 0 : idx;
   }
 
+  TimeOfDay _currentValue() {
+    final hour = _hourController.hasClients
+        ? _hourController.selectedItem % 24
+        : widget.value.hour;
+    final minuteIndex = _minuteController.hasClients
+        ? _minuteController.selectedItem % _minuteSlots.length
+        : _minuteIndex(widget.value.minute);
+    return TimeOfDay(
+      hour: hour < 0 ? (hour % 24 + 24) % 24 : hour,
+      minute: _minuteSlots[minuteIndex < 0
+          ? (minuteIndex % _minuteSlots.length + _minuteSlots.length) %
+              _minuteSlots.length
+          : minuteIndex],
+    );
+  }
+
   void _jumpTo(TimeOfDay time) {
     _syncingControllers = true;
     if (_hourController.hasClients) {
-      _hourController.jumpToItem(time.hour);
+      // Keep nearby scroll position when looping.
+      final current = _hourController.selectedItem;
+      final base = current - (current % 24);
+      _hourController.jumpToItem(base + time.hour);
     }
     if (_minuteController.hasClients) {
-      _minuteController.jumpToItem(_minuteIndex(time.minute));
+      final current = _minuteController.selectedItem;
+      final len = _minuteSlots.length;
+      final base = current - (current % len);
+      _minuteController.jumpToItem(base + _minuteIndex(time.minute));
     }
     _syncingControllers = false;
   }
@@ -152,22 +164,19 @@ class _TimeWheelRowState extends State<TimeWheelRow> {
     widget.onChanged(rounded);
   }
 
-  void _onHourSelected(int hour) {
+  void _onHourSelected(int index) {
     if (_syncingControllers) return;
-    final minute = _minuteController.hasClients
-        ? _minuteSlots[
-            _minuteController.selectedItem.clamp(0, _minuteSlots.length - 1)]
-        : _roundedValue(widget.value).minute;
-    _emit(TimeOfDay(hour: hour % 24, minute: minute));
+    final hour = ((index % 24) + 24) % 24;
+    final minute = _currentValue().minute;
+    _emit(TimeOfDay(hour: hour, minute: minute));
   }
 
   void _onMinuteSelected(int index) {
     if (_syncingControllers) return;
-    final hour = _hourController.hasClients
-        ? _hourController.selectedItem % 24
-        : widget.value.hour;
-    final minute = _minuteSlots[index.clamp(0, _minuteSlots.length - 1)];
-    _emit(TimeOfDay(hour: hour, minute: minute));
+    final len = _minuteSlots.length;
+    final minuteIndex = ((index % len) + len) % len;
+    final hour = _currentValue().hour;
+    _emit(TimeOfDay(hour: hour, minute: _minuteSlots[minuteIndex]));
   }
 
   void _onTextFocusChange() {
@@ -211,6 +220,7 @@ class _TimeWheelRowState extends State<TimeWheelRow> {
                   magnification: 1.08,
                   squeeze: 1.05,
                   useMagnifier: true,
+                  looping: true,
                   onSelectedItemChanged: _onHourSelected,
                   children: List.generate(
                     24,
@@ -242,6 +252,7 @@ class _TimeWheelRowState extends State<TimeWheelRow> {
                   magnification: 1.08,
                   squeeze: 1.05,
                   useMagnifier: true,
+                  looping: true,
                   onSelectedItemChanged: _onMinuteSelected,
                   children: _minuteSlots
                       .map(

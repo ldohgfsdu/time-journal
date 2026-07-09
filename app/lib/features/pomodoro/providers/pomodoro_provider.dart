@@ -19,7 +19,7 @@ final currentTimeProvider = Provider<DateTime Function()>(
 
 class PendingFocusCompletion {
   const PendingFocusCompletion({
-    required this.minutes,
+    required this.seconds,
     required this.task,
     required this.date,
     required this.startTime,
@@ -28,13 +28,19 @@ class PendingFocusCompletion {
     this.linkedPlanId,
   });
 
-  final int minutes;
+  final int seconds;
   final String task;
   final String date;
   final String startTime;
   final String endTime;
   final int? linkedTodoId;
   final int? linkedPlanId;
+
+  /// 兼容旧展示：向上取整到分钟（至少 0）。
+  int get minutes {
+    if (seconds <= 0) return 0;
+    return ((seconds + 59) ~/ 60);
+  }
 }
 
 class PomodoroState {
@@ -114,18 +120,26 @@ class PomodoroController extends StateNotifier<PomodoroState>
 
   DateTime _now() => _ref.read(currentTimeProvider)();
 
-  void setLinkedTask(String task, {int? todoId, int? planId}) {
+  /// [updateLinks]=true 时按传入的 todoId/planId 重绑（null 表示清空）。
+  /// 仅改任务名（如输入框 onChanged）时 updateLinks=false，保留已选待办/计划关联。
+  void setLinkedTask(
+    String task, {
+    int? todoId,
+    int? planId,
+    bool updateLinks = false,
+  }) {
     if (state.phase != PomodoroPhase.idle) return;
-    // Always replace bindings: if not provided (default null), clear old id to avoid stale.
-    // Manual input (no id) clears previous todo/plan binding.
-    // Selecting todo or plan replaces with the new binding.
-    state = state.copyWith(
-      linkedTask: task,
-      linkedTodoId: todoId,
-      clearLinkedTodo: todoId == null,
-      linkedPlanId: planId,
-      clearLinkedPlan: planId == null,
-    );
+    if (updateLinks) {
+      state = state.copyWith(
+        linkedTask: task,
+        linkedTodoId: todoId,
+        clearLinkedTodo: todoId == null,
+        linkedPlanId: planId,
+        clearLinkedPlan: planId == null,
+      );
+      return;
+    }
+    state = state.copyWith(linkedTask: task);
   }
 
   void selectMinutes(int minutes) {
@@ -289,9 +303,8 @@ class PomodoroController extends StateNotifier<PomodoroState>
         endedAt: Value(endedAt),
       ),
     );
-    final minutes = (actualSeconds / 60).round().clamp(1, 999);
     return PendingFocusCompletion(
-      minutes: minutes,
+      seconds: actualSeconds.clamp(0, 24 * 3600),
       task: state.linkedTask,
       date: DateFormat('yyyy-MM-dd').format(_startedAt!),
       startTime: DateFormat('HH:mm').format(_startedAt!),

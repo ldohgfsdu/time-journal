@@ -63,6 +63,7 @@ class WeeklySummary {
   final int plannedStudyMinutes;
   final int actualStudyMinutes;
   final int focusSessions;
+  /// 本周完成专注总秒数（字段名历史遗留，非「分钟」）。
   final int focusMinutes;
   final int earlySleepDays;
   final int sleepNights;
@@ -70,13 +71,19 @@ class WeeklySummary {
   final List<DayActivity> days;
   final String? avgBedtimeLabel;
   final int? prevEarlySleepDays;
+  /// 上周完成专注总秒数。
   final int? prevFocusMinutes;
   final int? topFocusPresetMinutes;
   final String reflectionNote;
 
+  int get focusSeconds => focusMinutes;
+
   int? get earlySleepDelta =>
       prevEarlySleepDays == null ? null : earlySleepDays - prevEarlySleepDays!;
 
-  int? get focusMinutesDelta =>
+  int? get focusSecondsDelta =>
       prevFocusMinutes == null ? null : focusMinutes - prevFocusMinutes!;
+
+  @Deprecated('use focusSecondsDelta')
+  int? get focusMinutesDelta => focusSecondsDelta;
 }

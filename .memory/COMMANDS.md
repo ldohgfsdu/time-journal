@@ -92,7 +92,9 @@ bash scripts/setup_android_sdk_termux.sh
 bash scripts/build_arm64_to_outbox.sh
 ```
 
-Outbox：`/storage/emulated/0/outbox/time-journal` → `time-journal-arm64-{commit}-{时间}.apk`（仅带版本戳，无固定名）
+Outbox：`/storage/emulated/0/outbox/time-journal/`  
+- **最新包**（根目录）：`time-journal-arm64-{commit}-{时间}.apk`  
+- **历史版本**：`.../history/`（新包写入时自动把旧的挪进去）
 
 ## Web preview
 

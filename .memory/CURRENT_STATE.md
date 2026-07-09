@@ -22,7 +22,7 @@ MVP / P0–P2 功能基本完成。v0.1 结论见 `.memory/V0_1_RELEASE.md`。
 
 ## Latest known commit
 
-- `e404c61` docs(memory): v0.1 acceptance sign-off for core paths 1-6
+- `a8951a6` docs(memory): v0.1 acceptance sign-off for core paths 1-6
 - 签收依据代码 HEAD：`835e6bf`（无 app 业务 diff；签收仅 memory）
 - 分支：`p0/journal-compare`
 - 签收轮（2026-07-09）：**无 app 代码变更**；4 个未提交 UI 审美文件已 revert；工作区干净

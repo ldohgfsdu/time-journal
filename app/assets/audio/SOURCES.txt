@@ -1,4 +1,4 @@
 Ambient loops (mp3) derived from free samples in:
 https://github.com/bradtraversy/ambient-sound-mixer (audio/)
-Used as rain/wave/fire/wind loops for sleep noise; re-encoded mono 128kbps.
-Replace anytime with your own Freesound/Pixabay CC samples if preferred.
+Re-encoded mono 128kbps; 2026-07-09 soft pass:
+highpass 60Hz + lowpass 3.2kHz + lower gain + light compression (less harsh for sleep).

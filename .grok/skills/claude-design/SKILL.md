@@ -114,11 +114,16 @@ Flutter: use `google_fonts` — `GoogleFonts.cormorantGaramond` / `GoogleFonts.i
 ## Workflow when invoked
 
 1. Re-read `DESIGN.md` Overview + Do's/Don'ts.
-2. State scope: which screens/components.
-3. Prefer **structure + type + surface rhythm** changes over hex-only.
-4. After UI edits: `flutter analyze` + `flutter test` under `app/`.
-5. If packaging: stamped APK to outbox via existing scripts (CI preferred).
-6. Update `.memory/SESSION_LOG.md` with what visual systems changed.
+2. **Ask user first** before any large visual rewrite of time-journal. This product already has a warm paper journal look users may prefer; Claude marketing chrome is a reference, not a forced rebrand.
+3. State scope: which screens/components (small diffs > full theme rewrites).
+4. Prefer **structure + type + surface rhythm** changes over hex-only — but never ship a “magazine Claude.com” look if the user wants the original hand-journal feel.
+5. After UI edits: `flutter analyze` + `flutter test` under `app/`.
+6. If packaging: stamped APK to outbox via existing scripts (CI preferred).
+7. Update `.memory/SESSION_LOG.md` with what visual systems changed.
+
+## Hard lesson (time-journal)
+
+Wholesale Claude redesign (serif everywhere, surface-card stacks, coral scarcity on nav) was rejected by the product owner as **worse than the original**. Keep this skill for **optional** inspiration / future polish **with explicit approval**, not automatic restyles.
 
 ## Flutter mapping checklist
 

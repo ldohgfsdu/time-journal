@@ -48,12 +48,12 @@ class _MainShellState extends ConsumerState<MainShell> {
   Widget _buildTabBar(int index) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppTheme.canvas,
-        border: Border(top: BorderSide(color: AppTheme.hairline)),
+        color: AppTheme.card,
+        border: Border(top: BorderSide(color: AppTheme.rule)),
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: Row(
             children: List.generate(_tabs.length, (i) {
               final tab = _tabs[i];
@@ -61,16 +61,15 @@ class _MainShellState extends ConsumerState<MainShell> {
               return Expanded(
                 child: InkWell(
                   onTap: () => ref.read(shellTabIndexProvider.notifier).state = i,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                  borderRadius: BorderRadius.circular(12),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
-                      // Selected = cream card wash + ink (coral reserved for CTA)
                       color: selected
-                          ? AppTheme.surfaceCard
+                          ? AppTheme.tomatoSoft.withValues(alpha: 0.8)
                           : Colors.transparent,
-                      borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -78,17 +77,18 @@ class _MainShellState extends ConsumerState<MainShell> {
                         Icon(
                           selected ? tab.activeIcon : tab.icon,
                           size: 22,
-                          color: selected ? AppTheme.ink : AppTheme.mutedSoft,
+                          color:
+                              selected ? AppTheme.tomato : AppTheme.inkFaint,
                         ),
-                        const SizedBox(height: 3),
+                        const SizedBox(height: 2),
                         Text(
                           tab.label,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight:
-                                selected ? FontWeight.w500 : FontWeight.w400,
+                                selected ? FontWeight.w600 : FontWeight.w400,
                             color:
-                                selected ? AppTheme.ink : AppTheme.mutedSoft,
+                                selected ? AppTheme.tomato : AppTheme.inkFaint,
                           ),
                         ),
                       ],

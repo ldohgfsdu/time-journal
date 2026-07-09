@@ -161,7 +161,7 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
       return PopScope(
         canPop: false,
         child: Scaffold(
-          backgroundColor: AppTheme.surfaceDark,
+          backgroundColor: const Color(0xFF0A0A0A),
           body: SafeArea(
             bottom: false,
             child: _buildImmersiveBody(state, controller, inFocus),

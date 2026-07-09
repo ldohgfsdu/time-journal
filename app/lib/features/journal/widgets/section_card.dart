@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../app/theme.dart';
 
-/// Claude feature-card: surface-card cream, hairline, generous padding, calm title.
 class SectionCard extends StatelessWidget {
   const SectionCard({
     super.key,
@@ -11,7 +9,6 @@ class SectionCard extends StatelessWidget {
     this.trailing,
     this.subtitle,
     this.dense = false,
-    this.editorialTitle = false,
   });
 
   final String title;
@@ -19,8 +16,6 @@ class SectionCard extends StatelessWidget {
   final Widget child;
   final Widget? trailing;
   final bool dense;
-  /// Use Cormorant serif for title (editorial band).
-  final bool editorialTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -28,71 +23,60 @@ class SectionCard extends StatelessWidget {
       width: double.infinity,
       margin: EdgeInsets.symmetric(
         horizontal: AppTheme.pagePadding,
-        vertical: dense ? 8 : 10,
+        vertical: dense ? 6 : 8,
       ),
       decoration: BoxDecoration(
-        color: AppTheme.surfaceCard,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        border: Border.all(color: AppTheme.hairline),
+        color: AppTheme.card,
+        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+        border: Border.all(color: AppTheme.rule),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.fromLTRB(
-              18,
-              dense ? 14 : 18,
-              16,
-              dense ? 10 : 12,
-            ),
+            padding: EdgeInsets.fromLTRB(16, dense ? 12 : 14, 16, dense ? 8 : 10),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Container(
+                  width: 3,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: AppTheme.tomato,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
-                        style: editorialTitle
-                            ? AppTheme.display(
-                                size: 22,
-                                weight: FontWeight.w500,
-                                height: 1.2,
-                                letterSpacing: -0.3,
-                              )
-                            : GoogleFonts.inter(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: AppTheme.ink,
-                                height: 1.3,
-                                letterSpacing: -0.1,
-                              ),
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.ink,
+                        ),
                       ),
                       if (subtitle != null) ...[
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         Text(
                           subtitle!,
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                            color: AppTheme.muted,
-                            height: 1.45,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppTheme.subtitle,
+                              ),
                         ),
                       ],
                     ],
                   ),
                 ),
-                if (trailing != null) ...[
-                  const SizedBox(width: 8),
-                  trailing!,
-                ],
+                ?trailing,
               ],
             ),
           ),
+          const Divider(height: 1),
           Padding(
-            padding: EdgeInsets.fromLTRB(18, 0, 18, dense ? 14 : 18),
+            padding: EdgeInsets.fromLTRB(16, dense ? 8 : 10, 16, dense ? 12 : 14),
             child: child,
           ),
         ],

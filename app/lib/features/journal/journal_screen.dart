@@ -271,7 +271,6 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                   SectionCard(
                     title: AppCopy.journalTodoTitle,
                     subtitle: AppCopy.journalTodoSubtitle,
-                    editorialTitle: true,
                     dense: allTodos.isEmpty && draftTodos.isEmpty,
                     trailing: ActionPillButton(
                       label: AppCopy.journalTodoAdd,
@@ -490,41 +489,29 @@ class _DateHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppTheme.pagePadding,
-        12,
+        4,
         AppTheme.pagePadding,
-        8,
+        10,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             displayDate,
-            style: AppTheme.display(
-              size: 32,
-              weight: FontWeight.w500,
-              height: 1.12,
-              letterSpacing: -0.6,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             weekday,
-            style: AppTheme.ui(
-              size: 14,
-              weight: FontWeight.w400,
-              color: AppTheme.muted,
-              height: 1.4,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppTheme.inkMuted,
+                ),
           ),
           if (attendanceHint != null) ...[
             const SizedBox(height: 4),
             Text(
               attendanceHint!,
-              style: AppTheme.ui(
-                size: 12,
-                weight: FontWeight.w500,
-                color: AppTheme.mutedSoft,
-              ),
+              style: const TextStyle(fontSize: 12, color: AppTheme.inkFaint),
             ),
           ],
         ],

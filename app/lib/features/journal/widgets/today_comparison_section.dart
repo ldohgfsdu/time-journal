@@ -43,7 +43,6 @@ class TodayComparisonSection extends ConsumerWidget {
     return SectionCard(
       title: AppCopy.journalCompareTitle,
       subtitle: AppCopy.journalCompareSubtitle,
-      editorialTitle: true,
       dense: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,16 +354,16 @@ class _SlotCardState extends State<_SlotCard> {
       duration: const Duration(milliseconds: 200),
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: widget.isCurrent
-              ? AppTheme.primarySoft
-              : AppTheme.canvas,
-          borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+              ? AppTheme.tomatoSoft.withValues(alpha: 0.35)
+              : AppTheme.paper.withValues(alpha: 0.6),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: widget.isCurrent
-                ? AppTheme.primary.withValues(alpha: 0.28)
-                : AppTheme.hairline,
+                ? AppTheme.tomato.withValues(alpha: 0.35)
+                : AppTheme.rule,
           ),
         ),
         child: Column(
@@ -374,32 +373,29 @@ class _SlotCardState extends State<_SlotCard> {
               children: [
                 if (widget.isCurrent)
                   Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    margin: const EdgeInsets.only(right: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: AppTheme.primary,
-                      borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+                      color: AppTheme.tomato.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Text(
+                    child: const Text(
                       AppCopy.journalCompareNow,
-                      style: AppTheme.ui(
-                        size: 11,
-                        weight: FontWeight.w500,
-                        color: Colors.white,
-                        height: 1.2,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.tomato,
                       ),
                     ),
                   ),
                 Expanded(
                   child: Text(
                     widget.slot.timeRange,
-                    style: AppTheme.ui(
-                      size: 13,
-                      weight: FontWeight.w500,
-                      color: AppTheme.muted,
-                      height: 1.3,
-                    ).copyWith(
-                      fontFeatures: const [FontFeature.tabularFigures()],
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.inkMuted,
+                      fontFeatures: [FontFeature.tabularFigures()],
                     ),
                   ),
                 ),
@@ -417,14 +413,13 @@ class _SlotCardState extends State<_SlotCard> {
               ],
             ),
             if (title.isNotEmpty) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Text(
                 title,
-                style: AppTheme.ui(
-                  size: 16,
-                  weight: FontWeight.w500,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
                   color: AppTheme.ink,
-                  height: 1.35,
                 ),
               ),
             ],
@@ -433,11 +428,11 @@ class _SlotCardState extends State<_SlotCard> {
               const SizedBox(height: 4),
               Text(
                 '${AppCopy.journalCompareActualPrefix}$actualText',
-                style: AppTheme.ui(
-                  size: 14,
+                style: TextStyle(
+                  fontSize: 14,
                   color: status == SlotStatus.pending
-                      ? AppTheme.mutedSoft
-                      : AppTheme.body,
+                      ? AppTheme.inkFaint
+                      : AppTheme.ink,
                 ),
               ),
             ],
@@ -611,27 +606,21 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color) = switch (status) {
-      SlotStatus.match => (AppCopy.journalCompareStatusMatch, AppTheme.muted),
-      SlotStatus.pending => (AppCopy.journalCompareStatusPending, AppTheme.mutedSoft),
-      SlotStatus.changed => (AppCopy.journalCompareStatusChanged, AppTheme.body),
-      SlotStatus.unplanned => (AppCopy.journalCompareStatusUnplanned, AppTheme.mutedSoft),
+      SlotStatus.match => (AppCopy.journalCompareStatusMatch, AppTheme.inkMuted),
+      SlotStatus.pending => (AppCopy.journalCompareStatusPending, AppTheme.inkFaint),
+      SlotStatus.changed => (AppCopy.journalCompareStatusChanged, AppTheme.inkMuted),
+      SlotStatus.unplanned => (AppCopy.journalCompareStatusUnplanned, AppTheme.inkFaint),
     };
     if (label.isEmpty) return const SizedBox.shrink();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppTheme.surfaceSoft,
-        borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-        border: Border.all(color: AppTheme.hairline),
+        color: AppTheme.tagBg,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         label,
-        style: AppTheme.ui(
-          size: 11,
-          weight: FontWeight.w500,
-          color: color,
-          height: 1.2,
-        ),
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
       ),
     );
   }

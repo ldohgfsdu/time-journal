@@ -31,7 +31,7 @@ class TimeWheelRow extends StatefulWidget {
     super.key,
     required this.value,
     required this.onChanged,
-    this.minuteStep = 5,
+    this.minuteStep = 1,
     this.height = 148,
     this.showKeyboardField = true,
   });

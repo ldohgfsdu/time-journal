@@ -88,8 +88,12 @@ class JournalRepository {
     final actual = await _db.blocksForDate(date, 'actual');
     final sessions = await _db.sessionsForDate(date);
     final completed = sessions.where((s) => s.completed).toList();
-    final focusMinutes =
-        completed.fold<int>(0, (sum, s) => sum + (s.actualSeconds ~/ 60));
+    // 与番茄记入一致：不足 1 分钟也按 1 分钟计，避免 59 秒显示 0
+    final focusMinutes = completed.fold<int>(0, (sum, s) {
+      final m = (s.actualSeconds / 60).round();
+      if (s.actualSeconds > 0 && m < 1) return sum + 1;
+      return sum + m.clamp(0, 999);
+    });
     return JournalSnapshot(
       date: date,
       journal: journal,
@@ -234,6 +238,15 @@ class JournalRepository {
   }
 
   Future<void> removeBlock(int id) => _db.deleteTimeBlock(id);
+
+  Future<String?> todoContentById(int todoId) async {
+    final row = await (_db.select(_db.todoItems)
+          ..where((t) => t.id.equals(todoId)))
+        .getSingleOrNull();
+    final text = row?.content.trim();
+    if (text == null || text.isEmpty) return null;
+    return text;
+  }
 
   /// Resolve planned block for a focus session (planId first, then same-day todo).
   Future<TimeBlock?> findPlannedForFocus({

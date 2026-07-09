@@ -20,22 +20,22 @@ const sleepNoiseOptions = [
   SleepNoiseOption(
     id: SleepNoiseId.rain,
     label: '雨声',
-    assetPath: 'assets/audio/rain.wav',
+    assetPath: 'assets/audio/rain.mp3',
   ),
   SleepNoiseOption(
     id: SleepNoiseId.wave,
     label: '海浪',
-    assetPath: 'assets/audio/wave.wav',
+    assetPath: 'assets/audio/wave.mp3',
   ),
   SleepNoiseOption(
     id: SleepNoiseId.fire,
     label: '篝火',
-    assetPath: 'assets/audio/fire.wav',
+    assetPath: 'assets/audio/fire.mp3',
   ),
   SleepNoiseOption(
     id: SleepNoiseId.wind,
     label: '风声',
-    assetPath: 'assets/audio/wind.wav',
+    assetPath: 'assets/audio/wind.mp3',
   ),
 ];
 

@@ -4,10 +4,15 @@ import 'package:time_journal/app/widgets/time_wheel_row.dart';
 
 void main() {
   group('roundMinuteToStep', () {
-    test('rounds to 5 minutes', () {
-      expect(roundMinuteToStep(2), 0);
-      expect(roundMinuteToStep(3), 5);
-      expect(roundMinuteToStep(58), 0);
+    test('step 1 keeps exact minutes', () {
+      expect(roundMinuteToStep(2, step: 1), 2);
+      expect(roundMinuteToStep(59, step: 1), 59);
+    });
+
+    test('rounds to 5 minutes when step is 5', () {
+      expect(roundMinuteToStep(2, step: 5), 0);
+      expect(roundMinuteToStep(3, step: 5), 5);
+      expect(roundMinuteToStep(58, step: 5), 0);
     });
   });
 

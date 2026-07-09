@@ -324,7 +324,12 @@ class PomodoroController extends StateNotifier<PomodoroState>
       return;
     }
 
-    final label = pending.task.trim().isEmpty ? '番茄专注' : pending.task.trim();
+    // 有关联待办但任务名为空时，仍不要写成默认「番茄专注」
+    var label = pending.task.trim();
+    if (label.isEmpty && pending.linkedTodoId != null) {
+      label = await repo.todoContentById(pending.linkedTodoId!) ?? '';
+    }
+    if (label.isEmpty) label = '番茄专注';
     final content = note != null && note.trim().isNotEmpty
         ? '$label（$note）'
         : label;

@@ -11,7 +11,7 @@ Future<TimeOfDay?> safeShowTimePicker(
 }) {
   var selected = TimeOfDay(
     hour: initialTime.hour,
-    minute: roundMinuteToStep(initialTime.minute),
+    minute: roundMinuteToStep(initialTime.minute, step: 1),
   );
 
   return showModalBottomSheet<TimeOfDay>(

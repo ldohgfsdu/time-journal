@@ -16,9 +16,9 @@
 
 ## Recommended next task
 
-1. **真机验收**（优先）：按 ACCEPTANCE_CHECKLIST 逐项勾选，结果写入清单与 SESSION_LOG。
-2. 验收通过后：在 DECISIONS / CURRENT_STATE 写下 v0.1 发布边界（版本号、仅 arm64 自用/内测、已知限制）。
-3. 非优先：release 一页纸说明（可后置）。
+1. **提交并 push** 本轮验收 blocker 修复（时间轮 / 番茄记入一致 / 白噪音 / 睡眠文案），拉新 arm64 APK 覆盖安装复测。
+2. 复测通过后：继续 ACCEPTANCE_CHECKLIST 核心项 1–6、9。
+3. 签收通过后再写 v0.1 发布边界。
 
 ## Product reminder
 

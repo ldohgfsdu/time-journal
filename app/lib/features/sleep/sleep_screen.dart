@@ -155,14 +155,28 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
                 ),
               ),
               Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                child: Text(
+                  AppCopy.sleepCheckInHint,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppTheme.inkMuted,
+                  ),
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 8,
+                  vertical: 6,
                 ),
                 child: FilledButton(
                   style: FilledButton.styleFrom(
                     backgroundColor: AppTheme.sleepBlue,
-                    minimumSize: const Size(double.infinity, 48),
+                    minimumSize: const Size(double.infinity, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   onPressed: () async {
                     final db = ref.read(databaseProvider);
@@ -171,19 +185,25 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
                     if (!context.mounted) return;
                     GentleFeedback.sleepCheckIn(context, message);
                   },
-                  child: const Text(AppCopy.sleepCheckInButton),
+                  child: const Text(
+                    AppCopy.sleepCheckInButton,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 8,
+                  vertical: 6,
                 ),
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppTheme.sleepBlue,
                     side: const BorderSide(color: AppTheme.sleepBlue),
                     minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   onPressed: () async {
                     final db = ref.read(databaseProvider);

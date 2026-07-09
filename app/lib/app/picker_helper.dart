@@ -16,6 +16,7 @@ Future<TimeOfDay?> safeShowTimePicker(
 
   return showModalBottomSheet<TimeOfDay>(
     context: context,
+    isScrollControlled: true,
     backgroundColor: AppTheme.card,
     barrierColor: AppTheme.barrier,
     shape: const RoundedRectangleBorder(
@@ -24,39 +25,48 @@ Future<TimeOfDay?> safeShowTimePicker(
     builder: (ctx) {
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                helpText,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.ink,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TimeWheelRow(
-                value: selected,
-                onChanged: (t) => selected = t,
-              ),
-              const SizedBox(height: 12),
-              Row(
+          padding: EdgeInsets.fromLTRB(
+            16,
+            12,
+            16,
+            12 + MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: StatefulBuilder(
+            builder: (ctx, setModalState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    child: const Text('取消'),
+                  Text(
+                    helpText,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.ink,
+                    ),
                   ),
-                  const Spacer(),
-                  FilledButton(
-                    onPressed: () => Navigator.pop(ctx, selected),
-                    child: const Text('确定'),
+                  const SizedBox(height: 8),
+                  TimeWheelRow(
+                    value: selected,
+                    onChanged: (t) => setModalState(() => selected = t),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('取消'),
+                      ),
+                      const Spacer(),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(ctx, selected),
+                        child: const Text('确定'),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
         ),
       );

@@ -6,7 +6,6 @@ import '../../app/copy.dart';
 import '../../app/gentle_feedback.dart';
 import '../../app/shell_navigation.dart';
 import '../../app/theme.dart';
-import '../../core/utils/todo_reorder.dart';
 import '../../data/local/app_prefs.dart';
 import '../../data/local/database.dart';
 import 'providers/journal_providers.dart';
@@ -290,43 +289,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                             ),
                           )
                         else ...[
+                          // 待办不提供拖拽排序：长按已用于「安排/专注」菜单，
+                          // 拖拽与手账「少点、克制」原则冲突，也容易拖不动。
                           for (final todo in draftTodos)
                             _buildTodoRow(dateKey, todo),
-                          if (visiblePersisted.isNotEmpty)
-                            ReorderableListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: visiblePersisted.length,
-                              onReorderItem: (oldIndex, newIndex) async {
-                                final indices = mapVisibleTodoReorder(
-                                  visibleTodos: visiblePersisted,
-                                  scopeTodos: unscheduledIncomplete,
-                                  oldIndex: oldIndex,
-                                  newIndex: newIndex,
-                                );
-                                if (indices == null) return;
-                                final repo =
-                                    ref.read(journalRepositoryProvider);
-                                await repo.reorderTodos(
-                                  dateKey,
-                                  indices.oldIndex,
-                                  indices.newIndex,
-                                  scopedTodoIds: unscheduledIncomplete
-                                      .map((t) => t.id)
-                                      .toList(),
-                                );
-                                if (mounted) {
-                                  ref.invalidate(journalSnapshotProvider);
-                                }
-                              },
-                              itemBuilder: (context, index) {
-                                final todo = visiblePersisted[index];
-                                return KeyedSubtree(
-                                  key: ValueKey(todo.id),
-                                  child: _buildTodoRow(dateKey, todo),
-                                );
-                              },
-                            ),
+                          for (final todo in visiblePersisted)
+                            _buildTodoRow(dateKey, todo),
                           if (hiddenCount > 0)
                             TextButton(
                               onPressed: () =>

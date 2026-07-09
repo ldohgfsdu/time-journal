@@ -122,11 +122,11 @@ class AppCopy {
   }
 
   static const focusCompleteRecord = '记入今天';
-  static const focusCompleteNote = '补一句备注';
+  static const focusCompleteNote = '记入并写一句备注';
   static const focusStartBreakButton = '开始休息 5 分钟';
   static const focusEndBreakButton = '结束休息';
   static const focusCompleteHint = '备注一句…';
-  static const focusCompleteRecorded = '这一段守住了，已记入今天';
+  static const focusCompleteRecorded = '已记入今天；有计划的会直接标成一致';
   static String focusCompleteFeedback(int minutes) =>
       '专注了 $minutes 分钟，这一段完成了，歇一歇吧';
 
@@ -168,26 +168,29 @@ class AppCopy {
   static const sleepWakeLabel = '起床';
   static String sleepTonightSchedule(String bed, String wake) =>
       '$bed 睡 / $wake 起';
-  static String sleepHeroLine(int days) =>
-      days > 0 ? '已连续早睡 $days 晚' : '今晚早点睡，也算赢一次';
-  static String sleepStreakNights(int days) => '连续 $days 晚';
+  static String sleepHeroLine(int days) => days > 0
+      ? '连续 $days 晚照顾好自己'
+      : '睡前按一下，醒来再按一下就够了';
+  static String sleepStreakNights(int days) =>
+      days > 0 ? '已经留下 $days 晚痕迹' : '从今晚开始也完全来得及';
   static String sleepWeekProgress(int days) => '本周早睡 $days 天';
 
-  static const sleepScheduleTitle = '今晚目标';
-  static const sleepRecordTitle = '今日记录';
+  static const sleepScheduleTitle = '今晚想几点睡';
+  static const sleepRecordTitle = '今晚留下的痕迹';
   static const sleepCheckInLabel = '就寝';
-  static const sleepCheckInPending = '未记录';
-  static const sleepWakePending = '未记录';
-  static const sleepScoreLabel = '今晚得分';
+  static const sleepCheckInPending = '还没记';
+  static const sleepWakePending = '还没记';
+  static const sleepScoreLabel = '节奏感';
   static const sleepScorePending = '待记录';
 
   static const sleepCheckInButton = '我准备去睡了';
+  static const sleepCheckInHint = '一键记下现在，不用填别的';
   static const sleepWakeButton = '我起床了';
-  static const sleepDurationLabel = '睡眠时长';
-  static const sleepWakeFeedback = '早安，今天已经记下起床时间';
+  static const sleepDurationLabel = '睡了多久';
+  static const sleepWakeFeedback = '早安，起床时间已记下';
   static String sleepWakeRecorded(String time) => '已记录：$time';
-  static const sleepNoiseTitle = '白噪音';
-  static const sleepNoiseSubtitle = '选一个舒服的声音，慢慢放松';
+  static const sleepNoiseTitle = '助眠声音';
+  static const sleepNoiseSubtitle = '轻一点的环境声，可选，不勉强';
   static const sleepNoisePlaying = '正在播放';
   static const sleepNoiseStop = '停止';
 

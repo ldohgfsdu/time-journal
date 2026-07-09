@@ -304,11 +304,30 @@ class PomodoroController extends StateNotifier<PomodoroState>
   Future<void> recordPendingToJournal({String? note}) async {
     final pending = state.pendingCompletion;
     if (pending == null) return;
+    final repo = JournalRepository(_ref.read(databaseProvider));
+
+    // 若能关联到计划块：按「按计划完成」写入，今日对照直接显示「一致」，
+    // 无需用户再手动点一次。专注真实时长仍保留在番茄会话记录里。
+    final planned = await repo.findPlannedForFocus(
+      date: pending.date,
+      linkedPlanId: pending.linkedPlanId,
+      linkedTodoId: pending.linkedTodoId,
+    );
+    if (planned != null) {
+      await repo.completePlannedAsActual(
+        pending.date,
+        planned,
+        note: note,
+      );
+      _ref.invalidate(journalSnapshotProvider);
+      state = state.copyWith(clearPending: true);
+      return;
+    }
+
     final label = pending.task.trim().isEmpty ? '番茄专注' : pending.task.trim();
     final content = note != null && note.trim().isNotEmpty
         ? '$label（$note）'
         : label;
-    final repo = JournalRepository(_ref.read(databaseProvider));
     await repo.addActualFromPomodoro(
       date: pending.date,
       startTime: pending.startTime,

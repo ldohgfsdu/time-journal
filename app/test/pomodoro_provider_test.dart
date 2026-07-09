@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:time_journal/app/notification_service.dart';
 import 'package:time_journal/data/local/database.dart';
 import 'package:time_journal/data/local/database_provider.dart';
+import 'package:time_journal/data/models/comparison_slot.dart';
 import 'package:time_journal/data/repositories/journal_repository.dart';
 import 'package:time_journal/features/pomodoro/providers/pomodoro_provider.dart';
 
@@ -467,7 +468,10 @@ void main() {
       final slot = snapshot.comparisonSlots.firstWhere((s) => s.planned?.id == planned.id);
       expect(slot.actual, isNotNull);
       expect(slot.actual!.content, '健身');
+      expect(slot.actual!.startTime, planned.startTime);
+      expect(slot.actual!.endTime, planned.endTime);
       expect(slot.orphanActual, isFalse);
+      expect(slot.status, SlotStatus.match);
     });
 
     test('manual planned block without linkedTodoId links via planId (today comparison focus)', () async {
@@ -511,7 +515,10 @@ void main() {
       final slot = snapshot.comparisonSlots.firstWhere((s) => s.planned?.id == planned.id);
       expect(slot.actual, isNotNull);
       expect(slot.actual!.content, '睡觉');
+      expect(slot.actual!.startTime, planned.startTime);
+      expect(slot.actual!.endTime, planned.endTime);
       expect(slot.orphanActual, isFalse);
+      expect(slot.status, SlotStatus.match);
       expect(snapshot.comparisonSlots.where((s) => s.orphanActual), isEmpty);
     });
 

@@ -139,8 +139,11 @@ class _PomodoroScreenState extends ConsumerState<PomodoroScreen> {
           await GentleFeedback.focusCompletedSheet(
             context,
             pending: pending,
-            onRecord: ({String? note}) =>
-                controller.recordPendingToJournal(note: note),
+            onRecord: ({String? note}) async {
+              await controller.recordPendingToJournal(note: note);
+              // 记入后切回手账，立刻看到「一致」对照，无需再找入口。
+              ref.read(shellTabIndexProvider.notifier).state = 0;
+            },
             onStartBreak: () => controller.startBreak(),
             onDismiss: controller.clearPendingCompletion,
           );

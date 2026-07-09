@@ -207,7 +207,6 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
           ),
           const SizedBox(height: 8),
           TimeWheelRow(
-            key: ValueKey('start-${_start.hour}-${_start.minute}'),
             value: _start,
             onChanged: (t) {
               setState(() {
@@ -240,9 +239,11 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
             ),
             const SizedBox(height: 8),
             TimeWheelRow(
-              key: ValueKey('end-${_end.hour}-${_end.minute}'),
               value: _end,
-              onChanged: (t) => setState(() => _end = t),
+              onChanged: (t) => setState(() {
+                _end = t;
+                _durationMinutes = null;
+              }),
             ),
           ],
           const SizedBox(height: 16),

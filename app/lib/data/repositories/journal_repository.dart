@@ -235,14 +235,45 @@ class JournalRepository {
 
   Future<void> removeBlock(int id) => _db.deleteTimeBlock(id);
 
-  Future<void> completePlannedAsActual(String date, TimeBlock planned) async {
+  /// Resolve planned block for a focus session (planId first, then same-day todo).
+  Future<TimeBlock?> findPlannedForFocus({
+    required String date,
+    int? linkedPlanId,
+    int? linkedTodoId,
+  }) async {
+    final planned = await _db.blocksForDate(date, 'planned');
+    if (linkedPlanId != null) {
+      for (final p in planned) {
+        if (p.id == linkedPlanId && p.content.trim().isNotEmpty) return p;
+      }
+    }
+    if (linkedTodoId != null) {
+      for (final p in planned) {
+        if (p.linkedTodoId == linkedTodoId && p.content.trim().isNotEmpty) {
+          return p;
+        }
+      }
+    }
+    return null;
+  }
+
+  Future<void> completePlannedAsActual(
+    String date,
+    TimeBlock planned, {
+    String? note,
+  }) async {
+    final base = planned.content.trim();
+    final trimmedNote = note?.trim();
+    final content = (trimmedNote != null && trimmedNote.isNotEmpty)
+        ? '$base（$trimmedNote）'
+        : base;
     final actualBlocks = await _db.blocksForDate(date, 'actual');
     final existing = JournalSnapshot._matchActual(planned, actualBlocks);
     if (existing != null) {
       await updateBlock(existing.copyWith(
         startTime: planned.startTime,
         endTime: planned.endTime,
-        content: planned.content,
+        content: content,
         linkedTodoId: Value(planned.linkedTodoId),
         linkedPlanId: Value<int?>(planned.id),
       ));
@@ -254,7 +285,7 @@ class JournalRepository {
         journalDate: date,
         startTime: planned.startTime,
         endTime: planned.endTime,
-        content: Value(planned.content),
+        content: Value(content),
         source: 'actual',
         linkedTodoId: Value(planned.linkedTodoId),
         linkedPlanId: Value<int?>(planned.id),

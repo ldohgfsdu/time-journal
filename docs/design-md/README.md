@@ -27,3 +27,9 @@
 1. 读根目录 `DESIGN.md`（Claude 规范）
 2. 改 UI 时对齐 tokens，**不要**大范围重做成另一套品牌
 3. 换规范：从 `/root/code/awesome-design-md/design-md/<brand>/DESIGN.md` 复制覆盖根目录 `DESIGN.md`，并更新本 README
+
+## Claude Design Skill
+
+- Grok: `.grok/skills/claude-design/SKILL.md` → invoke `/claude-design` or auto on Claude style requests
+- Claude Code: `.claude/skills/claude-design/SKILL.md`
+- Mobile adaptation brief: `CLAUDE_MOBILE_ADAPTATION.md`

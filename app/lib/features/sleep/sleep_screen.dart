@@ -79,31 +79,34 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
                 margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 18,
+                  vertical: 20,
                 ),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppTheme.cardRadius),
-                  color: AppTheme.sleepMist,
-                  border: Border.all(color: AppTheme.rule),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+                  color: AppTheme.surfaceCard,
+                  border: Border.all(color: AppTheme.hairline),
                 ),
                 child: Column(
                   children: [
                     SleepWeekDots(litCount: weekDots),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     Text(
                       AppCopy.sleepHeroLine(data.streakDays),
-                      style: const TextStyle(
-                        color: AppTheme.sleepBlue,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                      textAlign: TextAlign.center,
+                      style: AppTheme.display(
+                        size: 22,
+                        weight: FontWeight.w500,
+                        height: 1.25,
+                        letterSpacing: -0.3,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
                       AppCopy.sleepStreakNights(data.streakDays),
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppTheme.inkMuted,
+                      textAlign: TextAlign.center,
+                      style: AppTheme.ui(
+                        size: 13,
+                        color: AppTheme.muted,
                       ),
                     ),
                   ],
@@ -111,6 +114,7 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
               ),
               SectionCard(
                 title: AppCopy.sleepScheduleTitle,
+                editorialTitle: true,
                 child: Column(
                   children: [
                     Text(
@@ -118,11 +122,13 @@ class _SleepScreenState extends ConsumerState<SleepScreen> {
                         data.record.targetBedtime,
                         data.record.targetWakeTime,
                       ),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.sleepBlue,
-                        fontFeatures: [FontFeature.tabularFigures()],
+                      style: AppTheme.display(
+                        size: 26,
+                        weight: FontWeight.w500,
+                        color: AppTheme.ink,
+                        height: 1.2,
+                      ).copyWith(
+                        fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
                     const SizedBox(height: 12),

@@ -47,13 +47,13 @@ class _MainShellState extends ConsumerState<MainShell> {
 
   Widget _buildTabBar(int index) {
     return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.card.withValues(alpha: 0.96),
-        border: const Border(top: BorderSide(color: AppTheme.hairline)),
+      decoration: const BoxDecoration(
+        color: AppTheme.canvas,
+        border: Border(top: BorderSide(color: AppTheme.hairline)),
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
             children: List.generate(_tabs.length, (i) {
               final tab = _tabs[i];
@@ -66,8 +66,9 @@ class _MainShellState extends ConsumerState<MainShell> {
                     duration: const Duration(milliseconds: 180),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
+                      // Selected = cream card wash + ink (coral reserved for CTA)
                       color: selected
-                          ? AppTheme.primarySoft
+                          ? AppTheme.surfaceCard
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                     ),
@@ -77,7 +78,7 @@ class _MainShellState extends ConsumerState<MainShell> {
                         Icon(
                           selected ? tab.activeIcon : tab.icon,
                           size: 22,
-                          color: selected ? AppTheme.primary : AppTheme.mutedSoft,
+                          color: selected ? AppTheme.ink : AppTheme.mutedSoft,
                         ),
                         const SizedBox(height: 3),
                         Text(
@@ -87,7 +88,7 @@ class _MainShellState extends ConsumerState<MainShell> {
                             fontWeight:
                                 selected ? FontWeight.w500 : FontWeight.w400,
                             color:
-                                selected ? AppTheme.primary : AppTheme.mutedSoft,
+                                selected ? AppTheme.ink : AppTheme.mutedSoft,
                           ),
                         ),
                       ],

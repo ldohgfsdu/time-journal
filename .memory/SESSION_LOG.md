@@ -1,5 +1,11 @@
 # SESSION_LOG
 
+## 2026-07-09 — UI 预览政策：Web 优先，满意后再 APK
+
+- 用户要求：UI 设计不要每轮打包（等 CI 久、效果差时浪费）；**先 web 预览，改到满意再打包**。
+- 已写入 RULES / COMMANDS / DECISIONS / ACTIVE_OBJECT。
+- UI 任务可启动 web-server（默认 8081）；非 UI 真机验收/用户点名打包时才出 APK。
+
 ## 2026-07-09 — 真机反馈 blocker 修复（时间轮 / 番茄记入 / 白噪音 / 睡眠 / 去掉拖拽）
 
 - **范围**：验收中用户反馈；未开 P3、无 schema 变更。

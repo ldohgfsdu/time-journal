@@ -34,12 +34,18 @@ If unsure whether a message is casual or a development task, ask one short clari
 - 每次只改相关文件。
 - 不改 schema，除非用户明确授权。
 - 不执行 flutter build apk --release。
-- 不默认启动 web-server。
-- web-server 是常驻任务，启动前必须询问。
 - 不使用 auto mode，优先 acceptEdits。
 - 不 /login，除非用户明确要求接 Anthropic 官方账号。
 - 不 reset、不 checkout、不 clean，除非用户明确授权。
 - 不把 API Key 或任何密钥写进仓库。
+
+## UI 设计与预览（2026-07-09 起硬规则）
+
+- **UI / 视觉 / 样式迭代：先 Web 预览，禁止每改一轮就打包 APK。**
+- 流程：改 UI → `flutter run -d web-server`（或已有预览）→ 用户看效果 → 继续改 → **用户明确说满意 / 可以打包** 后再 commit+push 触发 CI APK 或走 outbox 脚本。
+- 用户本条授权后，**UI 相关任务可主动启动 web-server**（默认端口 8081，启动前仍简短说明 URL；若已有进程在跑则复用）。
+- **非 UI** 的功能修复、验收 blocker、用户明确要求装机复测时，才走 APK。
+- 不要在 UI 未定稿时 push `app/**` 仅为了等 CI 出包（浪费时间）。
 
 ## Cross-model entry
 

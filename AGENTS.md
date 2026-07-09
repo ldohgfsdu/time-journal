@@ -27,7 +27,8 @@ Read in this order (only when boot is triggered):
 - Do not store secrets in the repository.
 - Do not print or commit API keys.
 - Do not reset / checkout / clean unless explicitly approved by the user.
-- Do not start web-server unless explicitly approved.
+- Do not start web-server for non-UI work unless approved.
+- **UI / visual work: web preview first** (`flutter run -d web-server`), iterate until the user is satisfied; **do not package APK every UI round**. Package only when the user says so (满意/可以打包/装机复测).
 - Report drift if actual git/project state conflicts with memory.
 - Before changing code, state the scope.
 - After code changes, run the validation commands required by .memory/RULES.md.

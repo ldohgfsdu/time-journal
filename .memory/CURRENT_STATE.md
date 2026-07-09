@@ -14,6 +14,12 @@
 产品定位：低压力时间手账；核心是「计划 vs 实际」的温和对照。  
 MVP / P0–P2 功能基本完成。当前主瓶颈不是功能缺口，而是记忆对齐、真机签收与 v0.1 边界定义。
 
+### UI 工作流（硬规则）
+
+- **UI 先 Web 预览，满意后再打包 APK**（见 RULES / DECISIONS）。
+- 命令：`cd app && flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8081`
+- 不要为试 UI 效果每轮等 CI APK。
+
 ## Latest known commit
 
 - `40fac38` fix(app): acceptance blockers — time wheel, focus journal match, noise, drop todo drag

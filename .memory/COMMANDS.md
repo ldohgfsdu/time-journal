@@ -96,13 +96,21 @@ Outbox：`/storage/emulated/0/outbox/time-journal/`
 - **最新包**（根目录）：`time-journal-arm64-{commit}-{时间}.apk`  
 - **历史版本**：`.../history/`（新包写入时自动把旧的挪进去）
 
-## Web preview
+## Web preview（UI 默认路径）
 
-Only after user confirmation:
+**UI 改动一律先 Web 预览，满意后再打包 APK**（见 RULES / DECISIONS）。
 
+```bash
+cd app
+# 优先本机 flutter
+export PATH="/root/dev/flutter/bin:$PATH"
+flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8081
 ```
-cd app && flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8081
-```
+
+- 浏览器：`http://<本机IP>:8081`（手机同网可访问）
+- 热重载：终端 `r`；热重启：`R`
+- 停止：终端 `q` 或按用户要求 kill 进程
+- **不要**为看 UI 效果去 `fetch_arm64_apk` / CI 等包
 
 ## Cross-model memory
 

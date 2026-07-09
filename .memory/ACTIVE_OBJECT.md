@@ -16,8 +16,8 @@
 
 ## Recommended next task
 
-1. **提交并 push** 本轮验收 blocker 修复（时间轮 / 番茄记入一致 / 白噪音 / 睡眠文案），拉新 arm64 APK 覆盖安装复测。
-2. 复测通过后：继续 ACCEPTANCE_CHECKLIST 核心项 1–6、9。
+1. **UI 改动：Web 预览迭代**（`flutter run -d web-server`），满意后再打包。
+2. 功能/验收：按 ACCEPTANCE_CHECKLIST；需要真机路径时再出 APK。
 3. 签收通过后再写 v0.1 发布边界。
 
 ## Product reminder

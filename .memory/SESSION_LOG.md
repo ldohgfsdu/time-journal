@@ -1,5 +1,18 @@
 # SESSION_LOG
 
+## 2026-07-09 — 控制面同步 + 真机验收清单 + 交付主路径政策（Grok）
+
+- **范围**：仅文档 / `.memory/` / `开发计划.txt`；**未改** `app/**`、schema、GA、打包脚本行为。
+- **阶段统一为：** 功能收口完成 → 交付管道建设中 → 待真机签收 → 再决定 v0.1 发布。
+- **drift 修复：**
+  - `CURRENT_STATE` latest → `03ed92b`；去掉过时「仅真机验收准备」单句表述
+  - `开发计划.txt` P0-6：`blocked` + release blocker → **done**（已合入，非 blocker）
+- **新建** `.memory/ACCEPTANCE_CHECKLIST.md`：12 项；核心 1–6、9 全绿才可称 v0.1 可发
+- **冻结**：ACTIVE_OBJECT / DECISIONS 明确签收前不做 P3、不大 UI、不改 schema、不新开第三条 APK 路径、只修验收 blocker
+- **交付政策**：主路径 CI arm64 → fetch → outbox；本机 `build_arm64_to_outbox` 仅 fallback（RULES / COMMANDS / ENVIRONMENT / DECISIONS 对齐）
+- **未跑** flutter analyze/test（无 app 代码变更）
+- **下一步建议：** 真机按 ACCEPTANCE_CHECKLIST 签收（优先于写完整 v0.1 release 文案）
+
 ## 2026-07-06 (session 3)
 
 - **P1 UI 收口审查最小补丁**（Grok）：

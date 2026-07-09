@@ -75,11 +75,35 @@ Do not print or commit the API key.
 ## Flutter / Web
 
 - Flutter（本机）：`/root/dev/flutter/bin/flutter`（proot 内优先加入 PATH）
-- **本地 APK → outbox**：`bash scripts/build_arm64_to_outbox.sh`（需 **Android SDK**）
-- 首次安装 SDK：`bash scripts/setup_android_sdk_termux.sh`（proot Ubuntu + apt）；续装包：`bash scripts/install_android_sdk_packages.sh`
-- arm64 proot：SDK 自带 cmake/ninja 常为 x86_64；`fix_android_sdk_cmake_arm64.sh` 用 apt `cmake` + `ninja-build` 包装
-- **日常装包（arm64 proot）**：`post_push_app.sh` / `fetch_arm64_apk_from_ci.sh`（需 **`gh auth login` 一次**）；本机 NDK 不可跑时不再 Gradle
-- SDK 路径默认：`/data/data/com.termux/files/home/Android/Sdk`；生成 `scripts/android_sdk.env`（已 gitignore）
+
+### APK 交付（政策）
+
+**主路径（推荐、日常）：**
+
+```text
+push 含 app/** → GitHub CI arm64 release
+  → bash scripts/fetch_arm64_apk_from_ci.sh
+  → outbox
+```
+
+- 也可：`bash scripts/post_push_app.sh` / `bash scripts/release_apk_to_outbox.sh`
+- 说明：`release_apk_to_outbox.sh` 实现上若本机 NDK 可跑会先尝试本地 build，否则走 CI 拉包；**政策上仍以 CI→outbox 为主**，不扩展本机路径
+- 需一次：`gh auth login`
+- Outbox：`/storage/emulated/0/outbox/time-journal`（仓库内 `.external_outbox/time-journal`）
+- 产物名通常：`time-journal-arm64-release.apk`
+- Debug APK：仅 `workflow_dispatch`，不随 push
+
+**Fallback（不扩展）：**
+
+```bash
+bash scripts/build_arm64_to_outbox.sh
+```
+
+- 需 Android SDK；arm64 proot 上 NDK/cmake 常不可用，**不要**把本机 Gradle 当主路径继续加脚本
+- 首次 SDK：`bash scripts/setup_android_sdk_termux.sh`；续装：`bash scripts/install_android_sdk_packages.sh`
+- arm64 proot：`fix_android_sdk_cmake_arm64.sh` 用系统 cmake/ninja 包装 SDK 路径
+- SDK 默认：`/data/data/com.termux/files/home/Android/Sdk`；`scripts/android_sdk.env` 已 gitignore
+- **禁止**新增第三条 APK 构建路径
 
 Web Drift depends on:
 

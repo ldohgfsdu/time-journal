@@ -62,24 +62,30 @@ cd app && timeout 180 flutter test
 
 ## Commit / push / CI APK
 
-默认流程（见 `.memory/RULES.md`）：
+**主路径（政策）**：`push app/**` → CI arm64 release → `fetch_arm64_apk_from_ci` → outbox  
+**Fallback**：`build_arm64_to_outbox.sh`（不扩展、非日常主路径）  
+详见 `.memory/RULES.md`、`.memory/DECISIONS.md`、`.memory/ENVIRONMENT.md`。
+
+默认流程：
 
 1. 验证通过后 commit
 2. `git push origin p0/journal-compare`（除非用户说不要 push）
-3. 若 push 含 **`app/`** 改动 → GitHub Actions 自动 analyze、test、上传 **arm64 release** APK（日常只装这个）
-4. **push 后**（含 `app/`）：`bash scripts/post_push_app.sh` → **自动** CI 拉包或本机 build → **outbox**
-5. 收口：`bash scripts/round_close_app.sh`（未提交且只能走 CI 时需先 push）
-
-**一次性**：`gh auth login`（HTTPS），之后全自动。
+3. 若 push 含 **`app/`** 改动 → GitHub Actions 自动 analyze、test、上传 **arm64 release** APK
+4. **push 后**（含 `app/`）拉到 outbox：
 
 ```bash
 bash scripts/post_push_app.sh
+# 或显式：
 bash scripts/fetch_arm64_apk_from_ci.sh --wait-sha HEAD --dispatch
 bash scripts/fetch_arm64_apk_from_ci.sh --latest
 bash scripts/release_apk_to_outbox.sh
 ```
 
-本机 Gradle（仅 NDK 主机可跑时）：
+5. 收口：`bash scripts/round_close_app.sh`
+
+**一次性**：`gh auth login`（HTTPS）。
+
+本机 Gradle **仅 fallback**（CI 不可用，且 NDK 主机可跑时）：
 
 ```bash
 bash scripts/setup_android_sdk_termux.sh

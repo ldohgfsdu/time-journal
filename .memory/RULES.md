@@ -100,13 +100,14 @@ cd app && timeout 180 flutter test
 2. git status --short
 3. **默认** `git push origin $(git branch --show-current)`，把提交推到 GitHub（用户明确说「先不 push」「只本地提交」时除外）。
 
-### 推送后的 CI（GitHub Actions）
+### 推送后的 CI 与装包（GitHub Actions）
 
 - 仅当本次 push 包含 **`app/`** 内改动时，Actions 会自动跑 analyze + test + 上传 **arm64 Release APK**（`android-arm64-release.yml`）。
 - **Debug APK** 不随 push 构建（`android-debug-apk.yml` 仅 `workflow_dispatch`），避免大包浪费。
 - 只改 `.memory/`、`AGENTS.md`、文档等 **不会** 触发 APK 构建，避免无意义耗时。
-- push 含 **`app/`** 后执行：`bash scripts/post_push_app.sh` → **本机** `build_arm64_to_outbox.sh`，APK 写入 `.external_outbox/`（手机 `/storage/emulated/0/outbox/time-journal`）。CI 仅作备份归档。
-- 收口（含未 push）：`bash scripts/round_close_app.sh`（有 app 改动即本地打包到 outbox）。
+- **主路径：** push 含 `app/` → CI arm64 release → `bash scripts/fetch_arm64_apk_from_ci.sh`（或 `post_push_app.sh` / `release_apk_to_outbox.sh`）→ outbox（`/storage/emulated/0/outbox/time-journal`）。
+- **Fallback：** `bash scripts/build_arm64_to_outbox.sh`（CI 不可用时）；**不**再扩展本机路径、**不**新增第三条构建流水线。
+- 收口：`bash scripts/round_close_app.sh`（有 app 改动时走装包路由）。
 
 ## 收口规则
 

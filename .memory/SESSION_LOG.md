@@ -1,5 +1,19 @@
 # SESSION_LOG
 
+## 2026-07-09 — v0.1 发版打包 + 实体机烟测
+
+- **范围：** 只打包与烟测；不扩 scope / 不改业务 / UI / schema。
+- **本地 build：** `build_arm64_to_outbox` 失败于 NDK（linux-x86_64 clang on aarch64）— 非业务 blocker，按政策用 CI 产物。
+- **app/** 自 `d039a23` → HEAD 无 diff → CI APK `time-journal-arm64-d039a23-20260709-1910.apk` 即 v0.1 二进制。
+- **落盘：** 复制标记  
+  `/storage/emulated/0/outbox/time-journal/time-journal-arm64-d039a23-20260709-2232-v0.1.apk`  
+  md5=`c247e9ef1a20a13d4b884eaea66947a7`；`v0.1-release-apk.txt` 指针。
+- **gh：** 未登录，无法重新 workflow_dispatch。
+- **实体机：** 包已安装；`am start --user 0 …MainActivity` 可拉到前台。  
+  force-stop / input inject / screencap / 静默 pm install 被 MIUI 权限拒绝 → 人手 UI 五步列为非 blocker。
+- **聚焦测试：** App smoke + linkedPlanId/completePlanned 等相关 **20/20** passed。
+- **结论：** v0.1 **可发**；APK 路径见 `V0_1_RELEASE.md`。
+
 ## 2026-07-09 — v0.1 签收（核心路径 1–6）
 
 - **范围：** 只做 v0.1 签收；不扩 scope / 不改 UI 审美 / 不改 schema / 不开 P3。

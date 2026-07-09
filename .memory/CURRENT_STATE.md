@@ -9,7 +9,7 @@
 
 ## Current stage
 
-**功能收口完成 → 核心路径 1–6 签收通过 → v0.1 逻辑门禁满足（可发）。**
+**v0.1 可发：逻辑签收通过 + APK 已落 outbox + 实体机可拉起。**
 
 产品定位：低压力时间手账；核心是「计划 vs 实际」的温和对照。  
 MVP / P0–P2 功能基本完成。v0.1 结论见 `.memory/V0_1_RELEASE.md`。
@@ -22,11 +22,10 @@ MVP / P0–P2 功能基本完成。v0.1 结论见 `.memory/V0_1_RELEASE.md`。
 
 ## Latest known commit
 
-- `a8951a6` docs(memory): v0.1 acceptance sign-off for core paths 1-6
-- 签收依据代码 HEAD：`835e6bf`（无 app 业务 diff；签收仅 memory）
-- 分支：`p0/journal-compare`
-- 签收轮（2026-07-09）：**无 app 代码变更**；4 个未提交 UI 审美文件已 revert；工作区干净
-- 历史验收 blocker 修复：`40fac38`（时间轮 / 专注记入 / 白噪音 / 去拖拽）等已合入
+- 分支：`p0/journal-compare`（与 origin 对齐；工作区应干净）
+- 签收：`a8951a6`；代码基线 app：`d039a23`/`835e6bf`（其后仅 docs/memory）
+- **v0.1 APK：** `/storage/emulated/0/outbox/time-journal/time-journal-arm64-d039a23-20260709-2232-v0.1.apk`  
+  （同源 `…-1910.apk`，md5 `c247e9ef1a20a13d4b884eaea66947a7`）
 
 ## Completed（摘要）
 
@@ -59,9 +58,9 @@ MVP / P0–P2 功能基本完成。v0.1 结论见 `.memory/V0_1_RELEASE.md`。
 
 ## Release blockers
 
-- **无代码 blocker**
-- v0.1 逻辑门禁：**已满足**（核心 1–6 + #9 测试旁证）
-- 残余非 blocker：实体机覆盖安装冷启动、真实跨夜睡眠人肉（见清单已知限制）
+- **无**
+- v0.1：**可发**（逻辑门禁 + CI APK outbox）
+- 残余非 blocker：人手 UI 五步烟测（MIUI 限制自动化）、跨夜睡眠人肉、`gh auth` 后可再拉 CI
 
 ## Feature freeze（相对 P3 / 大改）
 

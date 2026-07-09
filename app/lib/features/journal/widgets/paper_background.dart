@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../app/theme.dart';
 
+/// Claude-style cream canvas: soft vertical wash, no lined-paper texture.
 class PaperBackground extends StatelessWidget {
   const PaperBackground({super.key, required this.child});
 
@@ -13,30 +14,13 @@ class PaperBackground extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppTheme.paper, AppTheme.paperDeep],
+          colors: [
+            AppTheme.canvas,
+            AppTheme.surfaceSoft,
+          ],
         ),
       ),
-      child: CustomPaint(
-        painter: _RuledPaperPainter(),
-        child: child,
-      ),
+      child: child,
     );
   }
-}
-
-class _RuledPaperPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppTheme.rule.withValues(alpha: 0.18)
-      ..strokeWidth = 0.5;
-
-    const gap = 28.0;
-    for (var y = gap; y < size.height; y += gap) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

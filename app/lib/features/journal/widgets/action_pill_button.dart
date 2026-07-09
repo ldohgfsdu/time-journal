@@ -18,27 +18,27 @@ class ActionPillButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppTheme.tomatoSoft,
-      borderRadius: BorderRadius.circular(20),
+      color: AppTheme.primarySoft,
+      borderRadius: BorderRadius.circular(AppTheme.radiusMd),
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: compact ? 8 : 10,
-            vertical: compact ? 5 : 6,
+            horizontal: compact ? 10 : 12,
+            vertical: compact ? 6 : 8,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: compact ? 14 : 16, color: AppTheme.tomato),
-              const SizedBox(width: 2),
+              Icon(icon, size: compact ? 14 : 16, color: AppTheme.primary),
+              const SizedBox(width: 4),
               Text(
                 label,
                 style: TextStyle(
-                  color: AppTheme.tomato,
+                  color: AppTheme.primary,
                   fontSize: compact ? 12 : 13,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

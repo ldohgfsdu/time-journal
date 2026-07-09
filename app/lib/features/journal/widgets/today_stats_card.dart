@@ -27,16 +27,21 @@ class TodayStatsCard extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
-        border: Border.all(color: AppTheme.rule),
+        color: AppTheme.surfaceCard,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        border: Border.all(color: AppTheme.hairline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             AppCopy.journalStatsTitle,
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: AppTheme.ink,
+              letterSpacing: -0.1,
+            ),
           ),
           const SizedBox(height: 10),
           Text(
@@ -44,7 +49,7 @@ class TodayStatsCard extends StatelessWidget {
               plannedSegments,
               AppCopy.fmtDuration(plannedMinutes),
             ),
-            style: const TextStyle(fontSize: 14, color: AppTheme.inkMuted),
+            style: const TextStyle(fontSize: 14, color: AppTheme.muted, height: 1.45),
           ),
           const SizedBox(height: 4),
           Text(
@@ -52,12 +57,12 @@ class TodayStatsCard extends StatelessWidget {
               actualSegments,
               AppCopy.fmtDuration(actualMinutes),
             ),
-            style: const TextStyle(fontSize: 14, color: AppTheme.inkMuted),
+            style: const TextStyle(fontSize: 14, color: AppTheme.muted, height: 1.45),
           ),
           const SizedBox(height: 4),
           Text(
             AppCopy.journalStatsFocus(AppCopy.fmtFocusDuration(focusSeconds)),
-            style: const TextStyle(fontSize: 14, color: AppTheme.inkMuted),
+            style: const TextStyle(fontSize: 14, color: AppTheme.muted, height: 1.45),
           ),
         ],
       ),

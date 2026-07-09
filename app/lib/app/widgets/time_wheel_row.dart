@@ -207,9 +207,9 @@ class _TimeWheelRowState extends State<TimeWheelRow> {
         Container(
           height: widget.height,
           decoration: BoxDecoration(
-            color: AppTheme.tagBg,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppTheme.rule),
+            color: AppTheme.surfaceSoft,
+            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+            border: Border.all(color: AppTheme.hairline),
           ),
           child: Row(
             children: [

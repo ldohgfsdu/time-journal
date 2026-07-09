@@ -188,7 +188,12 @@ class _ScheduleSheetBodyState extends State<_ScheduleSheetBody> {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              letterSpacing: -0.2,
+              color: AppTheme.ink,
+            ),
           ),
           if (widget.catchUp) ...[
             const SizedBox(height: 12),

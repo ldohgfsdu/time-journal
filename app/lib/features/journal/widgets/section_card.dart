@@ -27,8 +27,15 @@ class SectionCard extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppTheme.card,
-        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
-        border: Border.all(color: AppTheme.rule),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        border: Border.all(color: AppTheme.hairline),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.ink.withValues(alpha: 0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,13 +46,13 @@ class SectionCard extends StatelessWidget {
               children: [
                 Container(
                   width: 3,
-                  height: 16,
+                  height: 18,
                   decoration: BoxDecoration(
-                    color: AppTheme.tomato,
-                    borderRadius: BorderRadius.circular(2),
+                    color: AppTheme.primary,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusXs),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,18 +60,23 @@ class SectionCard extends StatelessWidget {
                       Text(
                         title,
                         style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                           color: AppTheme.ink,
+                          height: 1.3,
+                          letterSpacing: -0.1,
                         ),
                       ),
                       if (subtitle != null) ...[
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 3),
                         Text(
                           subtitle!,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppTheme.subtitle,
-                              ),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                            color: AppTheme.muted,
+                            height: 1.4,
+                          ),
                         ),
                       ],
                     ],
@@ -74,9 +86,9 @@ class SectionCard extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(height: 1),
+          const Divider(height: 1, color: AppTheme.hairlineSoft),
           Padding(
-            padding: EdgeInsets.fromLTRB(16, dense ? 8 : 10, 16, dense ? 12 : 14),
+            padding: EdgeInsets.fromLTRB(16, dense ? 10 : 12, 16, dense ? 12 : 16),
             child: child,
           ),
         ],
